@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { AuthDialog } from '@/components/auth/AuthDialog';
 import {
   ShoppingCart,
   Search,
@@ -27,11 +28,14 @@ import {
   Star,
   BarChart3,
   TrendingUp,
+  LogIn,
+  LogOut,
+  User,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
-  const { cartCount, setCartOpen, searchQuery, setSearchQuery, sortBy, setSortBy } = useStore();
+  const { cartCount, setCartOpen, authOpen, setAuthOpen, user, setUser, searchQuery, setSearchQuery, sortBy, setSortBy } = useStore();
   const totalItems = PRODUCTS.length;
   const totalSold = PRODUCTS.reduce((s, p) => s + p.sold, 0);
 
@@ -62,6 +66,22 @@ export default function Home() {
             <Button variant="ghost" size="icon" onClick={() => document.getElementById('mercado')?.scrollIntoView({ behavior: 'smooth' })} className="hidden sm:flex">
               <BarChart3 className="w-4 h-4" />
             </Button>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:flex flex-col items-end">
+                  <span className="text-xs font-medium leading-none">{user.name}</span>
+                  <span className="text-[10px] text-muted-foreground leading-none mt-0.5">{user.email}</span>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setUser(null)} className="h-9 w-9 cursor-pointer">
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="sm" className="gap-1.5 cursor-pointer" onClick={() => setAuthOpen(true)}>
+                <LogIn className="w-4 h-4" />
+                <span className="hidden sm:inline text-xs">Ingresar</span>
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -266,6 +286,7 @@ export default function Home() {
       </footer>
 
       <CartDrawer />
+      <AuthDialog />
     </div>
   );
 }

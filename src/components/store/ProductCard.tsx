@@ -56,7 +56,14 @@ export function ProductCard({ product }: { product: Product }) {
     >
       <Card className="h-full overflow-hidden border border-border/50 hover:border-primary/30 hover:shadow-xl transition-all duration-300 group bg-card">
         <div className="relative overflow-hidden bg-gradient-to-br from-muted/80 to-muted">
-          <div className="aspect-[4/3] flex items-center justify-center text-6xl">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="aspect-[4/3] w-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+            onError={(e) => { const el = e.currentTarget; el.style.display = 'none'; if (el.nextElementSibling) (el.nextElementSibling as HTMLElement).style.display = 'flex'; }}
+          />
+          <div className="aspect-[4/3] w-full items-center justify-center text-6xl absolute inset-0 bg-muted hidden">
             {getPlatformEmoji(product.platform)}
           </div>
           {discount > 0 && (

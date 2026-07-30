@@ -20,8 +20,8 @@ export function FeaturedCard({ product }: { product: Product }) {
   return (
     <div className="rounded-xl border border-border/50 p-4 hover:border-primary/30 hover:shadow-lg transition-all duration-300 bg-card group">
       <div className="flex items-start gap-3">
-        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
-          {emojiMap[product.platform] || '📦'}
+        <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 group-hover:scale-110 transition-transform bg-muted">
+          <img src={product.image} alt={product.platform} className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
