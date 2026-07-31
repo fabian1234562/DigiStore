@@ -20,15 +20,242 @@ import {
   CreditCard,
   Zap,
   ArrowRight,
+  KeyRound,
+  Ticket,
+  ShieldCheck,
+  Copy,
+  Check,
+  Mail,
+  UserCircle,
+  ChevronDown,
+  ChevronUp,
+  FileDown,
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+interface DeliveryDetail {
+  label: string;
+  value: string;
+}
+
+interface DeliveryItem {
+  type: string;
+  typeLabel: string;
+  icon: string;
+  productName: string;
+  details: DeliveryDetail[];
+  instructions: string;
+}
+
+interface OrderResult {
+  success: boolean;
+  orderId?: string;
+  message?: string;
+  total?: number;
+  email?: string;
+  date?: string;
+  estimatedDelivery?: string;
+  deliveries?: DeliveryItem[];
+  deliveryMethods?: {
+    email: string;
+    account: string;
+  };
+}
+
+function DeliveryIcon({ icon, className }: { icon: string; className?: string }) {
+  if (icon === 'KeyRound') return <KeyRound className={className || 'w-5 h-5'} />;
+  if (icon === 'Ticket') return <Ticket className={className || 'w-5 h-5'} />;
+  if (icon === 'ShieldCheck') return <ShieldCheck className={className || 'w-5 h-5'} />;
+  return <CreditCard className={className || 'w-5 h-5'} />;
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="shrink-0 p-1.5 rounded-md hover:bg-muted transition-colors cursor-pointer"
+      title="Copiar"
+    >
+      {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
+    </button>
+  );
+}
+
+function DeliveryCard({ delivery, index }: { delivery: DeliveryItem; index: number }) {
+  const [expanded, setExpanded] = useState(true);
+  const isCredentials = delivery.type === 'credentials';
+  const isLicense = delivery.type === 'license';
+
+  const typeColor = isCredentials ? 'text-amber-600 bg-amber-50 border-amber-200' : isLicense ? 'text-blue-600 bg-blue-50 border-blue-200' : 'text-purple-600 bg-purple-50 border-purple-200';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className="border border-border rounded-xl overflow-hidden"
+    >
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className={`w-full flex items-center justify-between p-4 cursor-pointer hover:bg-muted/30 transition-colors`}
+      >
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg border ${typeColor}`}>
+            <DeliveryIcon icon={delivery.icon} className="w-4 h-4" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-semibold">{delivery.productName}</p>
+            <p className="text-xs text-muted-foreground">{delivery.typeLabel}</p>
+          </div>
+        </div>
+        {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+      </button>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-4 space-y-3">
+              <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                {delivery.details.map((d, i) => (
+                  <div key={i} className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{d.label}</span>
+                    <div className="flex items-center gap-1.5 flex-1 justify-end">
+                      <span className={`text-xs font-mono font-semibold text-right break-all ${isCredentials && (d.label.includes('Contraseña') || d.label.includes('Email')) ? 'text-amber-700' : isLicense ? 'text-blue-700' : 'text-purple-700'}`}>
+                        {d.value}
+                      </span>
+                      <CopyButton text={d.value} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                <p className="text-[10px] font-semibold text-emerald-700 uppercase tracking-wide mb-1.5">Como activar tu producto</p>
+                <pre className="text-xs text-emerald-800 whitespace-pre-wrap font-sans leading-relaxed">{delivery.instructions}</pre>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function OrderSuccess({ result }: { result: OrderResult }) {
+  const handleCopyAll = () => {
+    if (!result.deliveries) return;
+    const text = result.deliveries.map(d => {
+      const details = d.details.map(det => `${det.label}: ${det.value}`).join('\n');
+      return `=== ${d.productName} ===\nTipo: ${d.typeLabel}\n${details}\n\nInstrucciones:\n${d.instructions}`;
+    }).join('\n\n---\n\n');
+    navigator.clipboard.writeText(`Orden: ${result.orderId}\nFecha: ${result.date}\nTotal: $${result.total?.toFixed(2)}\nEmail: ${result.email}\n\n${text}`);
+  };
+
+  return (
+    <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+        className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4 self-center"
+      >
+        <Zap className="w-8 h-8 text-emerald-600" />
+      </motion.div>
+
+      <h3 className="text-xl font-bold text-center mb-1">Pedido Exitoso</h3>
+      <p className="text-sm text-muted-foreground text-center mb-4">Tus productos digitales estan listos para usar</p>
+
+      <div className="bg-muted/50 rounded-lg p-3 mb-4 space-y-1.5">
+        <div className="flex justify-between text-xs">
+          <span className="text-muted-foreground">Orden</span>
+          <span className="font-mono font-semibold">{result.orderId}</span>
+        </div>
+        <div className="flex justify-between text-xs">
+          <span className="text-muted-foreground">Fecha</span>
+          <span>{result.date ? new Date(result.date).toLocaleString('es', { dateStyle: 'medium', timeStyle: 'short' }) : ''}</span>
+        </div>
+        <div className="flex justify-between text-xs">
+          <span className="text-muted-foreground">Total</span>
+          <span className="font-bold text-emerald-600">${result.total?.toFixed(2)} USD</span>
+        </div>
+        <div className="flex justify-between text-xs">
+          <span className="text-muted-foreground">Email</span>
+          <span className="font-mono text-xs">{result.email}</span>
+        </div>
+      </div>
+
+      <div className="space-y-1 mb-3">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Como recibes tus productos</p>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-center">
+            <KeyRound className="w-4 h-4 text-amber-600 mx-auto mb-1" />
+            <p className="text-[10px] font-medium text-amber-800">Credenciales</p>
+            <p className="text-[9px] text-amber-600">Email + Clave</p>
+          </div>
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-2.5 text-center">
+            <Ticket className="w-4 h-4 text-purple-600 mx-auto mb-1" />
+            <p className="text-[10px] font-medium text-purple-800">Codigos</p>
+            <p className="text-[9px] text-purple-600">Canje inmediato</p>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-center">
+            <ShieldCheck className="w-4 h-4 text-blue-600 mx-auto mb-1" />
+            <p className="text-[10px] font-medium text-blue-800">Licencias</p>
+            <p className="text-[9px] text-blue-600">Product Key</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-1.5 mb-4">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Tus Productos ({result.deliveries?.length || 0})</p>
+          <Button variant="ghost" size="sm" className="h-7 text-[10px] gap-1 px-2 cursor-pointer" onClick={handleCopyAll}>
+            <FileDown className="w-3 h-3" /> Copiar Todo
+          </Button>
+        </div>
+        <ScrollArea className="max-h-[40vh]">
+          <div className="space-y-2 pr-2">
+            {result.deliveries?.map((d, i) => (
+              <DeliveryCard key={i} delivery={d} index={i} />
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+
+      <div className="mt-auto space-y-2">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="flex items-center gap-2 mb-1">
+            <Mail className="w-3.5 h-3.5 text-blue-600" />
+            <p className="text-[10px] font-semibold text-blue-700">Tambien enviado por email</p>
+          </div>
+          <p className="text-[10px] text-blue-600">{result.deliveryMethods?.email}</p>
+        </div>
+        <div className="bg-muted/50 rounded-lg p-2.5 flex items-center gap-2">
+          <UserCircle className="w-3.5 h-3.5 text-muted-foreground" />
+          <p className="text-[10px] text-muted-foreground">{result.deliveryMethods?.account}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function CartDrawer() {
   const { cart, cartOpen, setCartOpen, removeFromCart, updateQuantity, clearCart, cartTotal } = useStore();
   const [email, setEmail] = useState('');
   const [checkingOut, setCheckingOut] = useState(false);
-  const [orderResult, setOrderResult] = useState<{ success: boolean; orderId?: string; message?: string } | null>(null);
+  const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
 
   const handleCheckout = async () => {
     if (!email) return;
@@ -44,6 +271,8 @@ export function CartDrawer() {
             name: item.product.name,
             price: item.product.price,
             quantity: item.quantity,
+            category: item.product.category,
+            platform: item.product.platform,
           })),
         }),
       });
@@ -71,9 +300,13 @@ export function CartDrawer() {
       <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
         <SheetHeader className="p-6 pb-4">
           <SheetTitle className="flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5" />
-            Tu Carrito
-            {cart.length > 0 && (
+            {orderResult?.success ? (
+              <Zap className="w-5 h-5 text-emerald-600" />
+            ) : (
+              <ShoppingCart className="w-5 h-5" />
+            )}
+            {orderResult?.success ? 'Entrega de Productos' : 'Tu Carrito'}
+            {!orderResult?.success && cart.length > 0 && (
               <span className="text-sm font-normal text-muted-foreground">
                 ({cart.reduce((c, i) => c + i.quantity, 0)} items)
               </span>
@@ -82,29 +315,14 @@ export function CartDrawer() {
         </SheetHeader>
 
         {orderResult?.success ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-              className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6"
-            >
-              <Zap className="w-10 h-10 text-emerald-600" />
-            </motion.div>
-            <h3 className="text-xl font-bold mb-2">¡Pedido Exitoso!</h3>
-            <p className="text-sm text-muted-foreground mb-1">Orden: {orderResult.orderId}</p>
-            <p className="text-sm text-muted-foreground mb-6">{orderResult.message}</p>
-            <Button onClick={closeAndReset} className="cursor-pointer">
-              Seguir Comprando <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
+          <OrderSuccess result={orderResult} />
         ) : (
           <>
             <ScrollArea className="flex-1 px-6">
               {cart.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                   <ShoppingCart className="w-12 h-12 text-muted-foreground/20 mb-4" />
-                  <p className="text-muted-foreground text-sm">Tu carrito está vacío</p>
+                  <p className="text-muted-foreground text-sm">Tu carrito esta vacio</p>
                 </div>
               ) : (
                 <AnimatePresence mode="popLayout">
@@ -122,7 +340,7 @@ export function CartDrawer() {
                          item.product.platform === 'Spotify' ? '🎵' :
                          item.product.platform === 'Netflix' ? '🎬' :
                          item.product.platform === 'Steam' ? '🎮' :
-                         item.product.platform === 'Windows' ? '🪟' :
+                         item.product.platform === 'Windows' ? '🖥️' :
                          item.product.platform === 'Xbox' ? '🟢' :
                          item.product.platform === 'YouTube' ? '▶️' :
                          item.product.platform === 'Microsoft' ? '📊' : '📦'}
@@ -173,7 +391,7 @@ export function CartDrawer() {
                       <span>${cartTotal().toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Envío</span>
+                      <span className="text-muted-foreground">Envio</span>
                       <span className="text-emerald-600 font-medium">Gratis</span>
                     </div>
                     <Separator />
@@ -206,13 +424,21 @@ export function CartDrawer() {
                       )}
                     </Button>
                     <p className="text-[10px] text-muted-foreground text-center">
-                      Pago seguro · Entrega instantánea · Garantía de reembolso
+                      Pago seguro · Entrega instantanea · Garantia de reembolso
                     </p>
                   </div>
                 </div>
               </>
             )}
           </>
+        )}
+
+        {orderResult?.success && (
+          <SheetFooter className="p-4 border-t">
+            <Button onClick={closeAndReset} className="w-full gap-2 cursor-pointer">
+              Seguir Comprando <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </SheetFooter>
         )}
       </SheetContent>
     </Sheet>
