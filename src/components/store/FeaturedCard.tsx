@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 
 export function FeaturedCard({ product }: { product: Product }) {
-  const { addToCart } = useStore();
+  const { addToCart, setSelectedProduct, setProductDetailOpen } = useStore();
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
@@ -18,7 +18,9 @@ export function FeaturedCard({ product }: { product: Product }) {
   };
 
   return (
-    <div className="rounded-xl border border-border/50 p-4 hover:border-primary/30 hover:shadow-lg transition-all duration-300 bg-card group">
+    <div className="rounded-xl border border-border/50 p-4 hover:border-primary/30 hover:shadow-lg transition-all duration-300 bg-card group cursor-pointer"
+      onClick={() => { setSelectedProduct(product); setProductDetailOpen(true); }}
+    >
       <div className="flex items-start gap-3">
         <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 group-hover:scale-110 transition-transform bg-muted">
           <img src={product.image} alt={product.platform} className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }} />
@@ -40,7 +42,7 @@ export function FeaturedCard({ product }: { product: Product }) {
                 <span className="text-xs text-muted-foreground line-through">${product.originalPrice.toFixed(2)}</span>
               )}
             </div>
-            <Button size="sm" variant="outline" className="h-7 text-xs gap-1 cursor-pointer" onClick={() => addToCart(product)}>
+            <Button size="sm" variant="outline" className="h-7 text-xs gap-1 cursor-pointer" onClick={(e) => { e.stopPropagation(); addToCart(product); }}>
               <ShoppingCart className="w-3 h-3" /> Agregar
             </Button>
           </div>

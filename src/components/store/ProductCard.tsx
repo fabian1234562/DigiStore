@@ -42,7 +42,7 @@ function getPlatformEmoji(platform: string) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addToCart } = useStore();
+  const { addToCart, setSelectedProduct, setProductDetailOpen } = useStore();
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
@@ -54,7 +54,9 @@ export function ProductCard({ product }: { product: Product }) {
       transition={{ duration: 0.3 }}
       whileHover={{ y: -4 }}
     >
-      <Card className="h-full overflow-hidden border border-border/50 hover:border-primary/30 hover:shadow-xl transition-all duration-300 group bg-card">
+      <Card className="h-full overflow-hidden border border-border/50 hover:border-primary/30 hover:shadow-xl transition-all duration-300 group bg-card cursor-pointer"
+        onClick={() => { setSelectedProduct(product); setProductDetailOpen(true); }}
+      >
         <div className="relative overflow-hidden bg-gradient-to-br from-muted/80 to-muted">
           <img
             src={product.image}
@@ -120,7 +122,7 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
             <Button
               size="sm"
-              onClick={() => addToCart(product)}
+              onClick={(e) => { e.stopPropagation(); addToCart(product); }}
               className="h-8 gap-1.5 cursor-pointer"
             >
               <ShoppingCart className="w-3.5 h-3.5" />

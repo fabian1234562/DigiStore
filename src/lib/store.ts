@@ -29,6 +29,8 @@ interface StoreState {
   cart: CartItem[];
   cartOpen: boolean;
   authOpen: boolean;
+  selectedProduct: Product | null;
+  productDetailOpen: boolean;
   user: { id: string; name: string; email: string } | null;
   searchQuery: string;
   selectedCategory: string;
@@ -40,6 +42,8 @@ interface StoreState {
   clearCart: () => void;
   setCartOpen: (open: boolean) => void;
   setAuthOpen: (open: boolean) => void;
+  setSelectedProduct: (product: Product | null) => void;
+  setProductDetailOpen: (open: boolean) => void;
   setUser: (user: { id: string; name: string; email: string } | null) => void;
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
@@ -53,6 +57,8 @@ export const useStore = create<StoreState>((set, get) => ({
   cart: [],
   cartOpen: false,
   authOpen: false,
+  selectedProduct: null,
+  productDetailOpen: false,
   user: null,
   searchQuery: '',
   selectedCategory: 'all',
@@ -92,6 +98,8 @@ export const useStore = create<StoreState>((set, get) => ({
   clearCart: () => set({ cart: [] }),
   setCartOpen: (open) => set({ cartOpen: open }),
   setAuthOpen: (open) => set({ authOpen: open }),
+  setSelectedProduct: (product) => set({ selectedProduct: product }),
+  setProductDetailOpen: (open) => set({ productDetailOpen: open }),
   setUser: (user) => set({ user }),
   setSearchQuery: (query) => set({ searchQuery: query }),
   setSelectedCategory: (category) => set({ selectedCategory: category, selectedSubcategory: 'all' }),

@@ -6,6 +6,7 @@ import { ProductGrid } from '@/components/store/ProductGrid';
 import { CartDrawer } from '@/components/store/CartDrawer';
 import { MarketAnalysis } from '@/components/store/MarketAnalysis';
 import { FeaturedCard } from '@/components/store/FeaturedCard';
+import { ProductDetail } from '@/components/store/ProductDetail';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -286,6 +287,7 @@ export default function Home() {
       </footer>
 
       <CartDrawer />
+      <ProductDetail />
       <AuthDialog />
     </div>
   );
