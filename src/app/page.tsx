@@ -4,7 +4,6 @@ import { useStore, CATEGORIES, PRODUCTS } from '@/lib/store';
 import { CategoryBar } from '@/components/store/CategoryBar';
 import { ProductGrid } from '@/components/store/ProductGrid';
 import { CartDrawer } from '@/components/store/CartDrawer';
-import { MarketAnalysis } from '@/components/store/MarketAnalysis';
 import { FeaturedCard } from '@/components/store/FeaturedCard';
 import { ProductDetail } from '@/components/store/ProductDetail';
 import { Button } from '@/components/ui/button';
@@ -25,18 +24,14 @@ import {
   Shield,
   Globe,
   Clock,
-  ArrowDown,
   Star,
-  BarChart3,
-  TrendingUp,
   LogIn,
   LogOut,
-  User,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
-  const { cartCount, setCartOpen, authOpen, setAuthOpen, user, setUser, searchQuery, setSearchQuery, sortBy, setSortBy } = useStore();
+  const { cartCount, setCartOpen, user, setUser, searchQuery, setSearchQuery, sortBy, setSortBy } = useStore();
   const totalItems = PRODUCTS.length;
   const totalSold = PRODUCTS.reduce((s, p) => s + p.sold, 0);
 
@@ -64,9 +59,6 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => document.getElementById('mercado')?.scrollIntoView({ behavior: 'smooth' })} className="hidden sm:flex">
-              <BarChart3 className="w-4 h-4" />
-            </Button>
             {user ? (
               <div className="flex items-center gap-2">
                 <div className="hidden sm:flex flex-col items-end">
@@ -125,14 +117,11 @@ export default function Home() {
               <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Gaming, streaming, software, gift cards y más. Los mejores precios con entrega inmediata a tu email.
                 <br className="hidden sm:block" />
-                Precios de reventa con alta rentabilidad basados en análisis de mercado real.
+                Los mejores precios del mercado con garantía en cada compra.
               </p>
               <div className="flex flex-wrap justify-center gap-3 pt-2">
                 <Button size="lg" className="gap-2 cursor-pointer" onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}>
                   <Zap className="w-4 h-4" /> Ver Productos
-                </Button>
-                <Button size="lg" variant="outline" className="gap-2 cursor-pointer" onClick={() => document.getElementById('mercado')?.scrollIntoView({ behavior: 'smooth' })}>
-                  <TrendingUp className="w-4 h-4" /> Análisis de Mercado
                 </Button>
               </div>
               <div className="flex flex-wrap justify-center gap-6 pt-4 text-sm text-muted-foreground">
@@ -215,34 +204,6 @@ export default function Home() {
             <CategoryBar />
             <ProductGrid />
           </div>
-        </section>
-
-        <section className="bg-muted/30 border-y border-border/40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-            <MarketAnalysis />
-          </div>
-        </section>
-
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-8 sm:p-12 text-center text-primary-foreground space-y-4"
-          >
-            <h2 className="text-2xl sm:text-3xl font-bold">¿Listo para empezar a vender?</h2>
-            <p className="text-primary-foreground/80 max-w-xl mx-auto">
-              Los productos digitales tienen márgenes de hasta 95%. Empieza hoy con nuestra guía de análisis de mercado y descubre las mejores oportunidades.
-            </p>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="cursor-pointer"
-              onClick={() => document.getElementById('mercado')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              Ver Análisis Completo <ArrowDown className="w-4 h-4 ml-2" />
-            </Button>
-          </motion.div>
         </section>
       </main>
 

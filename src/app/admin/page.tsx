@@ -36,6 +36,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MarketAnalysis } from '@/components/store/MarketAnalysis';
 
 interface ResearchResult {
   id: string;
@@ -228,7 +229,7 @@ export default function AdminDashboard() {
           </Card>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="research" className="gap-1.5 text-xs sm:text-sm">
                 <Search className="w-3.5 h-3.5" /> Investigador
               </TabsTrigger>
@@ -237,6 +238,9 @@ export default function AdminDashboard() {
               </TabsTrigger>
               <TabsTrigger value="prices" className="gap-1.5 text-xs sm:text-sm">
                 <TrendingUp className="w-3.5 h-3.5" /> Precios
+              </TabsTrigger>
+              <TabsTrigger value="market" className="gap-1.5 text-xs sm:text-sm">
+                <BarChart3 className="w-3.5 h-3.5" /> Estudio de Mercado
               </TabsTrigger>
             </TabsList>
 
@@ -426,6 +430,10 @@ export default function AdminDashboard() {
                   </motion.div>
                 )}
               </AnimatePresence>
+            </TabsContent>
+
+            <TabsContent value="market" className="mt-4">
+              <MarketAnalysis />
             </TabsContent>
           </Tabs>
         </motion.div>

@@ -1,0 +1,435 @@
+     1→"use client";
+     2→
+     3→import { useState } from 'react';
+     4→import { Button } from '@/components/ui/button';
+     5→import { Input } from '@/components/ui/input';
+     6→import { Badge } from '@/components/ui/badge';
+     7→import { Separator } from '@/components/ui/separator';
+     8→import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+     9→import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+    10→import { Progress } from '@/components/ui/progress';
+    11→import {
+    12→  Search,
+    13→  TrendingUp,
+    14→  DollarSign,
+    15→  BarChart3,
+    16→  Zap,
+    17→  Bot,
+    18→  RefreshCw,
+    19→  Copy,
+    20→  CheckCircle2,
+    21→  Target,
+    22→  ShoppingCart,
+    23→  Users,
+    24→  ArrowUpRight,
+    25→  ArrowDownRight,
+    26→  Sparkles,
+    27→  Clock,
+    28→  Globe,
+    29→  Package,
+    30→  Mail,
+    31→  MessageSquare,
+    32→  Loader2,
+    33→  Lightbulb,
+    34→  AlertTriangle,
+    35→  ChevronRight,
+    36→  Eye,
+    37→} from 'lucide-react';
+    38→import { motion, AnimatePresence } from 'framer-motion';
+    39→
+    40→interface ResearchResult {
+    41→  id: string;
+    42→  product: string;
+    43→  category: string;
+    44→  costPrice: string;
+    45→  sellPrice: string;
+    46→  margin: string;
+    47→  marginPct: number;
+    48→  demand: 'Alta' | 'Media' | 'Baja';
+    49→  competition: 'Baja' | 'Media' | 'Alta';
+    50→  reason: string;
+    51→  trend: string;
+    52→}
+    53→
+    54→interface MarketingPost {
+    55→  id: string;
+    56→  platform: string;
+    57→  content: string;
+    58→  hashtags: string;
+    59→  product: string;
+    60→}
+    61→
+    62→interface PriceAlert {
+    63→  id: string;
+    64→  product: string;
+    65→  currentPrice: number;
+    66→  suggestedPrice: number;
+    67→  competitorAvg: number;
+    68→  reason: string;
+    69→  action: 'subir' | 'bajar' | 'mantener';
+    70→}
+    71→
+    72→export default function AdminDashboard() {
+    73→  const [activeTab, setActiveTab] = useState('overview');
+    74→  const [researching, setResearching] = useState(false);
+    75→  const [researchResults, setResearchResults] = useState<ResearchResult[]>([]);
+    76→  const [generatingMarketing, setGeneratingMarketing] = useState(false);
+    77→  const [marketingPosts, setMarketingPosts] = useState<MarketingPost[]>([]);
+    78→  const [monitoring, setMonitoring] = useState(false);
+    79→  const [priceAlerts, setPriceAlerts] = useState<PriceAlert[]>([]);
+    80→  const [copiedId, setCopiedId] = useState<string | null>(null);
+    81→
+    82→  const stats = [
+    83→    { label: 'Productos Activos', value: '24', change: '+3', up: true, icon: Package, color: 'text-blue-600 bg-blue-50' },
+    84→    { label: 'Ventas Hoy', value: '47', change: '+12%', up: true, icon: ShoppingCart, color: 'text-emerald-600 bg-emerald-50' },
+    85→    { label: 'Ingresos Hoy', value: '$387.50', change: '+18%', up: true, icon: DollarSign, color: 'text-amber-600 bg-amber-50' },
+    86→    { label: 'Usuarios Registrados', value: '1,284', change: '+89', up: true, icon: Users, color: 'text-purple-600 bg-purple-50' },
+    87→  ];
+    88→
+    89→  const automationStatus = [
+    90→    { name: 'Investigador de Productos', status: 'active', lastRun: 'Hace 2 horas', nextRun: 'En 1 hora', icon: Search },
+    91→    { name: 'Generador de Marketing', status: 'active', lastRun: 'Hace 30 min', nextRun: 'En 4 horas', icon: Bot },
+    92→    { name: 'Monitor de Precios', status: 'active', lastRun: 'Hace 15 min', nextRun: 'En 45 min', icon: TrendingUp },
+    93→    { name: 'Notificaciones de Ventas', status: 'paused', lastRun: 'Hace 6 horas', nextRun: 'Pausado', icon: Mail },
+    94→    { name: 'Respuesta Automatica Clientes', status: 'active', lastRun: 'Hace 5 min', nextRun: 'Siempre activo', icon: MessageSquare },
+    95→  ];
+    96→
+    97→  const handleResearch = async () => {
+    98→    setResearching(true);
+    99→    setResearchResults([]);
+   100→    await new Promise(r => setTimeout(r, 2500));
+   101→    const results: ResearchResult[] = [
+   102→      { id: 'r1', product: 'Cuenta Spotify Premium - 6 Meses', category: 'Streaming', costPrice: '$1.50', sellPrice: '$8.99', margin: '$7.49', marginPct: 83, demand: 'Alta', competition: 'Media', reason: 'Demanda estacional alta por promociones de Spotify. Se puede vender en paquetes de 3 y 6 meses.', trend: '+25% busquedas esta semana' },
+   103→      { id: 'r2', product: 'Robux 1700 - Roblox', category: 'Gaming', costPrice: '$5.20', sellPrice: '$9.99', margin: '$4.79', marginPct: 48, demand: 'Alta', competition: 'Baja', reason: 'Poco competidor directo en Latam. Mercado infantil enorme con recompra constante.', trend: '+40% busquedas en Latinoamerica' },
+   104→      { id: 'r3', product: 'Windows 11 Home - Clave OEM', category: 'Software', costPrice: '$1.80', sellPrice: '$6.99', margin: '$5.19', marginPct: 74, demand: 'Alta', competition: 'Media', reason: 'Nueva version de Windows generando demanda. Costo de adquisicion bajisimo en bulk.', trend: 'Estable con picos de demanda' },
+   105→      { id: 'r4', product: 'Tarjeta Apple - $50 USD', category: 'Gift Cards', costPrice: '$45.00', sellPrice: '$49.49', margin: '$4.49', marginPct: 9, demand: 'Alta', competition: 'Alta', reason: 'Volumen altisimo. Aunque margen bajo, las ventas compensan. Ideal para atraer trafico.', trend: '+15% ventas en navidad' },
+   106→      { id: 'r5', product: 'Canva Pro - 1 Ano', category: 'Suscripciones', costPrice: '$8.00', sellPrice: '$19.99', margin: '$11.99', marginPct: 60, demand: 'Media', competition: 'Baja', reason: 'Poco oferta en el mercado. Nicho de diseadores y emprendedores creciendo rapido.', trend: '+60% crecimiento interanual' },
+   107→      { id: 'r6', product: 'Cuenta Crunchyroll Premium - 3 Meses', category: 'Streaming', costPrice: '$2.00', sellPrice: '$7.49', margin: '$5.49', marginPct: 73, demand: 'Media', competition: 'Baja', reason: 'Boom del anime global. Poca competencia en espanol. Se puede ofecer bundle con Netflix.', trend: '+35% busquedas esta semana' },
+   108→      { id: 'r7', product: '2800 Monedas FC 25 - PS5', category: 'Gaming', costPrice: '$3.00', sellPrice: '$11.99', margin: '$8.99', marginPct: 75, demand: 'Alta', competition: 'Media', reason: 'Temporada alta de FIFA/EA FC. Jugadores compran monedas recurrentemente cada semana.', trend: 'Estacional - alta en fines de semana' },
+   109→      { id: 'r8', product: 'NordVPN - 2 Anos', category: 'Software', costPrice: '$18.00', sellPrice: '$39.99', margin: '$21.99', marginPct: 55, demand: 'Media', competition: 'Media', reason: 'Demanda constante por privacidad. Buen margen y ciclo de vida largo del cliente.', trend: 'Estable todo el ano' },
+   110→    ];
+   111→    setResearchResults(results);
+   112→    setResearching(false);
+   113→  };
+   114→
+   115→  const handleGenerateMarketing = async () => {
+   116→    setGeneratingMarketing(true);
+   117→    setMarketingPosts([]);
+   118→    await new Promise(r => setTimeout(r, 2000));
+   119→    const posts: MarketingPost[] = [
+   120→      { id: 'm1', platform: 'Instagram', product: 'Netflix Premium - $3.99', content: 'Netflix Premium completo por solo $3.99 USD \n\n4K + 4 pantallas + sin anuncios \n\nEntrega instantanea 24/7', hashtags: '#Netflix #Streaming #Ofertas #DigiStore #PreciosBajos', product: 'Netflix Premium' },
+   121→      { id: 'm2', platform: 'TikTok', product: 'Windows 11 Pro - $8.99', content: 'Windows 11 Pro ORIGINAL por $8.99 ?? \n\nEl mismo Windows que cuesta $200 en la tienda oficial \n\nClave digital instantanea', hashtags: '#Windows11 #Tech #Oferta #SoftwareBarato #DigiStore', product: 'Windows 11 Pro' },
+   122→      { id: 'm3', platform: 'WhatsApp', product: 'Promo Bundle Gaming', content: 'PACK GAMING EN PROMO: \n\nV-Bucks 1000: $4.99 \nRobux 800: $3.99 \nGame Pass 1 mes: $4.99 \n\nLos 3 por solo $11.99 USD! \n\nEntrega al instante por este chat', hashtags: '', product: 'Bundle Gaming' },
+   123→      { id: 'm4', platform: 'Facebook', product: 'Spotify Premium 3 Meses', content: '3 MESES DE SPOTIFY PREMIUM por solo $4.99 USD \n\nSin anuncios | Descarga ilimitada | Calidad maxima \n\nMas de 195,000 clientes satisfechos \n\nEntrega automatica al instante', hashtags: '#Spotify #Musica #Oferta #Suscripcion #DigiStore', product: 'Spotify Premium' },
+   124→      { id: 'm5', platform: 'Instagram Story', product: 'Oferta Flash', content: 'OFERTA RELAMPAGO \n\nOffice 2024 completo: $12.49 \n(antes $249.99 - 95% descuento) \n\nWord + Excel + PowerPoint + Outlook \n\nLink en bio', hashtags: '#OfertaRelampago #MicrosoftOffice #Software', product: 'Office 2024' },
+   125→      { id: 'm6', platform: 'X (Twitter)', product: 'Discord Nitro 3 Meses', content: 'Discord Nitro 3 meses por $6.99 USD \n\nEmojis custom + Stickers globales + Stream en HD \n\nEl mejor precio del mercado. Entrega instantanea.', hashtags: '#Discord #Nitro #Gaming', product: 'Discord Nitro' },
+   126→    ];
+   127→    setMarketingPosts(posts);
+   128→    setGeneratingMarketing(false);
+   129→  };
+   130→
+   131→  const handlePriceMonitor = async () => {
+   132→    setMonitoring(true);
+   133→    setPriceAlerts([]);
+   134→    await new Promise(r => setTimeout(r, 2000));
+   135→    const alerts: PriceAlert[] = [
+   136→      { id: 'p1', product: 'Netflix Premium - 1 Mes', currentPrice: 3.99, suggestedPrice: 3.49, competitorAvg: 3.29, reason: '3 competidores bajaron a $3.29. Nuestro precio esta $0.70 sobre el promedio. Podemos perder ventas.', action: 'bajar' },
+   137→      { id: 'p2', product: 'Windows 11 Pro', currentPrice: 8.99, suggestedPrice: 9.99, competitorAvg: 11.49, reason: 'El competidor principal subio a $11.49. Tenemos margen para subir y seguir siendo los mas baratos.', action: 'subir' },
+   138→      { id: 'p3', product: 'V-Bucks 1000', currentPrice: 4.99, suggestedPrice: 4.99, competitorAvg: 5.20, reason: 'Nuestro precio es el mas bajo del mercado. Mantener para seguir atrayendo clientes.', action: 'mantener' },
+   139→      { id: 'p4', product: 'VPN Premium 2 Anos', currentPrice: 29.99, suggestedPrice: 26.99, competitorAvg: 28.50, reason: 'Competidores en promedio a $28.50. Bajar a $26.99 nos posicionaria como la opcion mas barata.', action: 'bajar' },
+   140→      { id: 'p5', product: 'Xbox Game Pass Ultimate', currentPrice: 4.99, suggestedPrice: 5.49, reason: 'Demanda al 95% de capacidad. Podemos subir $0.50 sin afectar ventas significativamente.', action: 'subir', competitorAvg: 5.99 },
+   141→      { id: 'p6', product: 'Tarjeta Steam $50', currentPrice: 46.99, suggestedPrice: 46.99, competitorAvg: 47.20, reason: 'Margen bajo pero somos competitivos. Mantener para no sacrificar el poco margen que hay.', action: 'mantener', competitorAvg: 47.20 },
+   142→    ];
+   143→    setPriceAlerts(alerts);
+   144→    setMonitoring(false);
+   145→  };
+   146→
+   147→  const handleCopy = (text: string, id: string) => {
+   148→    navigator.clipboard.writeText(text);
+   149→    setCopiedId(id);
+   150→    setTimeout(() => setCopiedId(null), 2000);
+   151→  };
+   152→
+   153→  return (
+   154→    <div className="min-h-screen bg-background">
+   155→      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+   156→        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+   157→          <div className="flex items-center gap-3">
+   158→            <a href="/" className="flex items-center gap-2">
+   159→              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+   160→                <Zap className="w-4 h-4 text-primary-foreground" />
+   161→              </div>
+   162→              <span className="font-bold text-lg hidden sm:block">DigiStore</span>
+   163→            </a>
+   164→            <Badge variant="outline" className="text-[10px]">ADMIN</Badge>
+   165→          </div>
+   166→          <a href="/">
+   167→            <Button variant="ghost" size="sm" className="gap-1.5 text-xs cursor-pointer">
+   168→              <Eye className="w-3.5 h-3.5" /> Ver Tienda
+   169→            </Button>
+   170→          </a>
+   171→        </div>
+   172→      </header>
+   173→
+   174→      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+   175→        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+   176→          <div>
+   177→            <h1 className="text-2xl sm:text-3xl font-bold">Panel de Automatizacion</h1>
+   178→            <p className="text-sm text-muted-foreground mt-1">Gestiona y automatiza tu negocio de productos digitales</p>
+   179→          </div>
+   180→
+   181→          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+   182→            {stats.map((s, i) => (
+   183→              <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+   184→                <Card className="border-border/50">
+   185→                  <CardContent className="p-4">
+   186→                    <div className="flex items-center justify-between mb-2">
+   187→                      <div className={`p-2 rounded-lg ${s.color}`}>
+   188→                        <s.icon className="w-4 h-4" />
+   189→                      </div>
+   190→                      <div className={`flex items-center gap-0.5 text-xs font-medium ${s.up ? 'text-emerald-600' : 'text-red-500'}`}>
+   191→                        {s.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+   192→                        {s.change}
+   193→                      </div>
+   194→                    </div>
+   195→                    <p className="text-xl sm:text-2xl font-bold">{s.value}</p>
+   196→                    <p className="text-[11px] text-muted-foreground mt-0.5">{s.label}</p>
+   197→                  </CardContent>
+   198→                </Card>
+   199→              </motion.div>
+   200→            ))}
+   201→          </div>
+   202→
+   203→          <Card className="border-border/50">
+   204→            <CardHeader className="pb-3">
+   205→              <CardTitle className="text-sm font-semibold flex items-center gap-2">
+   206→                <RefreshCw className="w-4 h-4 text-primary" />
+   207→                Estado de Automatizaciones
+   208→              </CardTitle>
+   209→            </CardHeader>
+   210→            <CardContent className="pt-0">
+   211→              <div className="space-y-2">
+   212→                {automationStatus.map((a) => (
+   213→                  <div key={a.name} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/30">
+   214→                    <div className="flex items-center gap-3">
+   215→                      <a.icon className="w-4 h-4 text-muted-foreground" />
+   216→                      <span className="text-sm font-medium">{a.name}</span>
+   217→                    </div>
+   218→                    <div className="flex items-center gap-3">
+   219→                      <span className="text-[10px] text-muted-foreground hidden sm:block">Ultima: {a.lastRun}</span>
+   220→                      <Badge variant={a.status === 'active' ? 'default' : 'secondary'} className="text-[10px] h-5">
+   221→                        {a.status === 'active' ? 'Activo' : 'Pausado'}
+   222→                      </Badge>
+   223→                    </div>
+   224→                  </div>
+   225→                ))}
+   226→              </div>
+   227→            </CardContent>
+   228→          </Card>
+   229→
+   230→          <Tabs value={activeTab} onValueChange={setActiveTab}>
+   231→            <TabsList className="grid w-full grid-cols-3">
+   232→              <TabsTrigger value="research" className="gap-1.5 text-xs sm:text-sm">
+   233→                <Search className="w-3.5 h-3.5" /> Investigador
+   234→              </TabsTrigger>
+   235→              <TabsTrigger value="marketing" className="gap-1.5 text-xs sm:text-sm">
+   236→                <Bot className="w-3.5 h-3.5" /> Marketing
+   237→              </TabsTrigger>
+   238→              <TabsTrigger value="prices" className="gap-1.5 text-xs sm:text-sm">
+   239→                <TrendingUp className="w-3.5 h-3.5" /> Precios
+   240→              </TabsTrigger>
+   241→            </TabsList>
+   242→
+   243→            <TabsContent value="research" className="mt-4 space-y-4">
+   244→              <Card className="border-border/50">
+   245→                <CardContent className="p-6">
+   246→                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+   247→                    <div>
+   248→                      <h3 className="font-semibold flex items-center gap-2">
+   249→                        <Sparkles className="w-5 h-5 text-amber-500" />
+   250→                        Investigador de Productos con IA
+   251→                      </h3>
+   252→                      <p className="text-sm text-muted-foreground mt-1">
+   253→                        Busca productos digitales con alto margen de ganancia y baja competencia en tiempo real
+   254→                      </p>
+   255→                    </div>
+   256→                    <Button onClick={handleResearch} disabled={researching} className="gap-2 cursor-pointer shrink-0">
+   257→                      {researching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+   258→                      {researching ? 'Investigando...' : 'Investigar Ahora'}
+   259→                    </Button>
+   260→                  </div>
+   261→                </CardContent>
+   262→              </Card>
+   263→
+   264→              <AnimatePresence>
+   265→                {researchResults.length > 0 && (
+   266→                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+   267→                    <p className="text-sm text-muted-foreground">{researchResults.length} oportunidades encontradas - ordenadas por margen</p>
+   268→                    {researchResults.map((r, i) => (
+   269→                      <motion.div key={r.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
+   270→                        <Card className="border-border/50 hover:border-primary/30 transition-colors">
+   271→                          <CardContent className="p-4">
+   272→                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+   273→                              <div className="flex-1 space-y-1.5">
+   274→                                <div className="flex items-center gap-2 flex-wrap">
+   275→                                  <span className="font-semibold text-sm">{r.product}</span>
+   276→                                  <Badge variant="outline" className="text-[10px]">{r.category}</Badge>
+   277→                                  {i === 0 && <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[10px]">Mejor Oportunidad</Badge>}
+   278→                                </div>
+   279→                                <p className="text-xs text-muted-foreground leading-relaxed">{r.reason}</p>
+   280→                                <div className="flex items-center gap-2 text-[10px]">
+   281→                                  <span className={`px-2 py-0.5 rounded-full font-medium ${r.demand === 'Alta' ? 'bg-emerald-100 text-emerald-700' : r.demand === 'Media' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>Demanda: {r.demand}</span>
+   282→                                  <span className={`px-2 py-0.5 rounded-full font-medium ${r.competition === 'Baja' ? 'bg-emerald-100 text-emerald-700' : r.competition === 'Media' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>Competencia: {r.competition}</span>
+   283→                                  <span className="text-blue-600 font-medium">{r.trend}</span>
+   284→                                </div>
+   285→                              </div>
+   286→                              <div className="flex items-center gap-4 shrink-0">
+   287→                                <div className="text-right">
+   288→                                  <p className="text-[10px] text-muted-foreground">Costo</p>
+   289→                                  <p className="text-sm font-medium">{r.costPrice}</p>
+   290→                                </div>
+   291→                                <div className="text-right">
+   292→                                  <p className="text-[10px] text-muted-foreground">Venta</p>
+   293→                                  <p className="text-sm font-bold text-emerald-600">{r.sellPrice}</p>
+   294→                                </div>
+   295→                                <div className="text-right min-w-[60px]">
+   296→                                  <p className="text-[10px] text-muted-foreground">Margen</p>
+   297→                                  <p className="text-sm font-bold text-primary">{r.marginPct}%</p>
+   298→                                </div>
+   299→                                <div className="w-16">
+   300→                                  <Progress value={r.marginPct} className="h-2" />
+   301→                                </div>
+   302→                                <Button size="sm" variant="outline" className="gap-1 text-xs cursor-pointer">
+   303→                                  Agregar <ChevronRight className="w-3 h-3" />
+   304→                                </Button>
+   305→                              </div>
+   306→                            </div>
+   307→                          </CardContent>
+   308→                        </Card>
+   309→                      </motion.div>
+   310→                    ))}
+   311→                  </motion.div>
+   312→                )}
+   313→              </AnimatePresence>
+   314→            </TabsContent>
+   315→
+   316→            <TabsContent value="marketing" className="mt-4 space-y-4">
+   317→              <Card className="border-border/50">
+   318→                <CardContent className="p-6">
+   319→                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+   320→                    <div>
+   321→                      <h3 className="font-semibold flex items-center gap-2">
+   322→                        <Bot className="w-5 h-5 text-purple-500" />
+   323→                        Generador de Marketing con IA
+   324→                      </h3>
+   325→                      <p className="text-sm text-muted-foreground mt-1">
+   326→                        Genera posts para Instagram, TikTok, WhatsApp, Facebook y mas con un clic
+   327→                      </p>
+   328→                    </div>
+   329→                    <Button onClick={handleGenerateMarketing} disabled={generatingMarketing} className="gap-2 cursor-pointer shrink-0">
+   330→                      {generatingMarketing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+   331→                      {generatingMarketing ? 'Generando...' : 'Generar Posts'}
+   332→                    </Button>
+   333→                  </div>
+   334→                </CardContent>
+   335→              </Card>
+   336→
+   337→              <AnimatePresence>
+   338→                {marketingPosts.length > 0 && (
+   339→                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-3">
+   340→                    {marketingPosts.map((post, i) => (
+   341→                      <motion.div key={post.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+   342→                        <Card className="border-border/50 h-full">
+   343→                          <CardContent className="p-4 space-y-3">
+   344→                            <div className="flex items-center justify-between">
+   345→                              <div className="flex items-center gap-2">
+   346→                                <Badge variant="outline" className="text-[10px]">{post.platform}</Badge>
+   347→                                <span className="text-xs text-muted-foreground">{post.product}</span>
+   348→                              </div>
+   349→                              <button onClick={() => handleCopy(post.content + (post.hashtags ? '\n' + post.hashtags : ''), post.id)} className="p-1.5 rounded-md hover:bg-muted transition-colors cursor-pointer">
+   350→                                {copiedId === post.id ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
+   351→                              </button>
+   352→                            </div>
+   353→                            <pre className="text-sm whitespace-pre-wrap font-sans leading-relaxed bg-muted/50 rounded-lg p-3">{post.content}</pre>
+   354→                            {post.hashtags && (
+   355→                              <p className="text-[10px] text-primary font-medium">{post.hashtags}</p>
+   356→                            )}
+   357→                          </CardContent>
+   358→                        </Card>
+   359→                      </motion.div>
+   360→                    ))}
+   361→                  </motion.div>
+   362→                )}
+   363→              </AnimatePresence>
+   364→            </TabsContent>
+   365→
+   366→            <TabsContent value="prices" className="mt-4 space-y-4">
+   367→              <Card className="border-border/50">
+   368→                <CardContent className="p-6">
+   369→                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+   370→                    <div>
+   371→                      <h3 className="font-semibold flex items-center gap-2">
+   372→                        <TrendingUp className="w-5 h-5 text-blue-500" />
+   373→                        Monitor Inteligente de Precios
+   374→                      </h3>
+   375→                      <p className="text-sm text-muted-foreground mt-1">
+   376→                        Compara precios con la competencia y recibe sugerencias de ajuste automatico
+   377→                      </p>
+   378→                    </div>
+   379→                    <Button onClick={handlePriceMonitor} disabled={monitoring} className="gap-2 cursor-pointer shrink-0">
+   380→                      {monitoring ? <Loader2 className="w-4 h-4 animate-spin" /> : <BarChart3 className="w-4 h-4" />}
+   381→                      {monitoring ? 'Analizando...' : 'Analizar Precios'}
+   382→                    </Button>
+   383→                  </div>
+   384→                </CardContent>
+   385→              </Card>
+   386→
+   387→              <AnimatePresence>
+   388→                {priceAlerts.length > 0 && (
+   389→                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+   390→                    {priceAlerts.map((alert, i) => (
+   391→                      <motion.div key={alert.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
+   392→                        <Card className={`border-l-4 ${alert.action === 'bajar' ? 'border-l-amber-500' : alert.action === 'subir' ? 'border-l-emerald-500' : 'border-l-blue-500'}`}>
+   393→                          <CardContent className="p-4">
+   394→                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+   395→                              <div className="flex-1 space-y-1.5">
+   396→                                <div className="flex items-center gap-2">
+   397→                                  <span className="font-semibold text-sm">{alert.product}</span>
+   398→                                  {alert.action === 'bajar' && <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[10px] gap-1"><ArrowDownRight className="w-3 h-3" /> Bajar</Badge>}
+   399→                                  {alert.action === 'subir' && <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 text-[10px] gap-1"><ArrowUpRight className="w-3 h-3" /> Subir</Badge>}
+   400→                                  {alert.action === 'mantener' && <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-[10px]">Mantener</Badge>}
+   401→                                </div>
+   402→                                <p className="text-xs text-muted-foreground">{alert.reason}</p>
+   403→                              </div>
+   404→                              <div className="flex items-center gap-3 shrink-0">
+   405→                                <div className="text-center px-3">
+   406→                                  <p className="text-[10px] text-muted-foreground">Tu Precio</p>
+   407→                                  <p className="text-sm font-medium line-through">${alert.currentPrice.toFixed(2)}</p>
+   408→                                </div>
+   409→                                <div className="text-center px-3">
+   410→                                  <p className="text-[10px] text-muted-foreground">Competencia</p>
+   411→                                  <p className="text-sm font-medium">${alert.competitorAvg.toFixed(2)}</p>
+   412→                                </div>
+   413→                                <div className="text-center px-3">
+   414→                                  <p className="text-[10px] text-muted-foreground">Sugerido</p>
+   415→                                  <p className={`text-sm font-bold ${alert.action === 'subir' ? 'text-emerald-600' : alert.action === 'bajar' ? 'text-amber-600' : 'text-blue-600'}`}>${alert.suggestedPrice.toFixed(2)}</p>
+   416→                                </div>
+   417→                                <Button size="sm" variant="outline" className="gap-1 text-xs cursor-pointer">
+   418→                                  Aplicar
+   419→                                </Button>
+   420→                              </div>
+   421→                            </div>
+   422→                          </CardContent>
+   423→                        </Card>
+   424→                      </motion.div>
+   425→                    ))}
+   426→                  </motion.div>
+   427→                )}
+   428→              </AnimatePresence>
+   429→            </TabsContent>
+   430→          </Tabs>
+   431→        </motion.div>
+   432→      </main>
+   433→    </div>
+   434→  );
+   435→}
