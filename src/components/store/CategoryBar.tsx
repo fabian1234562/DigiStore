@@ -28,13 +28,13 @@ export function CategoryBar() {
       <div className="flex flex-wrap gap-2 justify-center mb-3">
         <button
           onClick={() => setSelectedCategory('all')}
-          className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer border ${
             selectedCategory === 'all'
-              ? 'bg-primary text-primary-foreground shadow-lg scale-105'
-              : 'bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground'
+              ? 'bg-primary/15 text-primary border-primary/30 shadow-lg shadow-primary/5'
+              : 'bg-white/[0.03] border-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
           }`}
         >
-          🏪 Todos
+          Todos
         </button>
         {CATEGORIES.map((cat) => {
           const Icon = iconMap[cat.icon];
@@ -42,10 +42,10 @@ export function CategoryBar() {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer border ${
                 selectedCategory === cat.id
-                  ? 'bg-primary text-primary-foreground shadow-lg scale-105'
-                  : 'bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary/15 text-primary border-primary/30 shadow-lg shadow-primary/5'
+                  : 'bg-white/[0.03] border-white/[0.06] text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
               }`}
             >
               {Icon && <Icon className="w-4 h-4" />}
@@ -58,10 +58,10 @@ export function CategoryBar() {
         <div className="flex flex-wrap gap-1.5 justify-center">
           <button
             onClick={() => setSelectedSubcategory('all')}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               selectedSubcategory === 'all'
-                ? 'bg-primary/10 text-primary border border-primary/20'
-                : 'bg-muted/30 text-muted-foreground hover:text-foreground'
+                ? 'bg-white/[0.08] text-foreground border border-white/[0.1]'
+                : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
             }`}
           >
             Todos
@@ -70,10 +70,10 @@ export function CategoryBar() {
             <button
               key={sub}
               onClick={() => setSelectedSubcategory(sub)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 selectedSubcategory === sub
-                  ? 'bg-primary/10 text-primary border border-primary/20'
-                  : 'bg-muted/30 text-muted-foreground hover:text-foreground'
+                  ? 'bg-white/[0.08] text-foreground border border-white/[0.1]'
+                  : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
               }`}
             >
               {sub}
