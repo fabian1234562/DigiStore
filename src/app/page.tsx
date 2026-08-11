@@ -40,7 +40,7 @@ function HeroShowcase() {
   ];
 
   return (
-    <div className="relative h-[420px]">
+    <div className="relative h-[280px] sm:h-[380px] lg:h-[420px]">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-primary/15 rounded-full blur-[100px]" />
       <div className="absolute top-1/3 left-1/3 w-[200px] h-[200px] bg-fuchsia-500/10 rounded-full blur-[80px]" />
       {cards.map((c, i) => (
@@ -48,12 +48,12 @@ function HeroShowcase() {
           key={c.p.id}
           className={`absolute ${c.top} ${c.w} rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/40 ${c.rot} hover:rotate-0 transition-transform duration-700`}
         >
-          <img src={c.p.image} alt="" className="w-full aspect-[4/3] object-cover" />
-          <div className="bg-white/[0.06] backdrop-blur-md p-2.5">
-            <p className="text-[10px] text-white/50 font-medium">{c.label}</p>
-            <p className="text-xs font-semibold truncate">{c.p.name}</p>
-            <div className="flex items-center justify-between mt-1">
-              <span className={`text-sm font-bold ${c.priceColor}`}>${c.p.price.toFixed(2)}</span>
+          <img src={c.p.image} alt="" className="w-full aspect-[4/3] object-cover" loading="lazy" />
+          <div className="bg-white/[0.06] backdrop-blur-md p-2 sm:p-2.5">
+            <p className="text-[8px] sm:text-[10px] text-white/50 font-medium">{c.label}</p>
+            <p className="text-[10px] sm:text-xs font-semibold truncate">{c.p.name}</p>
+            <div className="flex items-center justify-between mt-0.5 sm:mt-1">
+              <span className={`text-xs sm:text-sm font-bold ${c.priceColor}`}>${c.p.price.toFixed(2)}</span>
               <span className={`text-[9px ${c.badgeColor} px-1.5 py-0.5 rounded`}>{c.badge}</span>
             </div>
           </div>
@@ -231,10 +231,8 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {topSelling.slice(0, 4).map((product, i) => (
-              <motion.div key={product.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}>
-                <FeaturedCard product={product} />
-              </motion.div>
+            {topSelling.slice(0, 4).map((product) => (
+              <FeaturedCard key={product.id} product={product} />
             ))}
           </div>
         </section>
@@ -264,10 +262,8 @@ export default function Home() {
                   return dB - dA;
                 })
                 .slice(0, 4)
-                .map((product, i) => (
-                  <motion.div key={product.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}>
-                    <ProductCard product={product} />
-                  </motion.div>
+                .map((product) => (
+                  <ProductCard key={product.id} product={product} />
                 ))}
             </div>
           </div>
@@ -289,12 +285,10 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {PRODUCTS.slice(-8).reverse().slice(0, 4).map((product, i) => (
-              <motion.div key={product.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}>
-                <ProductCard product={product} />
-              </motion.div>
+            {PRODUCTS.slice(-8).reverse().slice(0, 4).map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
-            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4, duration: 0.4 }}>
+            <div>
               <Link href="/tienda" className="h-full rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-primary/30 hover:bg-white/[0.05] transition-all duration-300 group flex flex-col items-center justify-center min-h-[320px] gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <ArrowRight className="w-7 h-7 text-primary" />
@@ -304,7 +298,7 @@ export default function Home() {
                   <p className="text-[11px] text-muted-foreground mt-1">{PRODUCTS.length} productos disponibles</p>
                 </div>
               </Link>
-            </motion.div>
+            </div>
           </div>
         </section>
 

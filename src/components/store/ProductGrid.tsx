@@ -1,45 +1,47 @@
 'use client';
 
-import { useStore, Product } from '@/lib/store';
+import { useStore, PRODUCTS, Product } from '@/lib/store';
 import { ProductCard } from './ProductCard';
-import { Skeleton } from '@/components/ui/skeleton';
 import { PackageSearch } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
+
+function sortProducts(products: Product[], sortBy: string): Product[] {
+  const sorted = [...products];
+  switch (sortBy) {
+    case 'popular': return sorted.sort((a, b) => b.sold - a.sold);
+    case 'rating': return sorted.sort((a, b) => b.rating - a.rating);
+    case 'price-asc': return sorted.sort((a, b) => a.price - b.price);
+    case 'price-desc': return sorted.sort((a, b) => b.price - a.price);
+    default: return sorted;
+  }
+}
 
 export function ProductGrid() {
   const { selectedCategory, selectedSubcategory, searchQuery, sortBy } = useStore();
 
-  const params = new URLSearchParams();
-  if (selectedCategory !== 'all') params.set('category', selectedCategory);
-  if (selectedSubcategory !== 'all') params.set('subcategory', selectedSubcategory);
-  if (searchQuery) params.set('search', searchQuery);
-  if (sortBy) params.set('sort', sortBy);
+  const products = useMemo(() => {
+    let filtered = PRODUCTS;
 
-  const { data, isLoading } = useQuery<{ products: Product[]; total: number }>({
-    queryKey: ['products', selectedCategory, selectedSubcategory, searchQuery, sortBy],
-    queryFn: () => fetch(`/api/products?${params.toString()}`).then(r => r.json()),
-  });
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(p => p.category === selectedCategory);
+    }
 
-  const products = data?.products ?? [];
+    if (selectedSubcategory !== 'all') {
+      filtered = filtered.filter(p => p.subcategory === selectedSubcategory);
+    }
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-border/50 p-4 space-y-3">
-            <Skeleton className="aspect-[4/3] w-full rounded-lg" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-3 w-full" />
-            <Skeleton className="h-3 w-1/2" />
-            <div className="flex justify-between">
-              <Skeleton className="h-6 w-20" />
-              <Skeleton className="h-8 w-24" />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.platform.toLowerCase().includes(q) ||
+        p.tags.some(t => t.toLowerCase().includes(q))
+      );
+    }
+
+    return sortProducts(filtered, sortBy);
+  }, [selectedCategory, selectedSubcategory, searchQuery, sortBy]);
 
   if (products.length === 0) {
     return (
@@ -54,7 +56,7 @@ export function ProductGrid() {
   return (
     <div>
       <p className="text-sm text-muted-foreground mb-4">{products.length} productos encontrados</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

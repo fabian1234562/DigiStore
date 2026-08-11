@@ -44,3 +44,24 @@ Stage Summary:
 - Each distinct brand/platform has its own unique real photograph
 - Build compiles successfully
 - Images hosted on z-cdn.chatglm.cn (stable, embeddable CDN)
+
+---
+Task ID: 2
+Agent: main
+Task: Optimize speed and responsive design
+
+Work Log:
+- ProductCard: removed framer-motion wrapper (was causing scroll jank), added loading="lazy", added sizes prop for responsive images, made text responsive with sm: breakpoints, removed unused getProductImage import
+- ProductGrid: replaced API fetch (useQuery) with direct client-side filtering using useMemo - eliminates network roundtrip on every filter change
+- FeaturedCard: removed framer-motion, added loading="lazy", responsive text sizes
+- Homepage hero: responsive height (280/380/420px), lazy loading on card images, responsive text sizes in cards
+- Homepage product sections: removed motion.div wrappers from product cards (12 fewer animated divs = smoother scroll)
+- All components now use native CSS transitions instead of JS animation for hover effects
+
+Stage Summary:
+- Eliminated unnecessary network requests (ProductGrid no longer fetches from API)
+- Removed framer-motion from 12+ product card wrappers (faster scroll, less JS execution)
+- Added lazy loading to all product images (loads only when visible)
+- Added proper sizes hints for Next.js image optimization
+- Responsive text and spacing across mobile/tablet/desktop
+- Build successful, no errors
