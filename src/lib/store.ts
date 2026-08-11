@@ -126,9 +126,9 @@ export const SUBCATEGORIES: Record<string, string[]> = {
   gaming: ['Skins', 'V-Bucks', 'Robux', 'Monedas', 'Pases de Batalla', 'Cuentas', 'Items'],
   streaming: ['Netflix', 'Spotify', 'Disney+', 'HBO Max', 'Crunchyroll', 'Prime Video', 'Paramount+', 'Apple TV+'],
   accounts: ['Gaming', 'Streaming', 'Redes Sociales', 'Software'],
-  giftcards: ['PlayStation', 'Xbox', 'Nintendo', 'Steam', 'Apple', 'Google Play', 'Amazon', 'Netflix', 'Epic Games'],
+  giftcards: ['PlayStation', 'Xbox', 'Nintendo', 'Steam', 'Apple', 'Google Play', 'Amazon', 'Netflix', 'Epic Games', 'Roblox', 'Spotify'],
   software: ['Licencias Windows', 'Office', 'Antivirus', 'VPN', 'Herramientas'],
-  subscriptions: ['Spotify', 'YouTube Premium', 'Discord Nitro', 'Twitch', 'Cloud Gaming', 'Canva Pro'],
+  subscriptions: ['Spotify', 'YouTube Premium', 'Discord Nitro', 'Twitch', 'Cloud Gaming', 'Canva Pro', 'PlayStation Plus', 'EA Play'],
 };
 
 // Real product images from web search
@@ -162,6 +162,16 @@ const IMG = {
   disney: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/71cbd03b93ff.jpg',
   discord: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/06243c250de4.png',
   vpn: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/37500ba95dd2.jpg',
+  cs2: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4009745d48c8.jpg',
+  gta: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2d5cebe0bcc1.jpg',
+  codpoints: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2d5cebe0bcc1.jpg',
+  honkai: 'https://z-cdn.chatglm.cn/image-search-mpt/58ef7ddeeaec.png',
+  wuthering: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/58ef7ddeeaec.png',
+  psplus: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3a5a508c433c.jpg',
+  eaplay: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a0d7be63ee69.jpg',
+  robloxgc: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/dbb49835219f.png',
+  spotgc: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3312f51c5e60.jpg',
+  nintendoe: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/efc9767063ba.jpg',
   hbo: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a852ed51ceb1.jpg',
   crunchyroll: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2c5ad4448d66.jpg',
   xbox: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/dc54dedbc1e6.jpg',
@@ -172,6 +182,16 @@ const IMG = {
   canva: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cd3fa6bc6c49.jpg',
   itunes: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d2323831542a.jpg',
   amazon: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7cbbcc16b019.jpg',
+  cs2: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4009745d48c8.jpg',
+  gta: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2d5cebe0bcc1.jpg',
+  codpoints: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2d5cebe0bcc1.jpg',
+  honkai: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/58ef7ddeeaec.png',
+  wuthering: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/58ef7ddeeaec.png',
+  psplus: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3a5a508c433c.jpg',
+  eaplay: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a0d7be63ee69.jpg',
+  robloxgc: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/dbb49835219f.png',
+  spotgc: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3312f51c5e60.jpg',
+  nintendoe: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/efc9767063ba.jpg',
 };
 
 export const PRODUCTS: Product[] = [
@@ -229,6 +249,22 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'g18', name: 'Gemas Brawl Stars - 170', description: 'Gemas premium para Brawl Stars. Desbloquea el Brawl Pass y cajas mega de personajes.', price: 3.49, originalPrice: 8.99, category: 'gaming', subcategory: 'Monedas', image: IMG.brawlstars, rating: 4.7, reviews: 8400, sold: 67000, deliveryTime: 'Entrega instantanea', platform: 'Brawl Stars', region: 'Global', tags: ['popular', 'tendencia'], stock: 999, featured: true,
+  },
+  // GAMING - Top Trending 2025
+  {
+    id: 'g19', name: 'CS2 Skins - Paquete Premium', description: 'Seleccion de skins premium para Counter-Strike 2. Incluye armas con acabados raros y colecciones exclusivas del mercado de Steam.', price: 9.99, originalPrice: 24.99, category: 'gaming', subcategory: 'Skins', image: IMG.cs2, rating: 4.8, reviews: 5200, sold: 38000, deliveryTime: 'Entrega instantanea', platform: 'Counter-Strike 2', region: 'Global', tags: ['popular', 'tendencia'], stock: 150, featured: true,
+  },
+  {
+    id: 'g20', name: 'GTA V - Shark Card Megalodon', description: 'Tarjeta Shark Megalodon de $8M para GTA Online. Compra propiedades, vehiculos de lujo y negocios.', price: 12.99, originalPrice: 39.99, category: 'gaming', subcategory: 'Items', image: IMG.gta, rating: 4.6, reviews: 4100, sold: 29000, deliveryTime: 'Entrega instantanea', platform: 'GTA V', region: 'Global', tags: ['oferta', 'tendencia'], stock: 500, featured: false,
+  },
+  {
+    id: 'g21', name: '2400 CoD Points - Warzone', description: 'CoD Points para Call of Duty Warzone y MW3. Compra el battle pass, bundles de armas y operadores.', price: 7.99, originalPrice: 19.99, category: 'gaming', subcategory: 'Monedas', image: IMG.codpoints, rating: 4.5, reviews: 3800, sold: 25000, deliveryTime: 'Entrega instantanea', platform: 'Call of Duty', region: 'Global', tags: ['popular', 'oferta'], stock: 999, featured: false,
+  },
+  {
+    id: 'g22', name: 'Oneiric Shard Pack - Honkai Star Rail', description: 'Paquete de fragmentos oniricos para Honkai: Star Rail. Obtene personajes 5 estrellas y armas legendarias.', price: 8.99, originalPrice: 24.99, category: 'gaming', subcategory: 'Monedas', image: IMG.honkai, rating: 4.9, reviews: 7500, sold: 55000, deliveryTime: 'Entrega instantanea', platform: 'Honkai Star Rail', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 999, featured: true,
+  },
+  {
+    id: 'g23', name: 'Astrite Pack - Wuthering Waves', description: 'Paquete de astritas para Wuthering Waves. Invoca resonadores de alta rareza y mejora tu equipo.', price: 7.49, originalPrice: 19.99, category: 'gaming', subcategory: 'Monedas', image: IMG.wuthering, rating: 4.7, reviews: 4200, sold: 32000, deliveryTime: 'Entrega instantanea', platform: 'Wuthering Waves', region: 'Global', tags: ['tendencia', 'oferta'], stock: 999, featured: false,
   },
   // STREAMING
   {
@@ -295,6 +331,15 @@ export const PRODUCTS: Product[] = [
   {
     id: 'gc11', name: 'Tarjeta Epic Games - $25 USD', description: 'Gift card Epic Games Store. Compra juegos exclusivos y de gran presupuesto.', price: 23.49, originalPrice: 25.00, category: 'giftcards', subcategory: 'Epic Games', image: IMG.epic, rating: 4.6, reviews: 5800, sold: 38000, deliveryTime: 'Entrega instantanea', platform: 'Epic Games', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
   },
+  {
+    id: 'gc12', name: 'Tarjeta Roblox - $25 USD', description: 'Gift card Roblox oficial. Canjea por Robux y compra items, game passes y ropa premium.', price: 23.49, originalPrice: 25.00, category: 'giftcards', subcategory: 'Roblox', image: IMG.robloxgc, rating: 4.8, reviews: 14200, sold: 115000, deliveryTime: 'Entrega instantanea', platform: 'Roblox', region: 'Global', tags: ['mas vendido', 'popular'], stock: 999, featured: true,
+  },
+  {
+    id: 'gc13', name: 'Tarjeta Spotify - $30 USD', description: 'Gift card Spotify. Carga saldo para meses de Spotify Premium sin anuncios.', price: 28.49, originalPrice: 30.00, category: 'giftcards', subcategory: 'Spotify', image: IMG.spotgc, rating: 4.7, reviews: 9500, sold: 72000, deliveryTime: 'Entrega instantanea', platform: 'Spotify', region: 'Global', tags: ['popular'], stock: 999, featured: false,
+  },
+  {
+    id: 'gc14', name: 'Tarjeta Nintendo eShop - $50 USD', description: 'Gift card Nintendo eShop de $50. Juegos de Switch, DLC y clasicos de NES y SNES.', price: 46.99, originalPrice: 50.00, category: 'giftcards', subcategory: 'Nintendo', image: IMG.nintendoe, rating: 4.9, reviews: 8200, sold: 62000, deliveryTime: 'Entrega instantanea', platform: 'Nintendo', region: 'Americas', tags: ['popular', 'oferta'], stock: 999, featured: false,
+  },
   // SOFTWARE
   {
     id: 'sw1', name: 'Licencia Windows 11 Pro - Clave Digital', description: 'Licencia original Windows 11 Pro. Clave 32/64 bits, activacion online oficial de Microsoft.', price: 8.99, originalPrice: 199.99, category: 'software', subcategory: 'Licencias Windows', image: IMG.win11, rating: 4.7, reviews: 28500, sold: 245000, deliveryTime: 'Entrega instantanea', platform: 'Windows', region: 'Global', tags: ['mas vendido', 'oferta', 'mejor margen'], stock: 999, featured: true,
@@ -335,6 +380,12 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'sub7', name: 'Xbox Game Pass Ultimate - 3 Meses', description: '3 meses de Game Pass Ultimate: consola + PC + cloud. La mejor oferta para gamers.', price: 12.99, originalPrice: 50.97, category: 'subscriptions', subcategory: 'Cloud Gaming', image: IMG.gamepass, rating: 4.9, reviews: 9800, sold: 72000, deliveryTime: 'Entrega instantanea', platform: 'Xbox', region: 'Global', tags: ['oferta', 'tendencia'], stock: 999, featured: false,
+  },
+  {
+    id: 'sub8', name: 'PlayStation Plus Premium - 1 Ano', description: '12 meses de PS Plus Premium: juegos de catalogo, cloud streaming, ofertas exclusivas y trials de juegos AAA.', price: 29.99, originalPrice: 159.99, category: 'subscriptions', subcategory: 'PlayStation Plus', image: IMG.psplus, rating: 4.8, reviews: 11200, sold: 85000, deliveryTime: 'Entrega instantanea', platform: 'PlayStation', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 999, featured: true,
+  },
+  {
+    id: 'sub9', name: 'EA Play Pro - 1 Mes', description: 'Acceso a los mejores juegos de EA: FC 25, Madden, Battlefield y mas. Incluye ediciones premium y day-one.', price: 3.99, originalPrice: 14.99, category: 'subscriptions', subcategory: 'EA Play', image: IMG.eaplay, rating: 4.6, reviews: 5600, sold: 38000, deliveryTime: 'Entrega instantanea', platform: 'EA', region: 'Global', tags: ['oferta', 'tendencia'], stock: 999, featured: false,
   },
 ];
 

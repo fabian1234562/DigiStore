@@ -1,0 +1,379 @@
+     1→import { create } from 'zustand';
+     2→
+     3→export interface Product {
+     4→  id: string;
+     5→  name: string;
+     6→  description: string;
+     7→  price: number;
+     8→  originalPrice?: number;
+     9→  category: string;
+    10→  subcategory: string;
+    11→  image: string;
+    12→  rating: number;
+    13→  reviews: number;
+    14→  sold: number;
+    15→  deliveryTime: string;
+    16→  platform: string;
+    17→  region: string;
+    18→  tags: string[];
+    19→  stock: number;
+    20→  featured: boolean;
+    21→}
+    22→
+    23→export interface CartItem {
+    24→  product: Product;
+    25→  quantity: number;
+    26→}
+    27→
+    28→interface StoreState {
+    29→  cart: CartItem[];
+    30→  cartOpen: boolean;
+    31→  authOpen: boolean;
+    32→  selectedProduct: Product | null;
+    33→  productDetailOpen: boolean;
+    34→  user: { id: string; name: string; email: string } | null;
+    35→  searchQuery: string;
+    36→  selectedCategory: string;
+    37→  selectedSubcategory: string;
+    38→  sortBy: string;
+    39→  addToCart: (product: Product) => void;
+    40→  removeFromCart: (productId: string) => void;
+    41→  updateQuantity: (productId: string, quantity: number) => void;
+    42→  clearCart: () => void;
+    43→  setCartOpen: (open: boolean) => void;
+    44→  setAuthOpen: (open: boolean) => void;
+    45→  setSelectedProduct: (product: Product | null) => void;
+    46→  setProductDetailOpen: (open: boolean) => void;
+    47→  setUser: (user: { id: string; name: string; email: string } | null) => void;
+    48→  setSearchQuery: (query: string) => void;
+    49→  setSelectedCategory: (category: string) => void;
+    50→  setSelectedSubcategory: (subcategory: string) => void;
+    51→  setSortBy: (sort: string) => void;
+    52→  cartTotal: () => number;
+    53→  cartCount: () => number;
+    54→}
+    55→
+    56→export const useStore = create<StoreState>((set, get) => ({
+    57→  cart: [],
+    58→  cartOpen: false,
+    59→  authOpen: false,
+    60→  selectedProduct: null,
+    61→  productDetailOpen: false,
+    62→  user: null,
+    63→  searchQuery: '',
+    64→  selectedCategory: 'all',
+    65→  selectedSubcategory: 'all',
+    66→  sortBy: 'popular',
+    67→
+    68→  addToCart: (product) =>
+    69→    set((state) => {
+    70→      const existing = state.cart.find((item) => item.product.id === product.id);
+    71→      if (existing) {
+    72→        return {
+    73→          cart: state.cart.map((item) =>
+    74→            item.product.id === product.id
+    75→              ? { ...item, quantity: item.quantity + 1 }
+    76→              : item
+    77→          ),
+    78→        };
+    79→      }
+    80→      return { cart: [...state.cart, { product, quantity: 1 }] };
+    81→    }),
+    82→
+    83→  removeFromCart: (productId) =>
+    84→    set((state) => ({
+    85→      cart: state.cart.filter((item) => item.product.id !== productId),
+    86→    })),
+    87→
+    88→  updateQuantity: (productId, quantity) =>
+    89→    set((state) => ({
+    90→      cart:
+    91→        quantity <= 0
+    92→          ? state.cart.filter((item) => item.product.id !== productId)
+    93→          : state.cart.map((item) =>
+    94→              item.product.id === productId ? { ...item, quantity } : item
+    95→            ),
+    96→    })),
+    97→
+    98→  clearCart: () => set({ cart: [] }),
+    99→  setCartOpen: (open) => set({ cartOpen: open }),
+   100→  setAuthOpen: (open) => set({ authOpen: open }),
+   101→  setSelectedProduct: (product) => set({ selectedProduct: product }),
+   102→  setProductDetailOpen: (open) => set({ productDetailOpen: open }),
+   103→  setUser: (user) => set({ user }),
+   104→  setSearchQuery: (query) => set({ searchQuery: query }),
+   105→  setSelectedCategory: (category) => set({ selectedCategory: category, selectedSubcategory: 'all' }),
+   106→  setSelectedSubcategory: (subcategory) => set({ selectedSubcategory: subcategory }),
+   107→  setSortBy: (sort) => set({ sortBy: sort }),
+   108→
+   109→  cartTotal: () =>
+   110→    get().cart.reduce((total, item) => total + item.product.price * item.quantity, 0),
+   111→
+   112→  cartCount: () =>
+   113→    get().cart.reduce((count, item) => count + item.quantity, 0),
+   114→}));
+   115→
+   116→export const CATEGORIES = [
+   117→  { id: 'gaming', name: 'Gaming', icon: 'Gamepad2', color: 'from-purple-500 to-pink-500' },
+   118→  { id: 'streaming', name: 'Streaming', icon: 'Tv', color: 'from-red-500 to-orange-500' },
+   119→  { id: 'accounts', name: 'Cuentas', icon: 'UserCircle', color: 'from-emerald-500 to-teal-500' },
+   120→  { id: 'giftcards', name: 'Tarjetas Regalo', icon: 'Gift', color: 'from-amber-500 to-yellow-500' },
+   121→  { id: 'software', name: 'Software', icon: 'AppWindow', color: 'from-cyan-500 to-blue-500' },
+   122→  { id: 'subscriptions', name: 'Suscripciones', icon: 'RefreshCw', color: 'from-violet-500 to-purple-500' },
+   123→];
+   124→
+   125→export const SUBCATEGORIES: Record<string, string[]> = {
+   126→  gaming: ['Skins', 'V-Bucks', 'Robux', 'Monedas', 'Pases de Batalla', 'Cuentas', 'Items'],
+   127→  streaming: ['Netflix', 'Spotify', 'Disney+', 'HBO Max', 'Crunchyroll', 'Prime Video', 'Paramount+', 'Apple TV+'],
+   128→  accounts: ['Gaming', 'Streaming', 'Redes Sociales', 'Software'],
+   129→  giftcards: ['PlayStation', 'Xbox', 'Nintendo', 'Steam', 'Apple', 'Google Play', 'Amazon', 'Netflix', 'Epic Games'],
+   130→  software: ['Licencias Windows', 'Office', 'Antivirus', 'VPN', 'Herramientas'],
+   131→  subscriptions: ['Spotify', 'YouTube Premium', 'Discord Nitro', 'Twitch', 'Cloud Gaming', 'Canva Pro'],
+   132→};
+   133→
+   134→// Real product images from web search
+   135→const IMG = {
+   136→  vbucks: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c79881560ec7.jpg',
+   137→  vbucks2800: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5084f9786eba.jpg',
+   138→  robux: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/dbb49835219f.png',
+   139→  robux1700: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6b7dd3f93f44.jpg',
+   140→  netflix: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/14a1c5f6ed2d.png',
+   141→  netflixgc: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ba07b04351fe.jpg',
+   142→  spotify: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3312f51c5e60.jpg',
+   143→  steam: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/efc9767063ba.jpg',
+   144→  epic: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5b3496408140.png',
+   145→  win11: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/f63eb6ade27c.jpg',
+   146→  office: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9f61712fdd94.png',
+   147→  adobe: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8a1cf95baa3f.jpg',
+   148→  ps: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3a5a508c433c.jpg',
+   149→  gamepass: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a0d7be63ee69.jpg',
+   150→  yt: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ddf35ebe2f5d.png',
+   151→  valorant: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4009745d48c8.jpg',
+   152→  apex: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/288b0a0084de.jpg',
+   153→  pubg: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/25da5e895239.jpg',
+   154→  warzone: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2d5cebe0bcc1.jpg',
+   155→  freefire: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a3463b0b34bc.jpg',
+   156→  amongus: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/da1445d915e0.jpg',
+   157→  minecraft: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/faf7b38ef295.jpg',
+   158→  genshin: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/58ef7ddeeaec.png',
+   159→  clashroyale: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c4b7303e38da.jpg',
+   160→  mobilelegends: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c97d7e0b8faa.jpg',
+   161→  brawlstars: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/73f142390d94.png',
+   162→  disney: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/71cbd03b93ff.jpg',
+   163→  discord: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/06243c250de4.png',
+   164→  vpn: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/37500ba95dd2.jpg',
+   165→  hbo: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a852ed51ceb1.jpg',
+   166→  crunchyroll: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2c5ad4448d66.jpg',
+   167→  xbox: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/dc54dedbc1e6.jpg',
+   168→  primevideo: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/99d3658a2fd3.jpg',
+   169→  paramount: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9b1ed2b16dd7.jpg',
+   170→  appletv: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7f49aaab59d1.jpg',
+   171→  twitch: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f6ed0137a6f.png',
+   172→  canva: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cd3fa6bc6c49.jpg',
+   173→  itunes: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d2323831542a.jpg',
+   174→  amazon: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7cbbcc16b019.jpg',
+   175→};
+   176→
+   177→export const PRODUCTS: Product[] = [
+   178→  // GAMING - Juegos Populares
+   179→  {
+   180→    id: 'g1', name: '1000 V-Bucks - Fortnite', description: 'Moneda virtual para Fortnite. Compra skins, pases de batalla y mas en la tienda del juego.', price: 4.99, originalPrice: 9.99, category: 'gaming', subcategory: 'V-Bucks', image: IMG.vbucks, rating: 4.8, reviews: 12500, sold: 89000, deliveryTime: 'Entrega instantanea', platform: 'Fortnite', region: 'Global', tags: ['popular', 'oferta'], stock: 999, featured: true,
+   181→  },
+   182→  {
+   183→    id: 'g2', name: '2800 V-Bucks - Fortnite', description: 'Paquete de 2800 V-Bucks para Fortnite. Ideal para comprar el Pase de Batalla y varias skins.', price: 12.99, originalPrice: 24.99, category: 'gaming', subcategory: 'V-Bucks', image: IMG.vbucks2800, rating: 4.8, reviews: 8200, sold: 62000, deliveryTime: 'Entrega instantanea', platform: 'Fortnite', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   184→  },
+   185→  {
+   186→    id: 'g3', name: '800 Robux - Roblox', description: 'Robux para Roblox. Personaliza tu avatar, compra game passes y items exclusivos.', price: 3.99, originalPrice: 9.99, category: 'gaming', subcategory: 'Robux', image: IMG.robux, rating: 4.7, reviews: 9800, sold: 72000, deliveryTime: 'Entrega instantanea', platform: 'Roblox', region: 'Global', tags: ['popular', 'oferta'], stock: 999, featured: true,
+   187→  },
+   188→  {
+   189→    id: 'g4', name: '1700 Robux - Roblox', description: 'Paquete de 1700 Robux. Suficiente para multiples game passes y accesorios premium.', price: 7.99, originalPrice: 19.99, category: 'gaming', subcategory: 'Robux', image: IMG.robux1700, rating: 4.7, reviews: 6500, sold: 48000, deliveryTime: 'Entrega instantanea', platform: 'Roblox', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   190→  },
+   191→  {
+   192→    id: 'g5', name: 'Pase de Batalla - Temporada Actual', description: '100 niveles de premios exclusivos durante toda la temporada de Fortnite.', price: 5.99, originalPrice: 9.99, category: 'gaming', subcategory: 'Pases de Batalla', image: IMG.vbucks, rating: 4.6, reviews: 5600, sold: 45000, deliveryTime: 'Entrega instantanea', platform: 'Fortnite', region: 'Global', tags: ['tendencia'], stock: 999, featured: true,
+   193→  },
+   194→  {
+   195→    id: 'g6', name: '2800 Monedas FIFA/EA FC', description: 'Monedas para FIFA / EA FC Ultimate Team. Construye tu equipo suenado con jugadores top.', price: 9.99, originalPrice: 24.99, category: 'gaming', subcategory: 'Monedas', image: IMG.valorant, rating: 4.5, reviews: 3400, sold: 28000, deliveryTime: '5-30 minutos', platform: 'EA FC 25', region: 'Global', tags: ['oferta'], stock: 500, featured: false,
+   196→  },
+   197→  {
+   198→    id: 'g7', name: 'Skin Legendaria - Valorant', description: 'Skin premium con efectos especiales y animacion unica para tu arma favorita en Valorant.', price: 7.99, originalPrice: 19.99, category: 'gaming', subcategory: 'Skins', image: IMG.valorant, rating: 4.9, reviews: 2100, sold: 15000, deliveryTime: 'Entrega instantanea', platform: 'Valorant', region: 'Global', tags: ['premium'], stock: 200, featured: true,
+   199→  },
+   200→  {
+   201→    id: 'g8', name: 'Cuenta Premium Minecraft', description: 'Cuenta premium de Minecraft Java Edition con acceso completo a multijugador y skins.', price: 4.99, originalPrice: 26.95, category: 'gaming', subcategory: 'Cuentas', image: IMG.minecraft, rating: 4.4, reviews: 7800, sold: 62000, deliveryTime: '1-24 horas', platform: 'Minecraft', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 150, featured: false,
+   202→  },
+   203→  {
+   204→    id: 'g9', name: 'RP League of Legends - 1380', description: 'Riot Points para League of Legends. Desbloquea campeones, skins y chromas exclusivos.', price: 5.49, originalPrice: 9.99, category: 'gaming', subcategory: 'Monedas', image: IMG.valorant, rating: 4.6, reviews: 4200, sold: 35000, deliveryTime: 'Entrega instantanea', platform: 'League of Legends', region: 'Global', tags: ['popular'], stock: 999, featured: false,
+   205→  },
+   206→  {
+   207→    id: 'g10', name: 'Genesis Crystal Pack - Genshin Impact', description: 'Paquete de cristales genesis. Obtene personajes 5 estrellas y armas legendarias.', price: 7.99, originalPrice: 19.99, category: 'gaming', subcategory: 'Monedas', image: IMG.genshin, rating: 4.8, reviews: 6100, sold: 48000, deliveryTime: 'Entrega instantanea', platform: 'Genshin Impact', region: 'Global', tags: ['oferta', 'tendencia'], stock: 999, featured: true,
+   208→  },
+   209→  {
+   210→    id: 'g11', name: 'Monedas Apex Legends - 1000', description: 'Monedas para Apex Legends. Desbloquea skins de armas, legendas y objetos del pase de batalla.', price: 4.99, originalPrice: 9.99, category: 'gaming', subcategory: 'Monedas', image: IMG.apex, rating: 4.6, reviews: 3800, sold: 32000, deliveryTime: 'Entrega instantanea', platform: 'Apex Legends', region: 'Global', tags: ['popular'], stock: 999, featured: false,
+   211→  },
+   212→  {
+   213→    id: 'g12', name: 'UC PUBG Mobile - 600', description: 'Unlimited Cash para PUBG Mobile. Compra skins, armas y el Royal Pass con descuento.', price: 4.49, originalPrice: 9.99, category: 'gaming', subcategory: 'Monedas', image: IMG.pubg, rating: 4.5, reviews: 5200, sold: 41000, deliveryTime: 'Entrega instantanea', platform: 'PUBG Mobile', region: 'Global', tags: ['popular', 'oferta'], stock: 999, featured: false,
+   214→  },
+   215→  {
+   216→    id: 'g13', name: 'Cuenta Premium Warzone/CoD', description: 'Cuenta con todos los DLCs y codigos de Call of Duty Warzone desbloqueados.', price: 5.99, originalPrice: 69.99, category: 'gaming', subcategory: 'Cuentas', image: IMG.warzone, rating: 4.3, reviews: 2800, sold: 18500, deliveryTime: '1-6 horas', platform: 'Call of Duty', region: 'Global', tags: ['oferta'], stock: 100, featured: false,
+   217→  },
+   218→  {
+   219→    id: 'g14', name: 'Diamantes Free Fire - 1000', description: 'Diamantes para Free Fire. Desbloquea personajes, skins de armas y el pase de elite.', price: 3.99, originalPrice: 9.99, category: 'gaming', subcategory: 'Monedas', image: IMG.freefire, rating: 4.4, reviews: 9200, sold: 78000, deliveryTime: 'Entrega instantanea', platform: 'Free Fire', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 999, featured: false,
+   220→  },
+   221→  {
+   222→    id: 'g15', name: 'Cuenta Among Us - Skins Completas', description: 'Cuenta con todas las skins, mascotas y sombreros desbloqueados de Among Us.', price: 2.99, originalPrice: 14.99, category: 'gaming', subcategory: 'Cuentas', image: IMG.amongus, rating: 4.2, reviews: 4500, sold: 22000, deliveryTime: 'Entrega instantanea', platform: 'Among Us', region: 'Global', tags: ['oferta'], stock: 200, featured: false,
+   223→  },
+   224→  {
+   225→    id: 'g16', name: 'Gemas Clash Royale - 1400', description: 'Gemas premium para Clash Royale. Desbloquea cofres magicos y mejora tus cartas.', price: 3.99, originalPrice: 9.99, category: 'gaming', subcategory: 'Monedas', image: IMG.clashroyale, rating: 4.5, reviews: 6700, sold: 55000, deliveryTime: 'Entrega instantanea', platform: 'Clash Royale', region: 'Global', tags: ['popular'], stock: 999, featured: false,
+   226→  },
+   227→  {
+   228→    id: 'g17', name: 'Diamantes Mobile Legends - 400', description: 'Diamantes para Mobile Legends Bang Bang. Compra heroes, skins y el magic wheel.', price: 3.49, originalPrice: 8.99, category: 'gaming', subcategory: 'Monedas', image: IMG.mobilelegends, rating: 4.5, reviews: 7100, sold: 58000, deliveryTime: 'Entrega instantanea', platform: 'Mobile Legends', region: 'Global', tags: ['popular', 'oferta'], stock: 999, featured: false,
+   229→  },
+   230→  {
+   231→    id: 'g18', name: 'Gemas Brawl Stars - 170', description: 'Gemas premium para Brawl Stars. Desbloquea el Brawl Pass y cajas mega de personajes.', price: 3.49, originalPrice: 8.99, category: 'gaming', subcategory: 'Monedas', image: IMG.brawlstars, rating: 4.7, reviews: 8400, sold: 67000, deliveryTime: 'Entrega instantanea', platform: 'Brawl Stars', region: 'Global', tags: ['popular', 'tendencia'], stock: 999, featured: true,
+   232→  },
+   233→  // STREAMING
+   234→  {
+   235→    id: 's1', name: 'Netflix Premium - 1 Mes', description: 'Cuenta premium Netflix. Calidad 4K, 4 pantallas simultaneas y sin anuncios.', price: 3.99, originalPrice: 22.99, category: 'streaming', subcategory: 'Netflix', image: IMG.netflix, rating: 4.7, reviews: 15200, sold: 120000, deliveryTime: 'Entrega instantanea', platform: 'Netflix', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 999, featured: true,
+   236→  },
+   237→  {
+   238→    id: 's2', name: 'Netflix Premium - 3 Meses', description: '3 meses de Netflix Premium full. Ahorra comprando el paquete trimestral.', price: 9.99, originalPrice: 68.97, category: 'streaming', subcategory: 'Netflix', image: IMG.netflix, rating: 4.8, reviews: 8900, sold: 72000, deliveryTime: 'Entrega instantanea', platform: 'Netflix', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   239→  },
+   240→  {
+   241→    id: 's3', name: 'Spotify Premium - 1 Mes', description: '1 mes de Spotify Premium. Sin anuncios, descarga ilimitada y calidad extrema.', price: 1.99, originalPrice: 4.99, category: 'streaming', subcategory: 'Spotify', image: IMG.spotify, rating: 4.8, reviews: 22300, sold: 210000, deliveryTime: 'Entrega instantanea', platform: 'Spotify', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 999, featured: false,
+   242→  },
+   243→  {
+   244→    id: 's4', name: 'Spotify Premium - 3 Meses', description: '3 meses de Spotify Premium. Sin anuncios, descarga ilimitada, calidad maxima.', price: 4.99, originalPrice: 14.97, category: 'streaming', subcategory: 'Spotify', image: IMG.spotify, rating: 4.8, reviews: 18900, sold: 195000, deliveryTime: 'Entrega instantanea', platform: 'Spotify', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 999, featured: true,
+   245→  },
+   246→  {
+   247→    id: 's5', name: 'Disney+ Premium - 1 Mes', description: 'Marvel, Star Wars, Pixar, National Geographic y mas. Calidad 4K UHD HDR.', price: 3.49, originalPrice: 13.99, category: 'streaming', subcategory: 'Disney+', image: IMG.disney, rating: 4.6, reviews: 8900, sold: 67000, deliveryTime: 'Entrega instantanea', platform: 'Disney+', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   248→  },
+   249→  {
+   250→    id: 's6', name: 'Crunchyroll Premium - 1 Mes', description: 'Anime sin anuncios, todos los titulos, estrenos simultaneos con Japon y manga incluido.', price: 2.99, originalPrice: 9.99, category: 'streaming', subcategory: 'Crunchyroll', image: IMG.crunchyroll, rating: 4.5, reviews: 5400, sold: 38000, deliveryTime: 'Entrega instantanea', platform: 'Crunchyroll', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   251→  },
+   252→  {
+   253→    id: 's7', name: 'HBO Max - 1 Mes', description: 'Series de HBO, peliculas Warner Bros, contenido DC y documentales exclusivos.', price: 3.49, originalPrice: 15.49, category: 'streaming', subcategory: 'HBO Max', image: IMG.hbo, rating: 4.5, reviews: 6200, sold: 42000, deliveryTime: 'Entrega instantanea', platform: 'HBO Max', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   254→  },
+   255→  {
+   256→    id: 's8', name: 'Amazon Prime Video - 1 Mes', description: 'Peliculas, series originales de Amazon, deportes en vivo y envios Prime incluidos.', price: 3.99, originalPrice: 14.99, category: 'streaming', subcategory: 'Prime Video', image: IMG.primevideo, rating: 4.6, reviews: 7800, sold: 56000, deliveryTime: 'Entrega instantanea', platform: 'Amazon Prime', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   257→  },
+   258→  {
+   259→    id: 's9', name: 'Paramount+ - 1 Mes', description: 'Contenido de CBS, MTV, Nickelodeon, peliculas de Paramount y series exclusivas.', price: 2.49, originalPrice: 11.99, category: 'streaming', subcategory: 'Paramount+', image: IMG.paramount, rating: 4.3, reviews: 3200, sold: 24000, deliveryTime: 'Entrega instantanea', platform: 'Paramount+', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   260→  },
+   261→  {
+   262→    id: 's10', name: 'Apple TV+ - 1 Mes', description: 'Series originales galardonadas de Apple, peliculas exclusivas y documentales.', price: 2.99, originalPrice: 9.99, category: 'streaming', subcategory: 'Apple TV+', image: IMG.appletv, rating: 4.4, reviews: 4100, sold: 29000, deliveryTime: 'Entrega instantanea', platform: 'Apple TV+', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   263→  },
+   264→  // GIFT CARDS
+   265→  {
+   266→    id: 'gc1', name: 'Tarjeta Steam - $50 USD', description: 'Gift card Steam. Compra juegos, DLC, software y mas en la tienda mas grande de PC.', price: 46.99, originalPrice: 50.00, category: 'giftcards', subcategory: 'Steam', image: IMG.steam, rating: 4.9, reviews: 22000, sold: 185000, deliveryTime: 'Entrega instantanea', platform: 'Steam', region: 'Global', tags: ['mas vendido'], stock: 999, featured: true,
+   267→  },
+   268→  {
+   269→    id: 'gc2', name: 'Tarjeta Steam - $20 USD', description: 'Gift card Steam de $20. Perfecta para comprar juegos indie o en oferta.', price: 18.99, originalPrice: 20.00, category: 'giftcards', subcategory: 'Steam', image: IMG.steam, rating: 4.8, reviews: 18000, sold: 156000, deliveryTime: 'Entrega instantanea', platform: 'Steam', region: 'Global', tags: ['popular'], stock: 999, featured: false,
+   270→  },
+   271→  {
+   272→    id: 'gc3', name: 'Tarjeta PlayStation - $25 USD', description: 'Gift card PlayStation Store para PS4/PS5. Juegos, DLC y suscripciones.', price: 23.49, originalPrice: 25.00, category: 'giftcards', subcategory: 'PlayStation', image: IMG.ps, rating: 4.8, reviews: 16500, sold: 142000, deliveryTime: 'Entrega instantanea', platform: 'PlayStation', region: 'Americas', tags: ['popular'], stock: 999, featured: false,
+   273→  },
+   274→  {
+   275→    id: 'gc4', name: 'Tarjeta PlayStation - $50 USD', description: 'Gift card PlayStation Store de $50. Ideal para juegos AAA de lanzamiento.', price: 46.49, originalPrice: 50.00, category: 'giftcards', subcategory: 'PlayStation', image: IMG.ps, rating: 4.9, reviews: 12400, sold: 98000, deliveryTime: 'Entrega instantanea', platform: 'PlayStation', region: 'Americas', tags: ['popular', 'oferta'], stock: 999, featured: false,
+   276→  },
+   277→  {
+   278→    id: 'gc5', name: 'Tarjeta Xbox - $50 USD', description: 'Gift card Xbox para Xbox Store y Game Pass. Juegos y suscripciones.', price: 45.99, originalPrice: 50.00, category: 'giftcards', subcategory: 'Xbox', image: IMG.xbox, rating: 4.7, reviews: 9800, sold: 78000, deliveryTime: 'Entrega instantanea', platform: 'Xbox', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   279→  },
+   280→  {
+   281→    id: 'gc6', name: 'Tarjeta Google Play - $25 USD', description: 'Gift card Google Play para apps, juegos, peliculas y libros en Android.', price: 23.49, originalPrice: 25.00, category: 'giftcards', subcategory: 'Google Play', image: IMG.steam, rating: 4.6, reviews: 11200, sold: 95000, deliveryTime: 'Entrega instantanea', platform: 'Google Play', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   282→  },
+   283→  {
+   284→    id: 'gc7', name: 'Tarjeta Nintendo eShop - $35 USD', description: 'Gift card Nintendo eShop para juegos de Switch clasicos y nuevos lanzamientos.', price: 32.49, originalPrice: 35.00, category: 'giftcards', subcategory: 'Nintendo', image: IMG.steam, rating: 4.8, reviews: 7600, sold: 54000, deliveryTime: 'Entrega instantanea', platform: 'Nintendo', region: 'Americas', tags: ['oferta'], stock: 500, featured: false,
+   285→  },
+   286→  {
+   287→    id: 'gc8', name: 'Tarjeta Apple/iTunes - $50 USD', description: 'Gift card Apple para App Store, iTunes, Apple Music y iCloud.', price: 46.99, originalPrice: 50.00, category: 'giftcards', subcategory: 'Apple', image: IMG.itunes, rating: 4.8, reviews: 14200, sold: 118000, deliveryTime: 'Entrega instantanea', platform: 'Apple', region: 'Global', tags: ['popular'], stock: 999, featured: false,
+   288→  },
+   289→  {
+   290→    id: 'gc9', name: 'Tarjeta Amazon - $50 USD', description: 'Gift card Amazon para compras en cualquier categoria de la tienda.', price: 47.49, originalPrice: 50.00, category: 'giftcards', subcategory: 'Amazon', image: IMG.amazon, rating: 4.9, reviews: 19500, sold: 168000, deliveryTime: 'Entrega instantanea', platform: 'Amazon', region: 'Global', tags: ['mas vendido'], stock: 999, featured: false,
+   291→  },
+   292→  {
+   293→    id: 'gc10', name: 'Tarjeta Netflix - $30 USD', description: 'Gift card oficial de Netflix. Carga saldo a tu cuenta de Netflix.', price: 28.49, originalPrice: 30.00, category: 'giftcards', subcategory: 'Netflix', image: IMG.netflixgc, rating: 4.7, reviews: 8900, sold: 67000, deliveryTime: 'Entrega instantanea', platform: 'Netflix', region: 'Americas', tags: ['oferta'], stock: 999, featured: false,
+   294→  },
+   295→  {
+   296→    id: 'gc11', name: 'Tarjeta Epic Games - $25 USD', description: 'Gift card Epic Games Store. Compra juegos exclusivos y de gran presupuesto.', price: 23.49, originalPrice: 25.00, category: 'giftcards', subcategory: 'Epic Games', image: IMG.epic, rating: 4.6, reviews: 5800, sold: 38000, deliveryTime: 'Entrega instantanea', platform: 'Epic Games', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   297→  },
+   298→  // SOFTWARE
+   299→  {
+   300→    id: 'sw1', name: 'Licencia Windows 11 Pro - Clave Digital', description: 'Licencia original Windows 11 Pro. Clave 32/64 bits, activacion online oficial de Microsoft.', price: 8.99, originalPrice: 199.99, category: 'software', subcategory: 'Licencias Windows', image: IMG.win11, rating: 4.7, reviews: 28500, sold: 245000, deliveryTime: 'Entrega instantanea', platform: 'Windows', region: 'Global', tags: ['mas vendido', 'oferta', 'mejor margen'], stock: 999, featured: true,
+   301→  },
+   302→  {
+   303→    id: 'sw2', name: 'Microsoft Office 2024 - Clave Digital', description: 'Office 2024 completo: Word, Excel, PowerPoint, Outlook. Licencia perpetua para 1 PC.', price: 12.49, originalPrice: 249.99, category: 'software', subcategory: 'Office', image: IMG.office, rating: 4.6, reviews: 19800, sold: 178000, deliveryTime: 'Entrega instantanea', platform: 'Microsoft', region: 'Global', tags: ['mas vendido', 'oferta', 'mejor margen'], stock: 999, featured: true,
+   304→  },
+   305→  {
+   306→    id: 'sw3', name: 'VPN Premium - Suscripcion 2 Anos', description: 'Suscripcion VPN 2 anos. 5500+ servidores en 60 paises, sin registros, velocidad maxima.', price: 29.99, originalPrice: 286.56, category: 'software', subcategory: 'VPN', image: IMG.vpn, rating: 4.8, reviews: 14200, sold: 98000, deliveryTime: 'Entrega instantanea', platform: 'VPN', region: 'Global', tags: ['oferta', 'mejor margen'], stock: 999, featured: false,
+   307→  },
+   308→  {
+   309→    id: 'sw4', name: 'Adobe Creative Cloud - 1 Ano', description: 'Suite completa Adobe: Photoshop, Illustrator, Premiere Pro, After Effects y mas.', price: 34.99, originalPrice: 659.88, category: 'software', subcategory: 'Herramientas', image: IMG.adobe, rating: 4.7, reviews: 8900, sold: 52000, deliveryTime: 'Entrega instantanea', platform: 'Adobe', region: 'Global', tags: ['mejor margen', 'oferta'], stock: 999, featured: true,
+   310→  },
+   311→  {
+   312→    id: 'sw5', name: 'Windows 10 Pro - Clave Digital', description: 'Licencia original Windows 10 Pro. Perfecta para PCs que no soportan Windows 11.', price: 6.99, originalPrice: 139.99, category: 'software', subcategory: 'Licencias Windows', image: IMG.win11, rating: 4.6, reviews: 16400, sold: 142000, deliveryTime: 'Entrega instantanea', platform: 'Windows', region: 'Global', tags: ['oferta', 'mejor margen'], stock: 999, featured: false,
+   313→  },
+   314→  {
+   315→    id: 'sw6', name: 'Antivirus Premium - 1 Ano 3 PCs', description: 'Proteccion completa para 3 dispositivos: antivirus, firewall, anti-phishing y control parental.', price: 9.99, originalPrice: 49.99, category: 'software', subcategory: 'Antivirus', image: IMG.vpn, rating: 4.5, reviews: 7600, sold: 48000, deliveryTime: 'Entrega instantanea', platform: 'Antivirus', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   316→  },
+   317→  // SUBSCRIPTIONS
+   318→  {
+   319→    id: 'sub1', name: 'YouTube Premium - 3 Meses', description: 'Sin anuncios, descarga de videos, YouTube Music Premium y reproduccion en segundo plano.', price: 5.99, originalPrice: 17.97, category: 'subscriptions', subcategory: 'YouTube Premium', image: IMG.yt, rating: 4.7, reviews: 13600, sold: 112000, deliveryTime: 'Entrega instantanea', platform: 'YouTube', region: 'Global', tags: ['popular', 'oferta'], stock: 999, featured: true,
+   320→  },
+   321→  {
+   322→    id: 'sub2', name: 'Discord Nitro - 3 Meses', description: 'Emojis personalizados, stickers globales, streaming HD, mejor calidad de voz y boost de servidor.', price: 6.99, originalPrice: 29.97, category: 'subscriptions', subcategory: 'Discord Nitro', image: IMG.discord, rating: 4.8, reviews: 8900, sold: 68000, deliveryTime: 'Entrega instantanea', platform: 'Discord', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   323→  },
+   324→  {
+   325→    id: 'sub3', name: 'Xbox Game Pass Ultimate - 1 Mes', description: 'Cientos de juegos para consola, PC y cloud gaming. Incluye EA Play y day-one releases.', price: 4.99, originalPrice: 16.99, category: 'subscriptions', subcategory: 'Cloud Gaming', image: IMG.gamepass, rating: 4.9, reviews: 16400, sold: 135000, deliveryTime: 'Entrega instantanea', platform: 'Xbox', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 999, featured: true,
+   326→  },
+   327→  {
+   328→    id: 'sub4', name: 'Twitch Turbo - 3 Meses', description: 'Sin anuncios en Twitch, chat sin limite de emotes, color personalizado en chat y almacenamiento extra.', price: 5.99, originalPrice: 26.97, category: 'subscriptions', subcategory: 'Twitch', image: IMG.twitch, rating: 4.5, reviews: 4200, sold: 28000, deliveryTime: 'Entrega instantanea', platform: 'Twitch', region: 'Global', tags: ['oferta'], stock: 999, featured: false,
+   329→  },
+   330→  {
+   331→    id: 'sub5', name: 'Canva Pro - 1 Ano', description: 'Diseno grafico profesional: plantillas premium, IA generativa, fondos removidos y mas de 100M de elementos.', price: 19.99, originalPrice: 119.99, category: 'subscriptions', subcategory: 'Canva Pro', image: IMG.canva, rating: 4.7, reviews: 6800, sold: 42000, deliveryTime: 'Entrega instantanea', platform: 'Canva', region: 'Global', tags: ['oferta', 'mejor margen'], stock: 999, featured: true,
+   332→  },
+   333→  {
+   334→    id: 'sub6', name: 'Spotify Premium - 6 Meses', description: '6 meses de Spotify Premium al mejor precio. Sin anuncios, descarga ilimitada y calidad ultra.', price: 8.99, originalPrice: 59.94, category: 'subscriptions', subcategory: 'Spotify', image: IMG.spotify, rating: 4.9, reviews: 11200, sold: 89000, deliveryTime: 'Entrega instantanea', platform: 'Spotify', region: 'Global', tags: ['mas vendido', 'oferta'], stock: 999, featured: false,
+   335→  },
+   336→  {
+   337→    id: 'sub7', name: 'Xbox Game Pass Ultimate - 3 Meses', description: '3 meses de Game Pass Ultimate: consola + PC + cloud. La mejor oferta para gamers.', price: 12.99, originalPrice: 50.97, category: 'subscriptions', subcategory: 'Cloud Gaming', image: IMG.gamepass, rating: 4.9, reviews: 9800, sold: 72000, deliveryTime: 'Entrega instantanea', platform: 'Xbox', region: 'Global', tags: ['oferta', 'tendencia'], stock: 999, featured: false,
+   338→  },
+   339→];
+   340→
+   341→export const MARKET_DATA = {
+   342→  totalMarketSize: '$522B',
+   343→  gamingRevenue: '$225.28B',
+   344→  streamingRevenue: '$204.77B',
+   345→  digitalProductsGrowth: '12.6%',
+   346→  profitMargins: {
+   347→    software: { min: 85, max: 95, label: 'Software y Licencias' },
+   348→    gaming: { min: 70, max: 90, label: 'Gaming Digital' },
+   349→    streaming: { min: 60, max: 85, label: 'Streaming' },
+   350→    giftcards: { min: 3, max: 12, label: 'Gift Cards' },
+   351→    subscriptions: { min: 50, max: 80, label: 'Suscripciones' },
+   352→  },
+   353→  topProducts: [
+   354→    { name: 'Cuentas de Streaming', revenue: '$47.06B', growth: '+18.2%', margin: '60-85%' },
+   355→    { name: 'Skins y V-Bucks', revenue: '$32.5B', growth: '+22.1%', margin: '70-90%' },
+   356→    { name: 'Tarjetas de Regalo', revenue: '$28.3B', growth: '+9.8%', margin: '3-12%' },
+   357→    { name: 'Licencias Software', revenue: '$45.7B', growth: '+15.3%', margin: '85-95%' },
+   358→    { name: 'Suscripciones Gaming', revenue: '$18.9B', growth: '+28.5%', margin: '50-80%' },
+   359→    { name: 'Monedas In-Game', revenue: '$15.2B', growth: '+19.7%', margin: '70-90%' },
+   360→    { name: 'Cuentas Premium', revenue: '$12.8B', growth: '+14.2%', margin: '65-85%' },
+   361→  ],
+   362→  regionalDemand: [
+   363→    { region: 'Norteamérica', share: 35, trend: 'Estable' },
+   364→    { region: 'Asia-Pacífico', share: 38, trend: '+25%' },
+   365→    { region: 'Europa', share: 18, trend: '+12%' },
+   366→    { region: 'Latinoamérica', share: 6, trend: '+35%' },
+   367→    { region: 'África/MEA', share: 3, trend: '+40%' },
+   368→  ],
+   369→  bestBuys: [
+   370→    { product: 'Licencias Windows/Office', cost: '$2-5', sellPrice: '$8-15', margin: '75-90%', reason: 'Demanda masiva global, costo de adquisición extremadamente bajo' },
+   371→    { product: 'Suscripciones Netflix/Spotify', cost: '$0.50-1.50', sellPrice: '$3-5', margin: '70-85%', reason: 'Alta rotación, los usuarios renuevan mensualmente' },
+   372→    { product: 'V-Bucks / Robux', cost: '$2-3', sellPrice: '$4-6', margin: '50-65%', reason: 'Mercado infantil/juvenil enorme, compra impulsiva frecuente' },
+   373→    { product: 'Gift Cards Steam/PlayStation', cost: '$42-46', sellPrice: '$45-50', margin: '5-15%', reason: 'Volumen altísimo, confianza del consumidor, regalo ideal' },
+   374→    { product: 'Discord Nitro / YT Premium', cost: '$3-5', sellPrice: '$5-8', margin: '55-65%', reason: 'Crecimiento explosivo en comunidad gamer' },
+   375→    { product: 'Cuentas Minecraft Premium', cost: '$2-3', sellPrice: '$4-6', margin: '65-80%', reason: 'Uno de los juegos más vendidos de la historia' },
+   376→    { product: 'VPN Suscripciones', cost: '$10-18', sellPrice: '$25-35', margin: '50-65%', reason: 'Demanda creciente por privacidad y acceso geo-restringido' },
+   377→  ],
+   378→};
+   379→

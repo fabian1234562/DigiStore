@@ -1,19 +1,20 @@
 "use client";
 
 import { useStore, PRODUCTS } from '@/lib/store';
-import { CategoryBar } from '@/components/store/CategoryBar';
-import { ProductGrid } from '@/components/store/ProductGrid';
 import { CartDrawer } from '@/components/store/CartDrawer';
 import { FeaturedCard } from '@/components/store/FeaturedCard';
+import { ProductCard } from '@/components/store/ProductCard';
 import { ProductDetail } from '@/components/store/ProductDetail';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AuthDialog } from '@/components/auth/AuthDialog';
 import {
-  ShoppingCart, Search, Zap, Shield, Globe, Clock, Star,
+  ShoppingCart, Search, Zap, Shield, Globe, Clock,
   LogIn, LogOut, ArrowRight, Sparkles, CreditCard, Headphones, BadgeCheck,
+  Gamepad2, Tv, Gift, AppWindow, RefreshCw, Flame, Star,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -21,18 +22,21 @@ const fadeUp = {
 };
 
 function HeroShowcase() {
-  const p1 = PRODUCTS[0];
-  const p2 = PRODUCTS[20];
-  const p3 = PRODUCTS[23];
-  const p4 = PRODUCTS[5];
+  const featured = PRODUCTS.filter(p => p.featured).sort((a, b) => b.sold - a.sold);
+  const p1 = featured[0];
+  const p2 = featured[3];
+  const p3 = featured[6];
+  const p4 = featured[9];
+  if (!p1 || !p2 || !p3 || !p4) return null;
+
   const d2 = Math.round(((p2.originalPrice! - p2.price) / p2.originalPrice!) * 100);
   const d4 = Math.round(((p4.originalPrice! - p4.price) / p4.originalPrice!) * 100);
 
   const cards = [
-    { p: p1, label: 'Gaming', priceColor: 'text-violet-400', badge: 'Entrega instantanea', badgeColor: 'bg-emerald-500/20 text-emerald-400', top: 'top-0 right-4', w: 'w-48', rot: 'rotate-3' },
-    { p: p2, label: 'Streaming', priceColor: 'text-fuchsia-400', badge: `-${d2}%`, badgeColor: 'bg-amber-500/20 text-amber-400', top: 'top-16 left-0', w: 'w-44', rot: '-rotate-6' },
-    { p: p3, label: 'Gift Card', priceColor: 'text-sky-400', badge: 'TOP', badgeColor: 'bg-violet-500/20 text-violet-400', top: 'bottom-16 right-12', w: 'w-40', rot: 'rotate-2' },
-    { p: p4, label: 'Gaming', priceColor: 'text-amber-400', badge: `-${d4}%`, badgeColor: 'bg-red-500/20 text-red-400', top: 'bottom-0 left-8', w: 'w-44', rot: '-rotate-3' },
+    { p: p1, label: 'TOP VENTAS', priceColor: 'text-violet-400', badge: 'Entrega instantanea', badgeColor: 'bg-emerald-500/20 text-emerald-400', top: 'top-0 right-4', w: 'w-48', rot: 'rotate-3' },
+    { p: p2, label: 'OFERTA', priceColor: 'text-fuchsia-400', badge: `-${d2}%`, badgeColor: 'bg-amber-500/20 text-amber-400', top: 'top-20 left-0', w: 'w-44', rot: '-rotate-6' },
+    { p: p3, label: 'POPULAR', priceColor: 'text-sky-400', badge: 'TOP', badgeColor: 'bg-violet-500/20 text-violet-400', top: 'bottom-20 right-8', w: 'w-40', rot: 'rotate-2' },
+    { p: p4, label: 'NUEVO', priceColor: 'text-amber-400', badge: `-${d4}%`, badgeColor: 'bg-red-500/20 text-red-400', top: 'bottom-0 left-6', w: 'w-44', rot: '-rotate-3' },
   ];
 
   return (
@@ -46,7 +50,7 @@ function HeroShowcase() {
         >
           <img src={c.p.image} alt="" className="w-full aspect-[4/3] object-cover" />
           <div className="bg-white/[0.06] backdrop-blur-md p-2.5">
-            <p className="text-[10px] text-white/50">{c.label}</p>
+            <p className="text-[10px] text-white/50 font-medium">{c.label}</p>
             <p className="text-xs font-semibold truncate">{c.p.name}</p>
             <div className="flex items-center justify-between mt-1">
               <span className={`text-sm font-bold ${c.priceColor}`}>${c.p.price.toFixed(2)}</span>
@@ -63,23 +67,31 @@ function HeroShowcase() {
   );
 }
 
+const categoryIcons = [Gamepad2, Tv, Gift, AppWindow, RefreshCw];
+const categoryNames = ['Gaming', 'Streaming', 'Gift Cards', 'Software', 'Suscripciones'];
+const categoryColors = ['from-purple-500/20 to-pink-500/20', 'from-red-500/20 to-orange-500/20', 'from-amber-500/20 to-yellow-500/20', 'from-cyan-500/20 to-blue-500/20', 'from-violet-500/20 to-purple-500/20'];
+const categoryTextColors = ['text-violet-400', 'text-red-400', 'text-amber-400', 'text-cyan-400', 'text-violet-400'];
+const categoryIds = ['gaming', 'streaming', 'giftcards', 'software', 'subscriptions'];
+
 export default function Home() {
-  const { cartCount, setCartOpen, user, setUser, searchQuery, setSearchQuery, sortBy, setSortBy } = useStore();
+  const { cartCount, setCartOpen, user, setUser, searchQuery, setSearchQuery } = useStore();
   const totalSold = PRODUCTS.reduce((s, p) => s + p.sold, 0);
+  const topFeatured = PRODUCTS.filter(p => p.featured).sort((a, b) => b.sold - a.sold).slice(0, 8);
+  const topSelling = [...PRODUCTS].sort((a, b) => b.sold - a.sold).slice(0, 8);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* HEADER */}
       <header className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-background/60 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          <a href="#" className="flex items-center gap-2.5 shrink-0">
+          <Link href="#" className="flex items-center gap-2.5 shrink-0">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-violet-400 flex items-center justify-center shadow-lg shadow-primary/25">
               <Zap className="w-4.5 h-4.5 text-white" />
             </div>
             <div className="hidden sm:block">
               <span className="font-bold text-base tracking-tight">Digi</span><span className="font-bold text-base tracking-tight text-primary">Store</span>
             </div>
-          </a>
+          </Link>
           <div className="flex-1 max-w-lg">
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
@@ -140,9 +152,11 @@ export default function Home() {
                   Gaming, streaming, software y gift cards al mejor precio. Activacion inmediata, soporte 24/7 y garantia en cada compra.
                 </motion.p>
                 <motion.div variants={fadeUp} custom={3} className="flex flex-wrap justify-center lg:justify-start gap-3 pt-2">
-                  <Button size="lg" className="gap-2 cursor-pointer rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white border-0 shadow-lg shadow-violet-600/25 h-12 px-8 text-sm font-semibold" onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}>
-                    Explorar Tienda <ArrowRight className="w-4 h-4" />
-                  </Button>
+                  <Link href="/tienda">
+                    <Button size="lg" className="gap-2 cursor-pointer rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white border-0 shadow-lg shadow-violet-600/25 h-12 px-8 text-sm font-semibold">
+                      Explorar Tienda <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
                 </motion.div>
                 <motion.div variants={fadeUp} custom={4} className="flex flex-wrap justify-center lg:justify-start gap-6 pt-4">
                   <div className="text-center"><p className="text-xl font-bold">{(totalSold / 1000).toFixed(0)}K+</p><p className="text-[11px] text-muted-foreground">Ventas exitosas</p></div>
@@ -166,7 +180,7 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[{ icon: Zap, label: 'Entrega Instantanea', desc: 'Recibe tu producto en segundos', color: 'text-violet-400' }, { icon: Shield, label: 'Pago 100% Seguro', desc: 'Encriptacion de punta a punta', color: 'text-emerald-400' }, { icon: Headphones, label: 'Soporte 24/7', desc: 'Siempre disponibles para ti', color: 'text-amber-400' }, { icon: BadgeCheck, label: 'Garantia 30 Dias', desc: 'Reemplazo o reembolso total', color: 'text-sky-400' }].map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0`}>
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
                     <item.icon className={`w-5 h-5 ${item.color}`} />
                   </div>
                   <div><p className="text-sm font-semibold">{item.label}</p><p className="text-[11px] text-muted-foreground">{item.desc}</p></div>
@@ -176,16 +190,48 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEATURED */}
+        {/* CATEGORY SHORTCUTS */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {categoryNames.map((name, i) => {
+              const Icon = categoryIcons[i];
+              const count = PRODUCTS.filter(p => p.category === categoryIds[i]).length;
+              return (
+                <Link key={categoryIds[i]} href={`/tienda?cat=${categoryIds[i]}`} className="group">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05, duration: 0.4 }}
+                    className={`relative rounded-2xl bg-gradient-to-br ${categoryColors[i]} border border-white/[0.06] p-5 hover:border-primary/30 transition-all duration-300 cursor-pointer`}
+                  >
+                    <Icon className={`w-7 h-7 ${categoryTextColors[i]} mb-3 group-hover:scale-110 transition-transform duration-300`} />
+                    <h3 className="text-sm font-bold">{name}</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{count} productos</p>
+                  </motion.div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* FEATURED - TOP SELLING */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-1"><div className="w-1 h-6 rounded-full bg-gradient-to-b from-violet-400 to-fuchsia-400" /><h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Productos Destacados</h2></div>
-              <p className="text-sm text-muted-foreground ml-3">Los mas vendidos con los mejores precios del mercado</p>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-violet-400 to-fuchsia-400" />
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Mas Vendidos</h2>
+                <Flame className="w-5 h-5 text-orange-400" />
+              </div>
+              <p className="text-sm text-muted-foreground ml-3">Los productos que mas compran nuestros clientes</p>
             </div>
+            <Link href="/tienda?sort=popular" className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors">
+              Ver todos <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {PRODUCTS.filter(p => p.featured).slice(0, 4).map((product, i) => (
+            {topSelling.slice(0, 4).map((product, i) => (
               <motion.div key={product.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}>
                 <FeaturedCard product={product} />
               </motion.div>
@@ -193,17 +239,72 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ALL PRODUCTS */}
-        <section id="productos" className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-1"><div className="w-1 h-6 rounded-full bg-gradient-to-b from-sky-400 to-violet-400" /><h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Todos los Productos</h2></div>
-              <p className="text-sm text-muted-foreground ml-3">Explora nuestro catalogo completo de productos digitales</p>
+        {/* BEST DEALS */}
+        <section className="border-t border-white/[0.04] bg-white/[0.01]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-1 h-6 rounded-full bg-gradient-to-b from-amber-400 to-red-400" />
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Mejores Ofertas</h2>
+                  <Zap className="w-5 h-5 text-amber-400" />
+                </div>
+                <p className="text-sm text-muted-foreground ml-3">Descuentos impresionantes en productos seleccionados</p>
+              </div>
+              <Link href="/tienda?sort=price-asc" className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors">
+                Ver todas <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[...PRODUCTS]
+                .filter(p => p.originalPrice)
+                .sort((a, b) => {
+                  const dA = (a.originalPrice! - a.price) / a.originalPrice!;
+                  const dB = (b.originalPrice! - b.price) / b.originalPrice!;
+                  return dB - dA;
+                })
+                .slice(0, 4)
+                .map((product, i) => (
+                  <motion.div key={product.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}>
+                    <ProductCard product={product} />
+                  </motion.div>
+                ))}
             </div>
           </div>
-          <div className="space-y-5">
-            <CategoryBar />
-            <ProductGrid />
+        </section>
+
+        {/* NEW & TRENDING */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-emerald-400 to-sky-400" />
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Nuevos Productos</h2>
+                <Star className="w-5 h-5 text-emerald-400" />
+              </div>
+              <p className="text-sm text-muted-foreground ml-3">Los productos mas recientes agregados a la tienda</p>
+            </div>
+            <Link href="/tienda" className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors">
+              Ver tienda <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {PRODUCTS.slice(-8).reverse().slice(0, 4).map((product, i) => (
+              <motion.div key={product.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}>
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4, duration: 0.4 }}>
+              <Link href="/tienda" className="h-full rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-primary/30 hover:bg-white/[0.05] transition-all duration-300 group flex flex-col items-center justify-center min-h-[320px] gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <ArrowRight className="w-7 h-7 text-primary" />
+                </div>
+                <div className="text-center">
+                  <p className="font-bold text-sm">Ver todos los productos</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">{PRODUCTS.length} productos disponibles</p>
+                </div>
+              </Link>
+            </motion.div>
           </div>
         </section>
 
@@ -217,9 +318,11 @@ export default function Home() {
                 <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-4">
                   <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">Precios imposibles de encontrar<br className="hidden sm:block" /> en otro lado</h2>
                   <p className="text-white/70 max-w-xl mx-auto leading-relaxed">Mas de {(totalSold / 1000).toFixed(0)}K clientes confian en nosotros. Productos digitales con entrega instantanea, soporte real y garantia total en cada compra.</p>
-                  <Button size="lg" className="mt-4 gap-2 cursor-pointer rounded-xl bg-white text-violet-700 hover:bg-white/90 border-0 shadow-xl h-12 px-8 text-sm font-bold" onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}>
-                    Ver Todos los Productos <ArrowRight className="w-4 h-4" />
-                  </Button>
+                  <Link href="/tienda">
+                    <Button size="lg" className="mt-4 gap-2 cursor-pointer rounded-xl bg-white text-violet-700 hover:bg-white/90 border-0 shadow-xl h-12 px-8 text-sm font-bold">
+                      Ir a la Tienda <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
                 </motion.div>
               </div>
             </div>
