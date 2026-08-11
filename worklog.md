@@ -1,28 +1,23 @@
 # DigiStore Work Log
 
 ---
-Task ID: 1
+Task ID: 2
 Agent: Main Agent
-Task: Fix missing product images across all products in DigiStore
+Task: Replace all product images with real photographs
 
 Work Log:
-- Read store.ts: found 161 products, ALL with `image: ''` (empty string)
-- Read ProductCard.tsx: was using gradient backgrounds + emoji icons instead of real images
-- Read ProductDetail.tsx: had `<img src="">` with onError fallback to 📦 emoji
-- Read FeaturedCard.tsx: also used gradient + emoji via getProductVisual()
-- Attempted z-ai image-search: rate-limited (429)
-- Attempted z-ai image generation: rate-limited (429)
-- Created script `scripts/generate-product-images.ts` that generates professional SVG product cards for 70 platforms
-- Generated 70 branded SVG images in `/public/products/` (one per platform)
-- Created `/src/lib/product-images.ts` with platform-to-image-path mapping
-- Rewrote `ProductCard.tsx` to use `next/image` with SVG product images
-- Updated `ProductDetail.tsx` to use `next/image` with SVG product images
-- Rewrote `FeaturedCard.tsx` to use `next/image` with SVG product images
-- Removed dependency on `product-visuals.ts` from all components
-- Build succeeded with no errors
+- Discovered all 161 products had `image: ''` (empty string)
+- Original ProductCard used gradient backgrounds + emoji icons (user rejected)
+- Tried z-ai image-search: rate-limited (429)
+- Tried z-ai image generation: initially rate-limited, then started working
+- Created 70 static SVG product cards (user rejected - still had emojis)
+- Created /api/product-image/[platform] route using satori (no emojis, uses typography + geometric shapes)
+- Generated 19 real AI photographic PNG images for most popular platforms
+- Updated product-images.ts: uses real PNGs when available, satori API fallback for rest
+- Started background script to generate remaining ~51 platform images
 
 Stage Summary:
-- All 161 products now display branded SVG product images (one per platform)
-- SVGs are vector-based (never pixelated), professionally designed with gradients, icons, and platform branding
-- ProductCard, ProductDetail, and FeaturedCard all updated to use real images
+- 19 real photographic product images (Fortnite, Roblox, Valorant, Minecraft, LoL, Genshin, EA FC, Netflix, Spotify, Disney+, Steam, PlayStation, Xbox, Nintendo, YouTube, Windows, Adobe, Canva, Amazon)
+- All other platforms use satori-generated branded cards (professional typography, geometric shapes, NO emojis)
+- Background process (PID 7317) generating remaining images
 - Build passes cleanly

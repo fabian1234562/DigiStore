@@ -1,92 +1,54 @@
-// Maps platform names to their product image paths
-// Images are SVGs stored in /public/products/
+// Product image resolution:
+// 1. Real AI-generated PNGs in /public/products/ (for platforms with generated images)
+// 2. Satori API route fallback (professional branded card, no emojis)
 
-export const PLATFORM_IMAGES: Record<string, string> = {
-  // GAMING
-  'Fortnite': '/products/fortnite.svg',
-  'Roblox': '/products/roblox.svg',
-  'Valorant': '/products/valorant.svg',
-  'Minecraft': '/products/minecraft.svg',
-  'League of Legends': '/products/league-of-legends.svg',
-  'Genshin Impact': '/products/genshin-impact.svg',
-  'EA FC 25': '/products/ea-fc-25.svg',
-  'Apex Legends': '/products/apex-legends.svg',
-  'PUBG Mobile': '/products/pubg-mobile.svg',
-  'Call of Duty': '/products/call-of-duty.svg',
-  'Free Fire': '/products/free-fire.svg',
-  'Among Us': '/products/among-us.svg',
-  'Clash Royale': '/products/clash-royale.svg',
-  'Mobile Legends': '/products/mobile-legends.svg',
-  'Brawl Stars': '/products/brawl-stars.svg',
-  'Counter-Strike 2': '/products/counter-strike-2.svg',
-  'GTA V': '/products/gta-v.svg',
-  'Honkai Star Rail': '/products/honkai-star-rail.svg',
-  'Wuthering Waves': '/products/wuthering-waves.svg',
-  'Clash of Clans': '/products/clash-of-clans.svg',
-  'FIFA Mobile': '/products/fifa-mobile.svg',
-  'Wild Rift': '/products/wild-rift.svg',
-  'Diablo IV': '/products/diablo-iv.svg',
-  'Overwatch 2': '/products/overwatch-2.svg',
-  'Rocket League': '/products/rocket-league.svg',
-  'Destiny 2': '/products/destiny-2.svg',
-
-  // STREAMING
-  'Netflix': '/products/netflix.svg',
-  'Spotify': '/products/spotify.svg',
-  'Disney+': '/products/disney-.svg',
-  'HBO Max': '/products/hbo-max.svg',
-  'Crunchyroll': '/products/crunchyroll.svg',
-  'Amazon Prime': '/products/amazon-prime.svg',
-  'Paramount+': '/products/paramount-.svg',
-  'Apple TV+': '/products/apple-tv-.svg',
-  'Twitch': '/products/twitch.svg',
-  'Hulu': '/products/hulu.svg',
-  'Max': '/products/max.svg',
-  'Peacock': '/products/peacock.svg',
-  'DAZN': '/products/dazn.svg',
-  'Star+': '/products/star-.svg',
-
-  // GIFT CARDS
-  'Steam': '/products/steam.svg',
-  'PlayStation': '/products/playstation.svg',
-  'Xbox': '/products/xbox.svg',
-  'Nintendo': '/products/nintendo.svg',
-  'Google Play': '/products/google-play.svg',
-  'Apple': '/products/apple.svg',
-  'Amazon': '/products/amazon.svg',
-  'Epic Games': '/products/epic-games.svg',
-  'Riot Games': '/products/riot-games.svg',
-  'Discord': '/products/discord.svg',
-  'Visa': '/products/visa.svg',
-  'PayPal': '/products/paypal.svg',
-
-  // SOFTWARE
-  'Windows': '/products/windows.svg',
-  'Microsoft': '/products/microsoft.svg',
-  'Adobe': '/products/adobe.svg',
-  'VPN': '/products/vpn.svg',
-  'Antivirus': '/products/antivirus.svg',
-  'NordVPN': '/products/nordvpn.svg',
-  'Kaspersky': '/products/kaspersky.svg',
-  'Malwarebytes': '/products/malwarebytes.svg',
-  'Office': '/products/office.svg',
-  'Avast': '/products/avast.svg',
-  'Bitdefender': '/products/bitdefender.svg',
-  'Norton': '/products/norton.svg',
-
-  // SUBSCRIPTIONS
-  'YouTube': '/products/youtube.svg',
-  'Canva': '/products/canva.svg',
-  'EA': '/products/ea.svg',
-  'AI': '/products/ai.svg',
-  'Cloud': '/products/cloud.svg',
-
-  // ACCOUNTS
-  'Social': '/products/social.svg',
+const PLATFORM_SLUGS: Record<string, string> = {
+  'Fortnite': 'fortnite', 'Roblox': 'roblox', 'Valorant': 'valorant',
+  'Minecraft': 'minecraft', 'League of Legends': 'league-of-legends',
+  'Genshin Impact': 'genshin-impact', 'EA FC 25': 'ea-fc-25',
+  'Apex Legends': 'apex-legends', 'PUBG Mobile': 'pubg-mobile',
+  'Call of Duty': 'call-of-duty', 'Free Fire': 'free-fire',
+  'Among Us': 'among-us', 'Clash Royale': 'clash-royale',
+  'Mobile Legends': 'mobile-legends', 'Brawl Stars': 'brawl-stars',
+  'Counter-Strike 2': 'counter-strike-2', 'GTA V': 'gta-v',
+  'Honkai Star Rail': 'honkai-star-rail', 'Wuthering Waves': 'wuthering-waves',
+  'Clash of Clans': 'clash-of-clans', 'FIFA Mobile': 'fifa-mobile',
+  'Wild Rift': 'wild-rift', 'Diablo IV': 'diablo-iv',
+  'Overwatch 2': 'overwatch-2', 'Rocket League': 'rocket-league',
+  'Destiny 2': 'destiny-2', 'Netflix': 'netflix', 'Spotify': 'spotify',
+  'Disney+': 'disney-', 'HBO Max': 'hbo-max', 'Crunchyroll': 'crunchyroll',
+  'Amazon Prime': 'amazon-prime', 'Paramount+': 'paramount-',
+  'Apple TV+': 'apple-tv-', 'Twitch': 'twitch', 'Hulu': 'hulu',
+  'Max': 'max', 'Peacock': 'peacock', 'DAZN': 'dazn', 'Star+': 'star-',
+  'Steam': 'steam', 'PlayStation': 'playstation', 'Xbox': 'xbox',
+  'Nintendo': 'nintendo', 'Google Play': 'google-play', 'Apple': 'apple',
+  'Amazon': 'amazon', 'Epic Games': 'epic-games', 'Riot Games': 'riot-games',
+  'Discord': 'discord', 'Visa': 'visa', 'PayPal': 'paypal',
+  'Windows': 'windows', 'Microsoft': 'microsoft', 'Adobe': 'adobe',
+  'VPN': 'vpn', 'Antivirus': 'antivirus', 'NordVPN': 'nordvpn',
+  'Kaspersky': 'kaspersky', 'Malwarebytes': 'malwarebytes', 'Office': 'office',
+  'Avast': 'avast', 'Bitdefender': 'bitdefender', 'Norton': 'norton',
+  'YouTube': 'youtube', 'Canva': 'canva', 'EA': 'ea',
+  'AI': 'ai', 'Cloud': 'cloud', 'Social': 'social',
 };
 
-const DEFAULT_IMAGE = '/products/ai.svg';
+// Platforms with real AI-generated PNG images
+const REAL_PNGS = new Set([
+  'fortnite', 'roblox', 'valorant', 'minecraft',
+  'league-of-legends', 'genshin-impact', 'ea-fc-25',
+  'netflix', 'spotify', 'disney-', 'steam',
+  'playstation', 'xbox', 'nintendo', 'youtube',
+  'windows', 'adobe', 'canva', 'amazon',
+]);
 
 export function getProductImage(platform: string): string {
-  return PLATFORM_IMAGES[platform] || DEFAULT_IMAGE;
+  const slug = PLATFORM_SLUGS[platform] || platform.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  
+  // Use real PNG if available
+  if (REAL_PNGS.has(slug)) {
+    return `/products/${slug}.png`;
+  }
+  
+  // Fall back to satori API route
+  return `/api/product-image/${slug}`;
 }

@@ -26,7 +26,7 @@ export function FeaturedCard({ product }: { product: Product }) {
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
-            unoptimized={imageUrl.endsWith('.svg')}
+            unoptimized={imageUrl.startsWith('/api/')}
           />
         </div>
 

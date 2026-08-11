@@ -448,7 +448,7 @@ export function ProductDetail() {
                 alt={product.name}
                 fill
                 className="object-cover"
-                unoptimized={(product.image || getProductImage(product.platform)).endsWith('.svg')}
+                unoptimized={true}
               />
             </div>
             <button
