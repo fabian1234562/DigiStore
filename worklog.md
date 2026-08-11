@@ -52,3 +52,4 @@ Stage Summary:
 - New page: /tienda with sidebar + grid layout
 - Main page restructured to showcase curated products + drive traffic to /tienda
 - Build passes cleanly
+---

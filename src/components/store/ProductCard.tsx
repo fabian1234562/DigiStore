@@ -1,6 +1,7 @@
 'use client';
 
 import { Product, useStore } from '@/lib/store';
+import { getProductVisual } from '@/lib/product-visuals';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, ShoppingCart, Zap, TrendingUp, Award } from 'lucide-react';
@@ -28,23 +29,12 @@ function getTagStyle(tag: string) {
   }
 }
 
-function getPlatformEmoji(platform: string) {
-  const map: Record<string, string> = {
-    'Fortnite': '🎯', 'Roblox': '🧱', 'Valorant': '🔫', 'Minecraft': '⛏️',
-    'League of Legends': '⚔️', 'Genshin Impact': '⭐', 'EA FC 25': '⚽',
-    'Netflix': '🎬', 'Spotify': '🎵', 'Disney+': '🏰', 'HBO Max': '📺',
-    'Crunchyroll': '🎌', 'Steam': '🎮', 'PlayStation': '🎮', 'Xbox': '🟢',
-    'Nintendo': '🔴', 'Google Play': '▶️', 'Apple': '🍎', 'Windows': '🪟',
-    'Microsoft': '📊', 'NordVPN': '🔒', 'YouTube': '▶️', 'Discord': '💬',
-  };
-  return map[platform] || '📦';
-}
-
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart, setSelectedProduct, setProductDetailOpen } = useStore();
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
+  const visual = getProductVisual(product.category, product.platform);
 
   return (
     <motion.div
@@ -57,29 +47,41 @@ export function ProductCard({ product }: { product: Product }) {
         className="h-full rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-primary/30 hover:bg-white/[0.05] transition-all duration-300 group cursor-pointer overflow-hidden"
         onClick={() => { setSelectedProduct(product); setProductDetailOpen(true); }}
       >
-        {/* Image */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-white/[0.04] to-white/[0.01]">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="aspect-[4/3] w-full object-cover group-hover:scale-108 transition-transform duration-700"
-            loading="lazy"
-            onError={(e) => { const el = e.currentTarget; el.style.display = 'none'; if (el.nextElementSibling) (el.nextElementSibling as HTMLElement).style.display = 'flex'; }}
+        {/* Product Visual */}
+        <div
+          className={`relative overflow-hidden bg-gradient-to-br ${visual.gradient}`}
+          style={{ backgroundImage: visual.bgPattern }}
+        >
+          {/* Decorative elements */}
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 20% 80%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)',
+              backgroundSize: '30px 30px',
+            }}
           />
-          <div className="aspect-[4/3] w-full items-center justify-center text-6xl absolute inset-0 bg-white/[0.02] hidden">
-            {getPlatformEmoji(product.platform)}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.05] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/[0.1] rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+
+          <div className="relative aspect-[4/3] w-full flex flex-col items-center justify-center gap-2 p-4">
+            <span className="text-5xl drop-shadow-lg group-hover:scale-110 transition-transform duration-500">{visual.icon}</span>
+            <p className="text-white/80 text-xs font-semibold text-center tracking-wide uppercase">{product.platform}</p>
           </div>
-          {/* Gradient overlay on image bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background/80 to-transparent" />
+
+          {/* Bottom gradient fade */}
+          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/20 to-transparent" />
+
           {/* Discount badge */}
           {discount > 0 && (
-            <div className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-rose-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg shadow-red-500/20">
+            <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-lg border border-white/10">
               -{discount}%
             </div>
           )}
+
           {/* Featured badge */}
           {product.featured && (
-            <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1 shadow-lg shadow-amber-500/20">
+            <div className="absolute top-3 right-3 bg-amber-500/90 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1 border border-amber-400/30">
               <Star className="w-2.5 h-2.5" /> TOP
             </div>
           )}
