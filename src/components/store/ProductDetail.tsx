@@ -1,6 +1,8 @@
 'use client';
 
 import { useStore, Product } from '@/lib/store';
+import { getProductImage } from '@/lib/product-images';
+import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -441,15 +443,13 @@ export function ProductDetail() {
           {/* Imagen */}
           <div className="relative">
             <div className="aspect-video sm:aspect-[16/9] w-full bg-gradient-to-br from-muted to-muted/80 relative overflow-hidden">
-              <img
-                src={product.image}
+              <Image
+                src={product.image || getProductImage(product.platform)}
                 alt={product.name}
-                className="w-full h-full object-cover"
-                onError={(e) => { const el = e.currentTarget; el.style.display = 'none'; if (el.nextElementSibling) (el.nextElementSibling as HTMLElement).style.display = 'flex'; }}
+                fill
+                className="object-cover"
+                unoptimized={(product.image || getProductImage(product.platform)).endsWith('.svg')}
               />
-              <div className="w-full h-full items-center justify-center text-8xl absolute inset-0 bg-muted hidden">
-                📦
-              </div>
             </div>
             <button
               onClick={() => { setProductDetailOpen(false); setTimeout(() => setSelectedProduct(null), 300); }}

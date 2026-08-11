@@ -1,11 +1,12 @@
 'use client';
 
 import { Product, useStore } from '@/lib/store';
-import { getProductVisual } from '@/lib/product-visuals';
+import { getProductImage } from '@/lib/product-images';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, ShoppingCart, Zap, TrendingUp, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 function getTagIcon(tag: string) {
   switch (tag) {
@@ -34,7 +35,7 @@ export function ProductCard({ product }: { product: Product }) {
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
-  const visual = getProductVisual(product.category, product.platform);
+  const imageUrl = product.image || getProductImage(product.platform);
 
   return (
     <motion.div
@@ -47,34 +48,24 @@ export function ProductCard({ product }: { product: Product }) {
         className="h-full rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-primary/30 hover:bg-white/[0.05] transition-all duration-300 group cursor-pointer overflow-hidden"
         onClick={() => { setSelectedProduct(product); setProductDetailOpen(true); }}
       >
-        {/* Product Visual */}
-        <div
-          className={`relative overflow-hidden bg-gradient-to-br ${visual.gradient}`}
-          style={{ backgroundImage: visual.bgPattern }}
-        >
-          {/* Decorative elements */}
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                'radial-gradient(circle at 20% 80%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)',
-              backgroundSize: '30px 30px',
-            }}
-          />
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.05] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/[0.1] rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
-
-          <div className="relative aspect-[4/3] w-full flex flex-col items-center justify-center gap-2 p-4">
-            <span className="text-5xl drop-shadow-lg group-hover:scale-110 transition-transform duration-500">{visual.icon}</span>
-            <p className="text-white/80 text-xs font-semibold text-center tracking-wide uppercase">{product.platform}</p>
+        {/* Product Image */}
+        <div className="relative overflow-hidden">
+          <div className="aspect-[4/3] w-full relative">
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              unoptimized={imageUrl.endsWith('.svg')}
+            />
           </div>
 
-          {/* Bottom gradient fade */}
-          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/20 to-transparent" />
+          {/* Top gradient overlay for badges readability */}
+          <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-black/30 to-transparent pointer-events-none" />
 
           {/* Discount badge */}
           {discount > 0 && (
-            <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-lg border border-white/10">
+            <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-lg border border-white/10">
               -{discount}%
             </div>
           )}
@@ -85,6 +76,11 @@ export function ProductCard({ product }: { product: Product }) {
               <Star className="w-2.5 h-2.5" /> TOP
             </div>
           )}
+
+          {/* Delivery time badge */}
+          <div className="absolute bottom-3 left-3 bg-black/40 backdrop-blur-sm text-white text-[9px] font-medium px-2 py-0.5 rounded-md border border-white/10">
+            {product.deliveryTime}
+          </div>
         </div>
 
         {/* Content */}

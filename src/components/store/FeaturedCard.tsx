@@ -1,32 +1,33 @@
 'use client';
 
 import { useStore, Product } from '@/lib/store';
-import { getProductVisual } from '@/lib/product-visuals';
+import { getProductImage } from '@/lib/product-images';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Star, Zap } from 'lucide-react';
+import Image from 'next/image';
 
 export function FeaturedCard({ product }: { product: Product }) {
   const { addToCart, setSelectedProduct, setProductDetailOpen } = useStore();
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
-  const visual = getProductVisual(product.category, product.platform);
+  const imageUrl = product.image || getProductImage(product.platform);
 
   return (
     <div
       className="relative rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-primary/30 hover:bg-white/[0.05] transition-all duration-300 group cursor-pointer overflow-hidden"
       onClick={() => { setSelectedProduct(product); setProductDetailOpen(true); }}
     >
-      {/* Visual */ }
-      <div className={`relative overflow-hidden bg-gradient-to-br ${visual.gradient}`} style={{ backgroundImage: visual.bgPattern }}>
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 20% 80%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.05] rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
-
-        <div className="relative aspect-[16/10] w-full flex items-center justify-center">
-          <div className="text-center">
-            <span className="text-6xl drop-shadow-2xl block mb-2 group-hover:scale-110 transition-transform duration-500">{visual.icon}</span>
-            <p className="text-white/60 text-[10px] font-medium uppercase tracking-[0.2em]">{product.platform}</p>
-          </div>
+      {/* Image */}
+      <div className="relative overflow-hidden">
+        <div className="aspect-[16/10] w-full relative">
+          <Image
+            src={imageUrl}
+            alt={product.name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            unoptimized={imageUrl.endsWith('.svg')}
+          />
         </div>
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -47,7 +48,7 @@ export function FeaturedCard({ product }: { product: Product }) {
         </div>
       </div>
 
-      {/* Content */ }
+      {/* Content */}
       <div className="p-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <div className="flex items-center gap-1 text-[10px] text-emerald-400">
