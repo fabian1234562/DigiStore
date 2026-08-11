@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "query": "Hearthstone packs cards game",
+  "count": 1,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfc64fa367a9.jpg",
+      "caption": "",
+      "source": "x.com",
+      "original_width": "1200px",
+      "original_height": "675px"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "query": "McAfee antivirus security product",
+  "count": 1,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/34180922c0a4.jpg",
+      "caption": "",
+      "source": "eBay",
+      "original_width": "899px",
+      "original_height": "1200px"
+    }
+  ]
+}

@@ -56,7 +56,7 @@ export function ProductCard({ product }: { product: Product }) {
               alt={product.name}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
-              unoptimized={imageUrl.startsWith('/api/')}
+              unoptimized={true}
             />
           </div>
 
