@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { AuthDialog } from '@/components/auth/AuthDialog';
 import {
   ShoppingCart, Search, Zap, ArrowLeft, SlidersHorizontal, ChevronDown,
-  Gamepad2, Tv, UserCircle, Gift, AppWindow, RefreshCw, LayoutGrid, List,
+  Gamepad2, Tv, Gift, AppWindow, RefreshCw, LayoutGrid, List,
 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
@@ -18,7 +18,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Gamepad2, Tv, UserCircle, Gift, AppWindow, RefreshCw,
+  Gamepad2, Tv, Gift, AppWindow, RefreshCw,
 };
 
 const sortOptions = [

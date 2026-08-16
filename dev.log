@@ -34,3 +34,16 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  GET /tienda 200 in 13ms (compile: 3ms, render: 10ms)
  GET /tienda 200 in 13ms (compile: 3ms, render: 10ms)
  GET /tienda 200 in 13ms (compile: 3ms, render: 10ms)
+ GET / 200 in 186ms (compile: 7ms, render: 178ms)
+ GET / 200 in 92ms (compile: 3ms, render: 88ms)
+ GET / 200 in 100ms (compile: 5ms, render: 95ms)
+ GET / 200 in 88ms (compile: 3ms, render: 85ms)
+ GET / 200 in 79ms (compile: 3ms, render: 76ms)
+ GET / 200 in 75ms (compile: 5ms, render: 71ms)
+ GET / 200 in 67ms (compile: 3ms, render: 64ms)
+✓ Compiled in 209ms
+✓ Compiled in 363ms
+✓ Compiled in 376ms
+✓ Compiled in 194ms
+✓ Compiled in 363ms
+✓ Compiled in 183ms

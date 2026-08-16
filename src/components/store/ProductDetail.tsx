@@ -1,7 +1,6 @@
 'use client';
 
 import { useStore, Product } from '@/lib/store';
-import { getProductImage } from '@/lib/product-images';
 import Image from 'next/image';
 import {
   Dialog,
@@ -18,7 +17,6 @@ import {
   Clock,
   Globe,
   Shield,
-  KeyRound,
   Ticket,
   ShieldCheck,
   CheckCircle2,
@@ -27,35 +25,72 @@ import {
   X,
   Info,
   Monitor,
-  Smartphone,
-  Users,
-  Download,
-  Wifi,
-  Tv,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function getDeliveryInfo(product: Product) {
   const cat = product.category;
-  const name = product.name.toLowerCase();
+  const amount = product.name.match(/\$(\d+)/)?.[1];
 
-  if (cat === 'streaming' || (cat === 'accounts' && name.includes('cuenta'))) {
+  if (cat === 'gaming') {
+    const isKey = product.name.toLowerCase().includes('key') || product.name.toLowerCase().includes('game key');
+    if (isKey) {
+      return {
+        type: 'key',
+        typeLabel: 'Clave de Activacion / Game Key',
+        icon: ShieldCheck,
+        color: 'text-blue-600 bg-blue-50 border-blue-200',
+        whatYouReceive: [
+          'Clave de activacion oficial unica',
+          'Se vincula permanentemente a tu cuenta de ' + product.platform,
+          'Instrucciones paso a paso para activar',
+          'Soporte tecnico por 30 dias',
+        ],
+        howItWorks: [
+          'Recibes la clave al instante tras el pago',
+          'Vas a la pagina oficial de ' + product.platform,
+          'Inicias sesion con tu cuenta personal',
+          'Vas a "Canjear Codigo" e ingresas la clave',
+        ],
+      };
+    }
     return {
-      type: 'credentials',
-      typeLabel: 'Credenciales de Acceso',
-      icon: KeyRound,
-      color: 'text-amber-600 bg-amber-50 border-amber-200',
+      type: 'code',
+      typeLabel: 'Codigo de Recarga Oficial',
+      icon: Ticket,
+      color: 'text-violet-600 bg-violet-50 border-violet-200',
       whatYouReceive: [
-        'Email y contrasena de la cuenta',
-        'Acceso Premium completo',
-        product.name.includes('3 Meses') ? 'Vigencia de 3 meses' : 'Vigencia de 1 mes',
-        'Instrucciones de activacion',
+        'Codigo de recarga oficial unico',
+        'Producto: ' + product.name,
+        'Se canjea directamente en tu cuenta personal de ' + product.platform,
+        'Instrucciones de canje incluidas',
       ],
       howItWorks: [
-        'Recibes las credenciales al instante tras el pago',
-        'Vas a la plataforma (Netflix, Spotify, etc.)',
-        'Inicias sesion con el email y contrasena proporcionados',
-        'Listo: ya tienes acceso a todo el contenido premium',
+        'Recibes el codigo al instante tras el pago',
+        'Abres ' + product.platform + ' o su pagina oficial',
+        'Inicias sesion con tu propia cuenta',
+        'Vas a la seccion de "Canjear Codigo" e ingresas el codigo',
+      ],
+    };
+  }
+
+  if (cat === 'streaming') {
+    return {
+      type: 'giftcard',
+      typeLabel: 'Tarjeta de Regalo Oficial',
+      icon: Ticket,
+      color: 'text-purple-600 bg-purple-50 border-purple-200',
+      whatYouReceive: [
+        'Codigo de tarjeta de regalo oficial de ' + product.platform,
+        `Monto: ${amount ? '$' + amount : 'N/A'} USD`,
+        'Se canjea en tu propia cuenta de ' + product.platform,
+        'Sin fecha de expiracion',
+      ],
+      howItWorks: [
+        'Recibes el codigo al instante tras el pago',
+        'Vas a la pagina oficial de ' + product.platform + ' y busca "Canjear" o "Redeem"',
+        'Inicias sesion con tu propia cuenta',
+        'Ingresas el codigo y el saldo se agrega a tu cuenta inmediatamente',
       ],
     };
   }
@@ -63,20 +98,20 @@ function getDeliveryInfo(product: Product) {
   if (cat === 'giftcards') {
     return {
       type: 'giftcard',
-      typeLabel: 'Codigo de Tarjeta de Regalo',
+      typeLabel: 'Tarjeta de Regalo Oficial',
       icon: Ticket,
       color: 'text-purple-600 bg-purple-50 border-purple-200',
       whatYouReceive: [
-        'Codigo de tarjeta de regalo unico',
-        `Monto: ${product.name.match(/\$(\d+)/)?.[0] || 'N/A'} USD`,
-        'Valido para agregar saldo en la tienda',
-        'Sin fecha de expiracion',
+        'Codigo de tarjeta de regalo oficial de ' + product.platform,
+        `Monto: ${amount ? '$' + amount : 'N/A'} USD`,
+        'Valido para agregar saldo en ' + product.platform,
+        'Sin fecha de expiracion - Usalo cuando quieras',
       ],
       howItWorks: [
         'Recibes el codigo al instante tras el pago',
-        'Abres la tienda correspondiente (Steam, PlayStation, etc.)',
+        'Abres la tienda de ' + product.platform + ' (Steam, PlayStation, Xbox, etc.)',
         'Vas a "Canjear Codigo" o "Agregar Saldo"',
-        'Ingresas el codigo y el saldo se acredita inmediatamente',
+        'Ingresas el codigo y el saldo se acredita inmediatamente en tu cuenta',
       ],
     };
   }
@@ -84,322 +119,58 @@ function getDeliveryInfo(product: Product) {
   if (cat === 'software') {
     return {
       type: 'license',
-      typeLabel: 'Clave de Licencia (Product Key)',
+      typeLabel: 'Clave de Licencia Oficial (Product Key)',
       icon: ShieldCheck,
       color: 'text-blue-600 bg-blue-50 border-blue-200',
       whatYouReceive: [
-        'Product Key original de ' + product.platform,
-        'Activacion online valida',
-        '1 activacion por clave',
-        'Instrucciones de instalacion paso a paso',
+        'Product Key / Clave de activacion original de ' + product.platform,
+        'Activacion online valida a traves del servidor oficial',
+        '1 activacion por clave (1 dispositivo)',
+        'Instrucciones de descarga e instalacion paso a paso',
       ],
       howItWorks: [
         'Recibes la Product Key al instante tras el pago',
-        'Descargas el software desde el sitio oficial gratis',
+        'Descargas el software desde la pagina oficial del fabricante (gratis)',
         'Durante la instalacion, ingresas la clave cuando te lo pida',
-        'Activas en linea y listo: software original completo',
+        'Activas en linea y listo: software original completo y activado',
       ],
     };
   }
 
-  if (name.includes('minecraft') && name.includes('cuenta')) {
-    return {
-      type: 'credentials',
-      typeLabel: 'Cuenta Premium',
-      icon: KeyRound,
-      color: 'text-amber-600 bg-amber-50 border-amber-200',
-      whatYouReceive: [
-        'Email y contrasena de la cuenta premium',
-        'Acceso completo a Minecraft Java Edition',
-        'Posibilidad de jugar en linea en cualquier servidor',
-        'Acceso al launcher oficial',
-      ],
-      howItWorks: [
-        'Recibes las credenciales al instante tras el pago',
-        'Vas a minecraft.net e inicias sesion',
-        'Descargas el launcher oficial de Minecraft',
-        'Juega en linea con todos los beneficios premium',
-      ],
-    };
-  }
-
-  if (name.includes('discord nitro')) {
-    return {
-      type: 'giftcard',
-      typeLabel: 'Codigo de Activacion',
-      icon: Ticket,
-      color: 'text-purple-600 bg-purple-50 border-purple-200',
-      whatYouReceive: [
-        'Codigo de activacion de Discord Nitro',
-        '3 meses de Discord Nitro completo',
-        'Emojis personalizados y stickers globales',
-        'Mejor calidad de streaming y upload',
-      ],
-      howItWorks: [
-        'Recibes el codigo al instante tras el pago',
-        'Abres Discord > Configuracion de Usuario > Gift Inventory',
-        'Haces clic en "Canjear Codigo"',
-        'Ingresas el codigo y disfrutas 3 meses de Nitro',
-      ],
-    };
-  }
-
-  if (name.includes('youtube premium')) {
-    return {
-      type: 'credentials',
-      typeLabel: 'Credenciales de Acceso',
-      icon: KeyRound,
-      color: 'text-amber-600 bg-amber-50 border-amber-200',
-      whatYouReceive: [
-        'Email y contrasena de la cuenta',
-        'YouTube Premium + YouTube Music incluidos',
-        'Sin anuncios en ningun video',
-        'Descarga ilimitada de videos por 3 meses',
-      ],
-      howItWorks: [
-        'Recibes las credenciales al instante tras el pago',
-        'Abres YouTube en tu navegador o app',
-        'Inicias sesion con el email y contrasena proporcionados',
-        'YouTube Premium se activa automaticamente',
-      ],
-    };
-  }
-
-  if (name.includes('game pass')) {
-    return {
-      type: 'giftcard',
-      typeLabel: 'Codigo de Canje',
-      icon: Ticket,
-      color: 'text-purple-600 bg-purple-50 border-purple-200',
-      whatYouReceive: [
-        'Codigo de canje de Game Pass Ultimate',
-        '1 mes de acceso completo',
-        'Consola + PC + Cloud Gaming',
-        'Incluye EA Play',
-      ],
-      howItWorks: [
-        'Recibes el codigo al instante tras el pago',
-        'Vas a xbox.com/redeem',
-        'Inicias sesion con tu cuenta de Microsoft',
-        'Ingresas el codigo y Game Pass Ultimate se activa',
-      ],
-    };
-  }
-
+  // Subscriptions - all are codes/gift codes
   return {
-    type: 'giftcard',
-    typeLabel: 'Codigo Digital',
+    type: 'code',
+    typeLabel: 'Codigo de Suscripcion Oficial',
     icon: Ticket,
-    color: 'text-purple-600 bg-purple-50 border-purple-200',
+    color: 'text-violet-600 bg-violet-50 border-violet-200',
     whatYouReceive: [
-      'Codigo de canje unico',
+      'Codigo de suscripcion oficial de ' + product.platform,
       'Producto: ' + product.name,
-      'Plataforma: ' + product.platform,
-      'Region: ' + product.region,
+      'Se canjea en tu cuenta personal existente',
+      'Sin renovacion automatica',
     ],
     howItWorks: [
       'Recibes el codigo al instante tras el pago',
-      'Abres la plataforma correspondiente',
-      'Buscas la opcion de canjear codigo',
-      'Ingresas el codigo y tu producto se activa al instante',
+      'Vas a la pagina oficial de ' + product.platform,
+      'Inicias sesion con tu cuenta y canjeas el codigo',
+      'La suscripcion se activa inmediatamente en tu cuenta',
     ],
   };
 }
 
 function getProductFeatures(product: Product): { icon: React.ElementType; text: string }[] {
-  const cat = product.category;
-  const name = product.name.toLowerCase();
   const features: { icon: React.ElementType; text: string }[] = [];
-
-  if (cat === 'gaming') {
-    if (name.includes('v-bucks') || name.includes('vbucks')) {
-      const amount = name.includes('2800') ? '2,800' : '1,000';
-      features.push(
-        { icon: Zap, text: `${amount} V-Bucks para gastar en la tienda de Fortnite` },
-        { icon: Monitor, text: 'Compatible con PC, PlayStation, Xbox, Switch y Movil' },
-        { icon: ShoppingCart, text: 'Compra skins, pases de batalla, emotes y items del Item Shop' },
-        { icon: Users, text: 'Se activa directamente en tu cuenta de Epic Games' },
-        { icon: Clock, text: 'Entrega inmediata: recibe tus V-Bucks en minutos' },
-      );
-    } else if (name.includes('robux')) {
-      const amount = name.includes('1700') ? '1,700' : '800';
-      features.push(
-        { icon: Zap, text: `${amount} Robux cargados a tu cuenta de Roblox` },
-        { icon: Monitor, text: 'Funciona en PC, Mac, iOS, Android y Xbox' },
-        { icon: ShoppingCart, text: 'Compra game passes, accesorios, ropa y items de juegos' },
-        { icon: Users, text: 'Personaliza tu avatar con los items mas exclusivos' },
-        { icon: Clock, text: 'Entrega inmediata directa a tu cuenta' },
-      );
-    } else if (name.includes('pase de batalla')) {
-      features.push(
-        { icon: Star, text: '100 niveles de recompensas exclusivas de la temporada' },
-        { icon: Zap, text: 'Skins unicas, emotes, wraps y objetos de contrapartida' },
-        { icon: Monitor, text: 'Compatible con todas las plataformas de Fortnite' },
-        { icon: Download, text: 'Desbloquea el estilo alternativo del skin del pase al nivel 100' },
-        { icon: Clock, text: 'Vigencia durante toda la temporada actual' },
-      );
-    } else if (name.includes('fifa') || name.includes('ea fc') || name.includes('monedas fifa')) {
-      features.push(
-        { icon: Zap, text: '2,800 monedas para FIFA/EA FC Ultimate Team' },
-        { icon: ShoppingCart, text: 'Compra jugadores en el mercado de transferencias' },
-        { icon: Users, text: 'Mejora tu equipo con jugadores top y estrellas' },
-        { icon: Monitor, text: 'Compatible con PS4, PS5, Xbox y PC' },
-        { icon: Clock, text: 'Entrega en 5-30 minutos por metodo seguro' },
-      );
-    } else if (name.includes('valorant')) {
-      features.push(
-        { icon: Star, text: 'Skin legendaria con efectos especiales unicos (VFX)' },
-        { icon: Zap, text: 'Animacion de inspeccion, kill animation y finisher' },
-        { icon: Monitor, text: 'Funciona en todas las armas disponibles' },
-        { icon: Users, text: 'Skin visible para todos los jugadores en partida' },
-        { icon: Shield, text: 'Garantia de activacion en tu cuenta de Riot' },
-      );
-    } else if (name.includes('minecraft')) {
-      features.push(
-        { icon: KeyRound, text: 'Cuenta premium full con acceso a Java Edition' },
-        { icon: Users, text: 'Juega en cualquier servidor multijugador online' },
-        { icon: Monitor, text: 'Acceso al launcher oficial de Minecraft' },
-        { icon: Download, text: 'Skins personalizadas y capa de jugador incluidas' },
-        { icon: Shield, text: 'Acceso completo y sin restricciones' },
-      );
-    } else if (name.includes('league of legends') || name.includes('rp ')) {
-      features.push(
-        { icon: Zap, text: '1,380 Riot Points para League of Legends' },
-        { icon: ShoppingCart, text: 'Desbloquea campeones, skins y chromas exclusivos' },
-        { icon: Monitor, text: 'Compatible con PC (cliente oficial de LoL)' },
-        { icon: Star, text: 'Ideal para comprar el pase de batalla o cajas Hextech' },
-        { icon: Clock, text: 'Entrega inmediata a tu cuenta de Riot' },
-      );
-    } else if (name.includes('genshin')) {
-      features.push(
-        { icon: Star, text: 'Cristales Genesis para hacer deseos (Gacha)' },
-        { icon: Zap, text: 'Posibilidad de obtener personajes 5 estrellas y armas legendarias' },
-        { icon: Monitor, text: 'Compatible con PC, iOS, Android y PlayStation' },
-        { icon: Users, text: 'Mejora tu equipo con los mejores personajes y armas' },
-        { icon: Clock, text: 'Entrega inmediata a tu cuenta de HoYoverse' },
-      );
-    } else if (name.includes('apex')) {
-      features.push(
-        { icon: Zap, text: '1,000 Monedas de Apex Legends' },
-        { icon: ShoppingCart, text: 'Desbloquea skins de armas, legendas y trail effects' },
-        { icon: Star, text: 'Compra el Pase de Batalla y objetos de la tienda' },
-        { icon: Monitor, text: 'Funciona en PS4, PS5, Xbox, PC y Switch' },
-        { icon: Clock, text: 'Entrega inmediata a tu cuenta de EA' },
-      );
-    } else if (name.includes('pubg')) {
-      features.push(
-        { icon: Zap, text: '600 UC (Unlimited Cash) para PUBG Mobile' },
-        { icon: ShoppingCart, text: 'Compra el Royal Pass, skins y items exclusivos' },
-        { icon: Smartphone, text: 'Compatible con Android e iOS' },
-        { icon: Star, text: 'Mejora tu armario con las skins mas raras' },
-        { icon: Clock, text: 'Entrega inmediata a tu cuenta de PUBG Mobile' },
-      );
-    } else if (name.includes('warzone') || name.includes('cod')) {
-      features.push(
-        { icon: KeyRound, text: 'Cuenta con todos los DLCs y paquetes de CoD desbloqueados' },
-        { icon: Zap, text: 'Acceso a todos los mapas, modos y armas' },
-        { icon: Monitor, text: 'Compatible con Warzone, Multiplayer y Zombies' },
-        { icon: Users, text: 'Incluye boost de nivel y items exclusivos' },
-        { icon: Shield, text: 'Cuenta verificada y funcional al 100%' },
-      );
-    } else if (name.includes('free fire')) {
-      features.push(
-        { icon: Zap, text: '1,000 Diamantes para Free Fire' },
-        { icon: ShoppingCart, text: 'Desbloquea personajes, skins de armas y el Pase Elite' },
-        { icon: Smartphone, text: 'Compatible con Android e iOS' },
-        { icon: Star, text: 'Evolve personajes y obten habilidades unicas' },
-        { icon: Clock, text: 'Entrega inmediata a tu cuenta' },
-      );
-    } else if (name.includes('among us')) {
-      features.push(
-        { icon: Star, text: 'Todas las skins, sombreros, mascotas y nombres desbloqueados' },
-        { icon: Users, text: 'Cuenta con cosméticos completos del juego' },
-        { icon: Monitor, text: 'Compatible con PC, Movil y Switch' },
-        { icon: Wifi, text: 'Juega online con amigos con tu estilo unico' },
-        { icon: Shield, text: 'Cuenta verificada y funcional' },
-      );
-    } else if (name.includes('clash royale')) {
-      features.push(
-        { icon: Zap, text: '1,400 Gemas para Clash Royale' },
-        { icon: ShoppingCart, text: 'Desbloquea cofres magicos y acelera tiempos' },
-        { icon: Star, text: 'Mejora tus cartas al maximo nivel mas rapido' },
-        { icon: Smartphone, text: 'Compatible con Android e iOS' },
-        { icon: Clock, text: 'Entrega inmediata a tu cuenta de Supercell' },
-      );
-    } else if (name.includes('mobile legends')) {
-      features.push(
-        { icon: Zap, text: '400 Diamantes para Mobile Legends: Bang Bang' },
-        { icon: ShoppingCart, text: 'Compra heroes, skins epicas y legendarias' },
-        { icon: Star, text: 'Participa en el Magic Wheel y gana premios' },
-        { icon: Smartphone, text: 'Compatible con Android e iOS' },
-        { icon: Clock, text: 'Entrega inmediata a tu cuenta' },
-      );
-    } else if (name.includes('brawl stars')) {
-      features.push(
-        { icon: Zap, text: '170 Gemas para Brawl Stars' },
-        { icon: ShoppingCart, text: 'Desbloquea el Brawl Pass y cajas mega de personajes' },
-        { icon: Star, text: 'Obten nuevos Brawlers y mejoralos' },
-        { icon: Smartphone, text: 'Compatible con Android e iOS' },
-        { icon: Clock, text: 'Entrega inmediata a tu cuenta de Supercell' },
-      );
-    } else {
-      features.push(
-        { icon: Zap, text: product.description },
-        { icon: Monitor, text: `Plataforma: ${product.platform}` },
-        { icon: Globe, text: `Region: ${product.region} - Compatible con todos los dispositivos` },
-        { icon: Clock, text: `Tiempo de entrega: ${product.deliveryTime}` },
-        { icon: Shield, text: 'Garantia de activacion o reemplazo' },
-      );
-    }
-  } else if (cat === 'streaming') {
-    const plat = product.platform;
-    features.push(
-      { icon: Tv, text: `Acceso completo a ${plat} con calidad premium` },
-      { icon: Monitor, text: 'Compatible con Smart TV, PC, Movil, Tablet y Consolas' },
-      { icon: Users, text: 'Multiples pantallas simultaneas segun el plan' },
-      { icon: Download, text: 'Descarga contenido para verlo sin conexion' },
-      { icon: Wifi, text: 'Sin anuncios - Experiencia 100% premium' },
-    );
-    if (name.includes('3 meses') || name.includes('3 Meses')) {
-      features.push({ icon: Clock, text: 'Vigencia de 3 meses completos desde la activacion' });
-    } else {
-      features.push({ icon: Clock, text: 'Vigencia de 1 mes completo desde la activacion' });
-    }
-  } else if (cat === 'giftcards') {
-    const amount = product.name.match(/\$(\d+)/)?.[1] || 'N/A';
-    features.push(
-      { icon: Ticket, text: `Tarjeta de regalo de $${amount} USD para ${product.platform}` },
-      { icon: ShoppingCart, text: 'Compra juegos, DLC, suscripciones y contenido digital' },
-      { icon: Monitor, text: 'Se canjea directamente en la tienda oficial' },
-      { icon: Shield, text: 'Codigo original y verificado - Sin riesgo de activacion' },
-      { icon: Clock, text: 'Sin fecha de expiracion - Usalo cuando quieras' },
-    );
-  } else if (cat === 'software') {
-    features.push(
-      { icon: ShieldCheck, text: `Licencia original y valida de ${product.platform}` },
-      { icon: Download, text: 'Descarga el software desde la pagina oficial del fabricante' },
-      { icon: Monitor, text: 'Activacion online con un solo clic' },
-      { icon: Shield, text: '1 dispositivo por clave - Activacion garantizada' },
-      { icon: Clock, text: 'Clave de por vida o segun el periodo contratado' },
-    );
-  } else if (cat === 'subscriptions') {
-    features.push(
-      { icon: Zap, text: `Suscripcion completa a ${product.platform}` },
-      { icon: Monitor, text: 'Acceso inmediato a todas las funciones premium' },
-      { icon: Star, text: 'Funciones exclusivas no disponibles en la version gratuita' },
-      { icon: Users, text: 'Ideal para trabajo, estudio o entretenimiento' },
-      { icon: Clock, text: `Duracion: ${product.name.includes('3') ? '3 meses' : product.name.includes('1 Ano') || product.name.includes('1 ano') || product.name.includes('12 Meses') ? '1 ano' : '1 mes'}` },
-    );
-  } else {
-    features.push(
-      { icon: Info, text: product.description },
-      { icon: Monitor, text: `Plataforma: ${product.platform}` },
-      { icon: Globe, text: `Region: ${product.region}` },
-      { icon: Clock, text: `Entrega: ${product.deliveryTime}` },
-      { icon: Shield, text: 'Garantia de 30 dias' },
-    );
+  features.push(
+    { icon: Ticket, text: 'Recibes un codigo oficial unico al instante tras tu compra' },
+    { icon: Monitor, text: 'Se canjea en tu propia cuenta personal de ' + product.platform },
+    { icon: Globe, text: 'Region: ' + product.region + ' - ' + (product.region === 'Global' ? 'Sin restricciones geograficas' : 'Verifica compatibilidad con tu region') },
+    { icon: Clock, text: 'Entrega inmediata: ' + product.deliveryTime.toLowerCase() },
+    { icon: Shield, text: 'Producto 100% oficial y legitimo con garantia de 30 dias' },
+  );
+  if (product.originalPrice) {
+    const savings = (product.originalPrice - product.price).toFixed(2);
+    features.push({ icon: Zap, text: 'Ahorras $' + savings + ' USD comparado con el precio oficial' });
   }
-
   return features;
 }
 
@@ -444,7 +215,7 @@ export function ProductDetail() {
           <div className="relative">
             <div className="aspect-video sm:aspect-[16/9] w-full bg-gradient-to-br from-muted to-muted/80 relative overflow-hidden">
               <Image
-                src={product.image || getProductImage(product.platform)}
+                src={product.image}
                 alt={product.name}
                 fill
                 className="object-cover"
