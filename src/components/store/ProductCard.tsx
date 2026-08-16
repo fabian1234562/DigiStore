@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, ShoppingCart, Zap, TrendingUp, Award, Eye } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 function getTagIcon(tag: string) {
   switch (tag) {
@@ -29,15 +30,20 @@ function getTagStyle(tag: string) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addToCart, setSelectedProduct, setProductDetailOpen } = useStore();
+  const { addToCart } = useStore();
+  const router = useRouter();
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
+  const handleClick = () => {
+    router.push(`/tienda/producto/${product.id}`);
+  };
+
   return (
     <div
       className="h-full rounded-2xl glass card-glow group cursor-pointer overflow-hidden relative"
-      onClick={() => { setSelectedProduct(product); setProductDetailOpen(true); }}
+      onClick={handleClick}
     >
       {/* Product Image */}
       <div className="relative overflow-hidden">

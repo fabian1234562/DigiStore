@@ -4,9 +4,11 @@ import { useStore, Product } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Star, Zap, Eye } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export function FeaturedCard({ product }: { product: Product }) {
-  const { addToCart, setSelectedProduct, setProductDetailOpen } = useStore();
+  const { addToCart } = useStore();
+  const router = useRouter();
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
@@ -14,7 +16,7 @@ export function FeaturedCard({ product }: { product: Product }) {
   return (
     <div
       className="relative rounded-2xl glass card-glow group cursor-pointer overflow-hidden"
-      onClick={() => { setSelectedProduct(product); setProductDetailOpen(true); }}
+      onClick={() => { router.push(`/tienda/producto/${product.id}`); }}
     >
       {/* Image */}
       <div className="relative overflow-hidden">
