@@ -30,6 +30,7 @@ import {
   ChevronDown,
   ChevronUp,
   FileDown,
+  AlertCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,16 +41,20 @@ interface DeliveryDetail {
 }
 
 interface DeliveryItem {
-  type: string;
-  typeLabel: string;
-  icon: string;
+  success?: boolean;
+  type?: string;
+  typeLabel?: string;
+  icon?: string;
   productName: string;
-  details: DeliveryDetail[];
-  instructions: string;
+  details?: DeliveryDetail[];
+  instructions?: string;
+  message?: string;
+  productId?: string;
 }
 
 interface OrderResult {
   success: boolean;
+  error?: string;
   orderId?: string;
   message?: string;
   total?: number;
@@ -61,6 +66,7 @@ interface OrderResult {
     email: string;
     account: string;
   };
+  setupUrl?: string;
 }
 
 function DeliveryIcon({ icon, className }: { icon: string; className?: string }) {
@@ -90,10 +96,11 @@ function CopyButton({ text }: { text: string }) {
 
 function DeliveryCard({ delivery, index }: { delivery: DeliveryItem; index: number }) {
   const [expanded, setExpanded] = useState(true);
+  const isFailed = delivery.success === false;
   const isCredentials = delivery.type === 'credentials';
   const isLicense = delivery.type === 'license';
 
-  const typeColor = isCredentials ? 'text-amber-600 bg-amber-50 border-amber-200' : isLicense ? 'text-blue-600 bg-blue-50 border-blue-200' : 'text-purple-600 bg-purple-50 border-purple-200';
+  const typeColor = isFailed ? 'text-red-600 bg-red-50 border-red-200' : isCredentials ? 'text-amber-600 bg-amber-50 border-amber-200' : isLicense ? 'text-blue-600 bg-blue-50 border-blue-200' : 'text-purple-600 bg-purple-50 border-purple-200';
 
   return (
     <motion.div
@@ -108,11 +115,11 @@ function DeliveryCard({ delivery, index }: { delivery: DeliveryItem; index: numb
       >
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-lg border ${typeColor}`}>
-            <DeliveryIcon icon={delivery.icon} className="w-4 h-4" />
+            {isFailed ? <AlertCircle className="w-4 h-4" /> : <DeliveryIcon icon={delivery.icon || 'Ticket'} className="w-4 h-4" />}
           </div>
           <div className="text-left">
             <p className="text-sm font-semibold">{delivery.productName}</p>
-            <p className="text-xs text-muted-foreground">{delivery.typeLabel}</p>
+            <p className="text-xs text-muted-foreground">{isFailed ? 'No disponible' : delivery.typeLabel}</p>
           </div>
         </div>
         {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
@@ -128,24 +135,33 @@ function DeliveryCard({ delivery, index }: { delivery: DeliveryItem; index: numb
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 space-y-3">
-              <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-                {delivery.details.map((d, i) => (
-                  <div key={i} className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">{d.label}</span>
-                    <div className="flex items-center gap-1.5 flex-1 justify-end">
-                      <span className={`text-xs font-mono font-semibold text-right break-all ${isCredentials && (d.label.includes('Contraseña') || d.label.includes('Email')) ? 'text-amber-700' : isLicense ? 'text-blue-700' : 'text-purple-700'}`}>
-                        {d.value}
-                      </span>
-                      <CopyButton text={d.value} />
-                    </div>
+              {isFailed ? (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-xs text-red-700 leading-relaxed">{delivery.message}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                    {delivery.details?.map((d, i) => (
+                      <div key={i} className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">{d.label}</span>
+                        <div className="flex items-center gap-1.5 flex-1 justify-end">
+                          <span className={`text-xs font-mono font-semibold text-right break-all ${isLicense ? 'text-blue-700' : 'text-purple-700'}`}>
+                            {d.value}
+                          </span>
+                          <CopyButton text={d.value} />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
-                <p className="text-[10px] font-semibold text-emerald-700 uppercase tracking-wide mb-1.5">Como activar tu producto</p>
-                <pre className="text-xs text-emerald-800 whitespace-pre-wrap font-sans leading-relaxed">{delivery.instructions}</pre>
-              </div>
+                  {delivery.instructions && (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                      <p className="text-[10px] font-semibold text-emerald-700 uppercase tracking-wide mb-1.5">Como activar tu producto</p>
+                      <pre className="text-xs text-emerald-800 whitespace-pre-wrap font-sans leading-relaxed">{delivery.instructions}</pre>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </motion.div>
         )}
@@ -157,8 +173,9 @@ function DeliveryCard({ delivery, index }: { delivery: DeliveryItem; index: numb
 function OrderSuccess({ result }: { result: OrderResult }) {
   const handleCopyAll = () => {
     if (!result.deliveries) return;
-    const text = result.deliveries.map(d => {
-      const details = d.details.map(det => `${det.label}: ${det.value}`).join('\n');
+    const successDeliveries = result.deliveries.filter(d => d.success !== false && d.details);
+    const text = successDeliveries.map(d => {
+      const details = d.details!.map(det => `${det.label}: ${det.value}`).join('\n');
       return `=== ${d.productName} ===\nTipo: ${d.typeLabel}\n${details}\n\nInstrucciones:\n${d.instructions}`;
     }).join('\n\n---\n\n');
     navigator.clipboard.writeText(`Orden: ${result.orderId}\nFecha: ${result.date}\nTotal: $${result.total?.toFixed(2)}\nEmail: ${result.email}\n\n${text}`);
@@ -176,7 +193,7 @@ function OrderSuccess({ result }: { result: OrderResult }) {
       </motion.div>
 
       <h3 className="text-xl font-bold text-center mb-1">Pedido Exitoso</h3>
-      <p className="text-sm text-muted-foreground text-center mb-4">Tus productos digitales estan listos para usar</p>
+      <p className="text-sm text-muted-foreground text-center mb-4">{result.message || 'Tus productos digitales estan listos'}</p>
 
       <div className="bg-muted/50 rounded-lg p-3 mb-4 space-y-1.5">
         <div className="flex justify-between text-xs">
@@ -450,6 +467,16 @@ export function CartDrawer() {
 
         {orderResult?.success && (
           <SheetFooter className="p-4 border-t">
+            {orderResult.error === 'supplier_not_configured' && orderResult.setupUrl && (
+              <a
+                href={orderResult.setupUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full mb-2 text-center text-xs text-blue-600 hover:underline"
+              >
+                Configurar proveedor de productos →
+              </a>
+            )}
             <Button onClick={closeAndReset} className="w-full gap-2 cursor-pointer">
               Seguir Comprando <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
