@@ -242,7 +242,7 @@ function CategoryNav() {
   };
 
   return (
-    <nav className="bg-amber-500/95 border-t border-amber-300/40 backdrop-blur-sm sticky top-[72px] z-40">
+    <nav className="bg-amber-500/95 border-t border-amber-300/40 backdrop-blur-sm sm:sticky sm:top-[98px] z-40">
       <div className="mx-auto max-w-7xl px-3 sm:px-6">
         <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-1.5">
           <Link
@@ -849,7 +849,7 @@ function ShopContent() {
 
             {/* Product Grid */}
             {filtered.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                 {filtered.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

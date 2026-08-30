@@ -217,7 +217,7 @@ function CategoryNav() {
   };
 
   return (
-    <nav className="bg-amber-500/95 border-t border-amber-300/40 backdrop-blur-sm sticky top-[72px] z-40">
+    <nav className="bg-amber-500/95 border-t border-amber-300/40 backdrop-blur-sm sm:sticky sm:top-[98px] z-40">
       <div className="mx-auto max-w-7xl px-3 sm:px-6">
         <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-1.5">
           <Link
@@ -567,8 +567,8 @@ function ProductCard({ product, compact = false }: { product: typeof PRODUCTS[0]
           </div>
         )}
 
-        {/* Hover overlay with Quick View & Compare */}
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center gap-2 pb-3">
+        {/* Hover overlay with Quick View & Compare (always visible on touch) */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center gap-2 pb-3 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
           <Link
             href={`/tienda/producto/${product.id}`}
             className="bg-white text-gray-800 text-[11px] font-semibold px-3 py-1.5 rounded-md flex items-center gap-1 hover:bg-gray-100 transition-colors"

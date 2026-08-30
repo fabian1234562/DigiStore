@@ -106,38 +106,41 @@ function getDeliveryInfo(product: Product) {
 /* ── Announcement Bar ── */
 function AnnouncementBar() {
   return (
-    <div className="bg-zinc-900 text-zinc-100 text-[11px] sm:text-xs">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-1 sm:px-6">
+    <div className="bg-[#212529] text-white text-xs" style={{ height: '34px' }}>
+      <div className="mx-auto flex max-w-7xl items-center justify-between h-full px-3 sm:px-6">
         <div className="flex items-center gap-1.5">
-          <Truck className="w-3 h-3 text-amber-400" />
-          <span className="hidden sm:inline">Entrega instantanea en pedidos digitales</span>
-          <span className="sm:hidden">Entrega instantanea</span>
+          <Truck className="w-3.5 h-3.5 text-amber-400" />
+          <span className="hidden sm:inline">Envio gratis en pedidos digitales</span>
+          <span className="sm:hidden">Envio gratis</span>
         </div>
         <div className="hidden items-center gap-4 md:flex">
           <span className="flex items-center gap-1">
-            <Shield className="w-3 h-3 text-emerald-400" /> Pago seguro
+            <Shield className="w-3.5 h-3.5 text-emerald-400" />
+            Pago seguro 100%
           </span>
+          <span className="text-white/60">|</span>
           <span className="flex items-center gap-1">
-            <Tag className="w-3 h-3 text-amber-400" /> Usa{' '}
-            <b className="text-amber-300">DIGI10</b> para 10% off
+            <Tag className="w-3.5 h-3.5 text-amber-400" />
+            Codigo: <span className="font-semibold text-amber-400">DIGI10</span>
           </span>
         </div>
-        <div className="flex items-center gap-2 text-zinc-300">
-          <span>
-            Envio: <b className="text-white">Global</b>
-          </span>
+        <div className="flex items-center gap-1.5">
+          <Globe className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Enviamos a todo el mundo</span>
+          <span className="sm:hidden">Global</span>
         </div>
       </div>
     </div>
   );
 }
 
-/* ── Header (Yellow) ── */
+/* ── Header (Yellow) — matches homepage responsive behavior ── */
 function Header() {
-  const { cartCount, setCartOpen, user, setUser, searchQuery, setSearchQuery } =
+  const { cartCount, setCartOpen, user, setUser, searchQuery, setSearchQuery, setAuthOpen } =
     useStore();
   const [mobileMenu, setMobileMenu] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const count = cartCount();
 
   const toggleDark = () => {
     setDarkMode(!darkMode);
@@ -145,155 +148,178 @@ function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full">
-      <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-zinc-900 shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 sm:gap-4 sm:px-6 sm:py-3">
+    <header className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 sticky top-0 z-50 shadow-md">
+      <div className="mx-auto max-w-7xl flex items-center gap-3 sm:gap-4 px-3 sm:px-6 py-3">
+        {/* Mobile menu button */}
+        <button
+          className="lg:hidden p-1.5 rounded-md hover:bg-amber-600/30 transition-colors"
+          onClick={() => setMobileMenu(!mobileMenu)}
+        >
+          <Menu className="w-5 h-5 text-gray-800" />
+        </button>
+
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <div className="w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center">
+            <Zap className="w-5 h-5 text-amber-400" />
+          </div>
+          <div className="hidden sm:flex flex-col leading-tight">
+            <span className="text-lg font-extrabold text-gray-900 tracking-tight">DigiStore</span>
+            <span className="text-[9px] text-gray-700 font-medium -mt-0.5">Productos digitales al instante</span>
+          </div>
+          <span className="sm:hidden text-lg font-extrabold text-gray-900">DigiStore</span>
+        </Link>
+
+        {/* Location selector — hidden on small mobile */}
+        <button className="hidden md:flex items-center gap-1 text-xs font-medium text-gray-800 hover:text-gray-900 transition-colors shrink-0">
+          <MapPin className="w-4 h-4" />
+          <span>Latam</span>
+          <ChevronDown className="w-3 h-3" />
+        </button>
+
+        {/* Search bar — hidden on mobile */}
+        <div className="flex-1 max-w-2xl hidden sm:flex">
+          <div className="flex w-full rounded-lg overflow-hidden ring-1 ring-amber-200/60">
+            <input
+              type="text"
+              placeholder="Buscar productos digitales..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 px-3.5 py-2 text-sm bg-white text-gray-800 placeholder-gray-400 outline-none min-w-0"
+            />
+            <Link href={`/tienda?q=${encodeURIComponent(searchQuery)}`}>
+              <button className="px-4 bg-amber-400 hover:bg-amber-500 transition-colors flex items-center gap-1.5">
+                <Search className="w-4 h-4 text-gray-800" />
+                <span className="text-xs font-semibold text-gray-800 hidden md:inline">Buscar</span>
+              </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Right icons */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* Theme toggle */}
           <button
-            onClick={() => setMobileMenu(!mobileMenu)}
-            className="inline-flex items-center justify-center size-9 md:hidden rounded-md hover:bg-amber-300/40 transition-colors cursor-pointer"
+            onClick={toggleDark}
+            className="p-2 rounded-full hover:bg-amber-600/30 transition-colors hidden sm:flex"
           >
-            <Menu className="w-5 h-5" />
+            {darkMode ? <Sun className="w-5 h-5 text-gray-800" /> : <Moon className="w-5 h-5 text-gray-800" />}
           </button>
-          <Link
-            href="/"
-            className="flex shrink-0 items-center gap-1.5 transition-transform hover:scale-[1.02]"
-          >
-            <div className="grid h-9 w-9 place-items-center rounded-lg bg-zinc-900 text-amber-400 shadow-md">
-              <span className="text-lg font-black">D</span>
-            </div>
-            <div className="hidden sm:block leading-none">
-              <div className="text-lg font-black tracking-tight">DigiStore</div>
-              <div className="text-[10px] font-medium text-zinc-700">
-                Productos digitales al instante
-              </div>
-            </div>
-          </Link>
-          <div className="hidden lg:flex items-center gap-1 rounded-md px-2 py-1 hover:bg-amber-300/40 cursor-default">
-            <MapPin className="w-4 h-4" />
-            <div className="leading-tight">
-              <div className="text-[10px] text-zinc-700">Entrega a</div>
-              <div className="text-xs font-semibold">Todo el mundo</div>
-            </div>
-          </div>
-          <div className="relative flex-1">
-            <div className="flex items-stretch overflow-hidden rounded-md bg-white shadow-sm ring-1 ring-amber-200/60 focus-within:ring-2 focus-within:ring-amber-500">
-              <input
-                type="text"
-                placeholder="Buscar productos, marcas y categorias..."
-                className="h-10 w-full border-0 bg-transparent px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Link href={`/tienda?q=${encodeURIComponent(searchQuery)}`}>
-                <button className="h-10 bg-amber-400 px-3 hover:bg-amber-500 transition-colors cursor-pointer">
-                  <Search className="w-[18px] h-[18px] text-zinc-900" />
-                </button>
-              </Link>
-            </div>
-          </div>
+
+          {/* Compare */}
+          <button className="p-2 rounded-full hover:bg-amber-600/30 transition-colors hidden lg:flex relative">
+            <GitCompare className="w-5 h-5 text-gray-800" />
+          </button>
+
+          {/* Wishlist */}
+          <button className="p-2 rounded-full hover:bg-amber-600/30 transition-colors relative">
+            <Heart className="w-5 h-5 text-gray-800" />
+          </button>
+
+          {/* Account */}
           {user ? (
             <button
-              className="hidden md:flex flex-col items-start rounded-md px-2 py-1 hover:bg-amber-300/40 transition-colors cursor-pointer"
               onClick={() => setUser(null)}
+              className="hidden sm:flex items-center gap-1.5 p-1.5 rounded-full hover:bg-amber-600/30 transition-colors"
             >
-              <span className="text-[10px] leading-none">Hola, {user.name}</span>
-              <span className="flex items-center gap-0.5 text-xs font-semibold">
-                Cerrar sesion <ChevronDown className="w-3 h-3" />
-              </span>
+              <LogIn className="w-5 h-5 text-gray-800" />
+              <div className="hidden md:flex flex-col items-start leading-tight">
+                <span className="text-[10px] text-gray-600">Hola, {user.name}</span>
+                <span className="text-xs font-semibold text-gray-900">Cerrar sesion</span>
+              </div>
             </button>
           ) : (
             <button
-              className="hidden md:flex flex-col items-start rounded-md px-2 py-1 hover:bg-amber-300/40 transition-colors cursor-pointer"
-              onClick={() => useStore.getState().setAuthOpen(true)}
+              onClick={() => setAuthOpen(true)}
+              className="hidden sm:flex items-center gap-1.5 p-1.5 rounded-full hover:bg-amber-600/30 transition-colors"
             >
-              <span className="text-[10px] leading-none">Hola, Inicia sesion</span>
-              <span className="flex items-center gap-0.5 text-xs font-semibold">
-                Cuenta <ChevronDown className="w-3 h-3" />
-              </span>
+              <LogIn className="w-5 h-5 text-gray-800" />
+              <div className="hidden md:flex flex-col items-start leading-tight">
+                <span className="text-[10px] text-gray-600">Hola, Inicia sesion</span>
+                <span className="text-xs font-semibold text-gray-900">Cuenta</span>
+              </div>
             </button>
           )}
+
+          {/* Cart */}
           <button
-            onClick={toggleDark}
-            className="inline-flex items-center justify-center size-9 rounded-md hover:bg-amber-300/40 transition-colors cursor-pointer"
-          >
-            <Sun
-              className={`w-[18px] h-[18px] rotate-0 scale-100 transition-all ${darkMode ? '-rotate-90 scale-0' : ''}`}
-            />
-            <Moon
-              className={`w-[18px] h-[18px] absolute rotate-90 scale-0 transition-all ${darkMode ? 'rotate-0 scale-100' : ''}`}
-            />
-          </button>
-          <button className="relative hidden sm:grid h-10 w-10 place-items-center rounded-md hover:bg-amber-300/40 transition-colors cursor-pointer">
-            <GitCompare className="w-5 h-5" />
-          </button>
-          <button className="relative hidden sm:grid h-10 w-10 place-items-center rounded-md hover:bg-amber-300/40 transition-colors cursor-pointer">
-            <Heart className="w-5 h-5" />
-          </button>
-          <button
-            className="relative flex items-center gap-1.5 rounded-md px-2 py-1 hover:bg-amber-300/40 transition-colors cursor-pointer"
             onClick={() => setCartOpen(true)}
+            className="relative p-2 rounded-full hover:bg-amber-600/30 transition-colors"
           >
-            <ShoppingCart className="w-[22px] h-[22px]" />
-            {cartCount() > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                {cartCount()}
+            <ShoppingCart className="w-5 h-5 text-gray-800" />
+            {count > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {count > 9 ? '9+' : count}
               </span>
             )}
-            <span className="hidden text-xs font-semibold sm:block">Carrito</span>
+            <span className="hidden lg:inline text-xs font-semibold text-gray-900 ml-1">Carrito</span>
           </button>
         </div>
       </div>
-      <div className="border-t border-amber-300/40 bg-amber-500/95">
-        <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-3 py-1.5 sm:px-6 scrollbar-none">
-          <Link
-            href="/tienda?sort=popular"
-            className="flex shrink-0 items-center gap-1 rounded px-2 py-1 text-xs font-semibold text-zinc-900 hover:bg-amber-300/50 transition-colors"
-          >
-            <Sparkles className="w-3 h-3" /> Mas vendido
-          </Link>
-          <Link
-            href="/tienda"
-            className="shrink-0 rounded px-2 py-1 text-xs font-medium text-zinc-900 hover:bg-amber-300/50 transition-colors"
-          >
-            Todo
-          </Link>
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/tienda?cat=${cat.id}`}
-              className="shrink-0 rounded px-2 py-1 text-xs font-medium text-zinc-900 hover:bg-amber-300/50 transition-colors"
-            >
-              {cat.name}
-            </Link>
-          ))}
-          <Link
-            href="/tienda?onSale=true"
-            className="shrink-0 rounded px-2 py-1 text-xs font-medium text-zinc-900 hover:bg-amber-300/50 transition-colors"
-          >
-            Ofertas
-          </Link>
+
+      {/* Mobile search bar */}
+      <div className="sm:hidden px-3 pb-3">
+        <div className="flex w-full rounded-lg overflow-hidden ring-1 ring-amber-200/60">
+          <input
+            type="text"
+            placeholder="Buscar productos..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 px-3 py-2 text-sm bg-white text-gray-800 placeholder-gray-400 outline-none"
+          />
+          <button className="px-3 bg-amber-400 hover:bg-amber-500 transition-colors">
+            <Search className="w-4 h-4 text-gray-800" />
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu dropdown */}
       {mobileMenu && (
-        <div className="absolute top-full left-0 right-0 z-50 bg-white border-b border-zinc-200 shadow-lg md:hidden">
-          <div className="px-4 py-3 space-y-1">
+        <div className="lg:hidden bg-amber-400 border-t border-amber-300/40 px-3 pb-3">
+          <div className="flex flex-col gap-1">
             <Link
               href="/tienda"
               onClick={() => setMobileMenu(false)}
-              className="block px-3 py-2 text-sm font-medium rounded-lg hover:bg-zinc-100"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-500/40 text-sm font-medium text-gray-800 transition-colors"
             >
-              Todo
+              <Sparkles className="w-4 h-4" />
+              Ver toda la tienda
             </Link>
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.id}
-                href={`/tienda?cat=${cat.id}`}
+                href={`/tienda?categoria=${cat.id}`}
                 onClick={() => setMobileMenu(false)}
-                className="block px-3 py-2 text-sm font-medium rounded-lg hover:bg-zinc-100"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-500/40 text-sm font-medium text-gray-800 transition-colors"
               >
                 {cat.name}
               </Link>
             ))}
+            <div className="h-px bg-amber-500/60 my-1" />
+            {user ? (
+              <button
+                onClick={() => { setUser(null); setMobileMenu(false); }}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-500/40 text-sm font-medium text-gray-800 transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                Cerrar sesion ({user.name})
+              </button>
+            ) : (
+              <button
+                onClick={() => { setAuthOpen(true); setMobileMenu(false); }}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-500/40 text-sm font-medium text-gray-800 transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                Iniciar sesion / Cuenta
+              </button>
+            )}
+            <button
+              onClick={toggleDark}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-500/40 text-sm font-medium text-gray-800 transition-colors"
+            >
+              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              Cambiar tema
+            </button>
           </div>
         </div>
       )}
@@ -301,86 +327,99 @@ function Header() {
   );
 }
 
-/* ── Footer (Dark) ── */
+/* ── Footer (Dark) — matches homepage ── */
 function Footer() {
+  const [email, setEmail] = useState('');
+
   return (
-    <footer className="bg-zinc-900 text-white">
-      <div className="mx-auto max-w-7xl px-3 py-12 sm:px-6">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-          <div className="col-span-2 sm:col-span-1 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="grid h-9 w-9 place-items-center rounded-lg bg-amber-500 text-zinc-900 shadow-md">
-                <span className="text-lg font-black">D</span>
+    <footer className="bg-[#212529] text-gray-300 mt-12">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 py-10 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {/* Column 1: Logo + description */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center border border-gray-700">
+                <Zap className="w-5 h-5 text-amber-400" />
               </div>
-              <div className="leading-none">
-                <div className="text-lg font-black tracking-tight">DigiStore</div>
-                <div className="text-[10px] font-medium text-zinc-400">
-                  Productos digitales al instante
-                </div>
-              </div>
+              <span className="text-lg font-extrabold text-white">DigiStore</span>
             </div>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Tu tienda de confianza para productos digitales al mejor precio
-              con entrega instantanea a todo el mundo.
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">
+              Tu tienda de productos digitales de confianza. Codigos instantaneos, los mejores precios y atencion 24/7.
             </p>
+            <div className="flex items-center gap-3">
+              <a href="#" className="w-9 h-9 rounded-full bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors group">
+                <svg className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+              </a>
+              <a href="#" className="w-9 h-9 rounded-full bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors group">
+                <svg className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              </a>
+              <a href="#" className="w-9 h-9 rounded-full bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors group">
+                <svg className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+            </div>
           </div>
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-white">Productos</h4>
-            <ul className="space-y-2 text-xs text-zinc-400">
+
+          {/* Column 2: Productos */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Productos</h4>
+            <ul className="space-y-2.5">
               {CATEGORIES.map((cat) => (
-                <li key={cat.id}>
-                  <Link
-                    href={`/tienda?cat=${cat.id}`}
-                    className="hover:text-white transition-colors"
-                  >
-                    {cat.name}
-                  </Link>
-                </li>
+                <li key={cat.id}><Link href={`/tienda?categoria=${cat.id}`} className="text-sm text-gray-400 hover:text-amber-400 transition-colors">{cat.name}</Link></li>
               ))}
             </ul>
           </div>
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-white">Soporte</h4>
-            <ul className="space-y-2 text-xs text-zinc-400">
-              {['Centro de ayuda', 'Chat en vivo', 'Garantias', 'Metodos de pago'].map(
-                (item) => (
-                  <li
-                    key={item}
-                    className="hover:text-white transition-colors cursor-pointer"
-                  >
-                    {item}
-                  </li>
-                ),
-              )}
+
+          {/* Column 3: Soporte */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Soporte</h4>
+            <ul className="space-y-2.5">
+              {['Centro de ayuda', 'Como comprar', 'Como redimir codigos', 'Politica de reembolso', 'Contacto', 'FAQ'].map((item) => (
+                <li key={item}><a href="#" className="text-sm text-gray-400 hover:text-amber-400 transition-colors">{item}</a></li>
+              ))}
             </ul>
           </div>
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-white">Legal</h4>
-            <ul className="space-y-2 text-xs text-zinc-400">
-              {['Terminos de servicio', 'Privacidad', 'Devoluciones', 'Contacto'].map(
-                (item) => (
-                  <li
-                    key={item}
-                    className="hover:text-white transition-colors cursor-pointer"
-                  >
-                    {item}
-                  </li>
-                ),
-              )}
+
+          {/* Column 4: Legal + Email */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Legal</h4>
+            <ul className="space-y-2.5 mb-6">
+              {['Terminos y condiciones', 'Politica de privacidad', 'Cookies', 'Aviso legal'].map((item) => (
+                <li key={item}><a href="#" className="text-sm text-gray-400 hover:text-amber-400 transition-colors">{item}</a></li>
+              ))}
             </ul>
+            <h4 className="text-white font-semibold text-sm mb-2">Recibe ofertas</h4>
+            <p className="text-xs text-gray-400 mb-3">Suscribete y recibe descuentos exclusivos.</p>
+            <div className="flex rounded-lg overflow-hidden">
+              <input
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1 px-3 py-2 text-sm bg-gray-800 border border-gray-700 text-white placeholder-gray-500 outline-none focus:border-amber-500 transition-colors"
+              />
+              <button className="px-3 bg-amber-500 hover:bg-amber-600 transition-colors flex items-center">
+                <Send className="w-4 h-4 text-white" />
+              </button>
+            </div>
           </div>
         </div>
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 sm:flex-row">
-          <p className="text-xs text-zinc-500">
-            2025 DigiStore. Todos los derechos reservados.
+
+        {/* Bottom bar */}
+        <div className="border-t border-gray-700/50 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-gray-500">
+            &copy; {new Date().getFullYear()} DigiStore. Todos los derechos reservados. Productos digitales al instante.
           </p>
-          <div className="flex items-center gap-4 text-xs text-zinc-500">
-            <span className="flex items-center gap-1.5">
-              <CreditCard className="w-3.5 h-3.5" /> Pagos seguros
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5" /> Envio global
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Shield className="w-4 h-4" />
+              <span>Pago seguro</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="bg-gray-700 rounded px-2 py-1 text-[10px] text-gray-300 font-medium">VISA</div>
+              <div className="bg-gray-700 rounded px-2 py-1 text-[10px] text-gray-300 font-medium">MC</div>
+              <div className="bg-gray-700 rounded px-2 py-1 text-[10px] text-gray-300 font-medium">AMEX</div>
+              <div className="bg-gray-700 rounded px-2 py-1 text-[10px] text-gray-300 font-medium">PayPal</div>
+            </div>
           </div>
         </div>
       </div>
