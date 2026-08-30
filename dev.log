@@ -1,6 +1,6 @@
 ▲ Next.js 16.1.3 (Turbopack)
 - Local:         http://localhost:3000
-- Network:       http://21.0.3.105:3000
+- Network:       http://21.0.14.110:3000
 - Environments: .env
 
 ✓ Starting...
@@ -9,9 +9,21 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 813ms
+✓ Ready in 704ms
 ○ Compiling / ...
- GET / 200 in 3.3s (compile: 3.2s, render: 169ms)
- GET / 200 in 9.2s (compile: 8.5s, render: 713ms)
- GET / 200 in 137ms (compile: 4ms, render: 133ms)
- GET / 200 in 128ms (compile: 6ms, render: 122ms)
+ GET / 200 in 3.9s (compile: 3.7s, render: 176ms)
+ GET / 200 in 4.4s (compile: 3.7s, render: 660ms)
+ GET / 200 in 95ms (compile: 3ms, render: 92ms)
+⚠ Cross origin request detected from preview-chat-922ac4c0-8125-475d-b347-263939878674.space-z.ai to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 129ms (compile: 7ms, render: 122ms)
+ GET / 200 in 94ms (compile: 5ms, render: 89ms)
+ GET / 200 in 89ms (compile: 5ms, render: 84ms)
+ GET / 200 in 94ms (compile: 4ms, render: 90ms)
+✓ Compiled in 683ms
+ GET / 200 in 52ms (compile: 33ms, render: 19ms)
+✓ Compiled in 603ms
+ GET / 200 in 51ms (compile: 33ms, render: 18ms)
+✓ Compiled in 444ms
+✓ Compiled in 841ms
+✓ Compiled in 357ms
