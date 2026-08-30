@@ -313,8 +313,7 @@ export const PRODUCT_MAP: Record<string, {
   sub2: { reloadlyBrand: 'Discord', countryIso: 'US', currencyCode: 'USD', faceValue: 30 },
   sub7: { reloadlyBrand: 'Canva', countryIso: 'US', currencyCode: 'USD', faceValue: 30 },
   sub8: { reloadlyBrand: 'Canva', countryIso: 'US', currencyCode: 'USD', faceValue: 120 },
-  sub13: { reloadlyBrand: 'Spotify', countryIso: 'US', currencyCode: 'USD', faceValue: 10 },
-  sub14: { reloadlyBrand: 'Spotify', countryIso: 'US', currencyCode: 'USD', faceValue: 30 },
+  // sub13 y sub14 eliminados (duplicados de s7 y s8)
   sub19: { reloadlyBrand: 'Canva', countryIso: 'US', currencyCode: 'USD', faceValue: 60 },
   sub20: { reloadlyBrand: 'Discord', countryIso: 'US', currencyCode: 'USD', faceValue: 3 },
 

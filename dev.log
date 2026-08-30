@@ -1,6 +1,6 @@
 ▲ Next.js 16.1.3 (Turbopack)
 - Local:         http://localhost:3000
-- Network:       http://21.0.12.154:3000
+- Network:       http://21.0.15.191:3000
 - Environments: .env
 
 ✓ Starting...
@@ -9,96 +9,10 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 721ms
+✓ Ready in 683ms
 ○ Compiling / ...
- GET / 200 in 1751ms (compile: 1241ms, render: 510ms)
- GET / 200 in 86ms (compile: 3ms, render: 83ms)
- GET / 200 in 300ms (compile: 6ms, render: 294ms)
- GET /tienda/producto/g4 200 in 2.9s (compile: 2.8s, render: 150ms)
+ GET / 200 in 1387ms (compile: 1195ms, render: 193ms)
+ GET / 200 in 2.6s (compile: 1977ms, render: 590ms)
+ GET / 200 in 81ms (compile: 3ms, render: 78ms)
 ⚠ Cross origin request detected from preview-chat-922ac4c0-8125-475d-b347-263939878674.space-z.ai to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
 Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
- GET / 200 in 263ms (compile: 6ms, render: 258ms)
- GET / 200 in 131ms (compile: 4ms, render: 127ms)
- GET / 200 in 104ms (compile: 4ms, render: 100ms)
- GET / 200 in 264ms (compile: 5ms, render: 258ms)
- GET / 200 in 160ms (compile: 4ms, render: 156ms)
- GET / 200 in 123ms (compile: 3ms, render: 120ms)
- GET / 200 in 135ms (compile: 5ms, render: 130ms)
- POST /api/chat 200 in 4.1s (compile: 551ms, render: 3.6s)
- POST /api/chat 200 in 2.5s (compile: 4ms, render: 2.5s)
-✓ Compiled in 424ms
-✓ Compiled in 627ms
- GET / 200 in 271ms (compile: 60ms, render: 211ms)
- GET / 200 in 188ms (compile: 2ms, render: 185ms)
- GET /tienda/producto/g4 200 in 193ms (compile: 129ms, render: 64ms)
- GET / 200 in 21ms (compile: 7ms, render: 15ms)
- GET / 200 in 14ms (compile: 3ms, render: 12ms)
- GET / 200 in 326ms (compile: 3ms, render: 323ms)
- GET /tienda/producto/g4 200 in 54ms (compile: 28ms, render: 26ms)
- GET / 200 in 119ms (compile: 3ms, render: 115ms)
- GET / 200 in 174ms (compile: 5ms, render: 168ms)
- GET / 200 in 221ms (compile: 3ms, render: 218ms)
- GET / 200 in 221ms (compile: 111ms, render: 110ms)
- GET / 200 in 98ms (compile: 3ms, render: 96ms)
- GET /tienda/producto/g4 200 in 48ms (compile: 30ms, render: 18ms)
- GET /tienda/producto/g4 200 in 54ms (compile: 33ms, render: 21ms)
- POST /api/chat 200 in 4.0s (compile: 3ms, render: 4.0s)
- POST /api/chat 200 in 1100ms (compile: 4ms, render: 1097ms)
- POST /api/chat 200 in 4.1s (compile: 3ms, render: 4.1s)
- GET / 200 in 105ms (compile: 3ms, render: 102ms)
- GET / 200 in 171ms (compile: 4ms, render: 167ms)
- GET /tienda/producto/g11 200 in 50ms (compile: 30ms, render: 20ms)
- GET /tienda/producto/g11 200 in 62ms (compile: 35ms, render: 27ms)
- GET /tienda/producto/g11 200 in 60ms (compile: 31ms, render: 29ms)
- GET /tienda/producto/g11 200 in 46ms (compile: 30ms, render: 17ms)
- GET /tienda/producto/g4 200 in 377ms (compile: 28ms, render: 349ms)
- GET / 200 in 18ms (compile: 5ms, render: 13ms)
-✓ Compiled in 886ms
- GET / 200 in 372ms (compile: 110ms, render: 263ms)
- GET / 200 in 132ms (compile: 4ms, render: 128ms)
- GET /tienda/producto/g11 200 in 355ms (compile: 79ms, render: 276ms)
- POST /api/chat 200 in 5.0s (compile: 3ms, render: 5.0s)
- GET /tienda 200 in 827ms (compile: 805ms, render: 22ms)
- GET /tienda/producto/s8 200 in 75ms (compile: 43ms, render: 33ms)
- GET / 200 in 124ms (compile: 4ms, render: 120ms)
- GET / 200 in 251ms (compile: 3ms, render: 248ms)
- GET /tienda/producto/s2 200 in 51ms (compile: 33ms, render: 18ms)
-✓ Compiled in 179ms
-✓ Compiled in 426ms
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET /tienda/producto/s2 200 in 546ms (compile: 86ms, render: 461ms)
-✓ Compiled in 250ms
-✓ Compiled in 334ms
-✓ Compiled in 225ms
-✓ Compiled in 286ms
-✓ Compiled in 256ms
-✓ Compiled in 302ms
-✓ Compiled in 962ms
-✓ Compiled in 265ms
-✓ Compiled in 248ms
- GET /tienda/producto/s2 200 in 241ms (compile: 88ms, render: 153ms)
- GET / 200 in 121ms (compile: 86ms, render: 35ms)
- GET / 200 in 112ms (compile: 3ms, render: 109ms)
- GET /tienda/producto/s2 200 in 108ms (compile: 37ms, render: 71ms)
- GET / 200 in 71ms (compile: 4ms, render: 67ms)
- GET /tienda/producto/s2 200 in 54ms (compile: 37ms, render: 17ms)
-✓ Compiled in 352ms
- GET / 200 in 536ms (compile: 50ms, render: 486ms)
- GET / 200 in 257ms (compile: 20ms, render: 237ms)
- GET / 200 in 15ms (compile: 3ms, render: 12ms)
- GET /tienda/producto/g21 200 in 119ms (compile: 87ms, render: 32ms)
- POST /api/checkout 200 in 154ms (compile: 140ms, render: 14ms)
- GET /tienda?categoria=giftcards 200 in 106ms (compile: 68ms, render: 38ms)
- GET /tienda/producto/gc17 200 in 63ms (compile: 42ms, render: 21ms)
- POST /api/checkout 200 in 10ms (compile: 2ms, render: 7ms)
- POST /api/checkout 200 in 8ms (compile: 2ms, render: 6ms)
- GET / 200 in 243ms (compile: 7ms, render: 236ms)
- GET / 200 in 244ms (compile: 114ms, render: 130ms)
-✓ Compiled in 403ms
- GET / 200 in 236ms (compile: 5ms, render: 231ms)
- GET / 200 in 118ms (compile: 3ms, render: 115ms)
- GET / 200 in 185ms (compile: 6ms, render: 179ms)
- GET / 200 in 91ms (compile: 2ms, render: 88ms)
-✓ Compiled in 1006ms
-✓ Compiled in 299ms
-✓ Compiled in 241ms

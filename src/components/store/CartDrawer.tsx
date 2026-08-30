@@ -1,4 +1,4 @@
-'use client';
+  'use client';
 
 import { useStore } from '@/lib/store';
 import {
@@ -31,8 +31,10 @@ import {
   ChevronUp,
   FileDown,
   AlertCircle,
+  ExternalLink,
+  Loader2,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface DeliveryDetail {
@@ -60,7 +62,7 @@ interface OrderResult {
   total?: number;
   email?: string;
   date?: string;
-  estimatedDelivery?: string;
+  paymentMethod?: string;
   deliveries?: DeliveryItem[];
   deliveryMethods?: {
     email: string;
@@ -97,10 +99,8 @@ function CopyButton({ text }: { text: string }) {
 function DeliveryCard({ delivery, index }: { delivery: DeliveryItem; index: number }) {
   const [expanded, setExpanded] = useState(true);
   const isFailed = delivery.success === false;
-  const isCredentials = delivery.type === 'credentials';
-  const isLicense = delivery.type === 'license';
 
-  const typeColor = isFailed ? 'text-red-600 bg-red-50 border-red-200' : isCredentials ? 'text-amber-600 bg-amber-50 border-amber-200' : isLicense ? 'text-blue-600 bg-blue-50 border-blue-200' : 'text-purple-600 bg-purple-50 border-purple-200';
+  const typeColor = isFailed ? 'text-red-600 bg-red-50 border-red-200' : 'text-purple-600 bg-purple-50 border-purple-200';
 
   return (
     <motion.div
@@ -146,7 +146,7 @@ function DeliveryCard({ delivery, index }: { delivery: DeliveryItem; index: numb
                       <div key={i} className="flex items-center justify-between gap-2">
                         <span className="text-xs text-muted-foreground whitespace-nowrap">{d.label}</span>
                         <div className="flex items-center gap-1.5 flex-1 justify-end">
-                          <span className={`text-xs font-mono font-semibold text-right break-all ${isLicense ? 'text-blue-700' : 'text-purple-700'}`}>
+                          <span className="text-xs font-mono font-semibold text-right break-all text-purple-700">
                             {d.value}
                           </span>
                           <CopyButton text={d.value} />
@@ -193,7 +193,7 @@ function OrderSuccess({ result }: { result: OrderResult }) {
       </motion.div>
 
       <h3 className="text-xl font-bold text-center mb-1">Pedido Exitoso</h3>
-      <p className="text-sm text-muted-foreground text-center mb-4">{result.message || 'Tus productos digitales estan listos'}</p>
+      <p className="text-sm text-muted-foreground text-center mb-4">{result.message || 'Tus productos digitales están listos'}</p>
 
       <div className="bg-muted/50 rounded-lg p-3 mb-4 space-y-1.5">
         <div className="flex justify-between text-xs">
@@ -209,35 +209,22 @@ function OrderSuccess({ result }: { result: OrderResult }) {
           <span className="font-bold text-emerald-600">${result.total?.toFixed(2)} USD</span>
         </div>
         <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground">Email</span>
-          <span className="font-mono text-xs">{result.email}</span>
+          <span className="text-muted-foreground">Pago</span>
+          <span className="font-mono text-xs">{result.paymentMethod || 'MercadoPago'}</span>
         </div>
       </div>
 
-      <div className="space-y-1 mb-3">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Como recibes tus productos</p>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-center">
-            <KeyRound className="w-4 h-4 text-amber-600 mx-auto mb-1" />
-            <p className="text-[10px] font-medium text-amber-800">Credenciales</p>
-            <p className="text-[9px] text-amber-600">Email + Clave</p>
-          </div>
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-2.5 text-center">
-            <Ticket className="w-4 h-4 text-purple-600 mx-auto mb-1" />
-            <p className="text-[10px] font-medium text-purple-800">Codigos</p>
-            <p className="text-[9px] text-purple-600">Canje inmediato</p>
-          </div>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-center">
-            <ShieldCheck className="w-4 h-4 text-blue-600 mx-auto mb-1" />
-            <p className="text-[10px] font-medium text-blue-800">Licencias</p>
-            <p className="text-[9px] text-blue-600">Product Key</p>
-          </div>
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
+        <div className="flex items-center gap-2 mb-1.5">
+          <Ticket className="w-4 h-4 text-purple-600" />
+          <p className="text-[10px] font-semibold text-purple-700 uppercase tracking-wide">Tus Codigos Reales</p>
         </div>
+        <p className="text-xs text-purple-600">Cada codigo fue obtenido directamente del proveedor oficial y es 100% real y canjeable.</p>
       </div>
 
       <div className="space-y-1.5 mb-4">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Tus Productos ({result.deliveries?.length || 0})</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Productos ({result.deliveries?.length || 0})</p>
           <Button variant="ghost" size="sm" className="h-7 text-[10px] gap-1 px-2 cursor-pointer" onClick={handleCopyAll}>
             <FileDown className="w-3 h-3" /> Copiar Todo
           </Button>
@@ -255,13 +242,9 @@ function OrderSuccess({ result }: { result: OrderResult }) {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
             <Mail className="w-3.5 h-3.5 text-blue-600" />
-            <p className="text-[10px] font-semibold text-blue-700">Tambien enviado por email</p>
+            <p className="text-[10px] font-semibold text-blue-700">Codigos enviados por email</p>
           </div>
-          <p className="text-[10px] text-blue-600">{result.deliveryMethods?.email}</p>
-        </div>
-        <div className="bg-muted/50 rounded-lg p-2.5 flex items-center gap-2">
-          <UserCircle className="w-3.5 h-3.5 text-muted-foreground" />
-          <p className="text-[10px] text-muted-foreground">{result.deliveryMethods?.account}</p>
+          <p className="text-[10px] text-blue-600">Tambien puedes encontrar los codigos en tu email de compra.</p>
         </div>
       </div>
     </div>
@@ -273,12 +256,48 @@ export function CartDrawer() {
   const [email, setEmail] = useState('');
   const [checkingOut, setCheckingOut] = useState(false);
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
+  const [configError, setConfigError] = useState<string | null>(null);
+
+  // Al abrir el drawer, verificar si hay resultado de pago en la URL
+  useEffect(() => {
+    if (cartOpen) return;
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get('payment');
+    const orderId = params.get('order');
+
+    if (paymentStatus === 'success' && orderId) {
+      // Consultar resultado de la orden
+      fetchOrderResult(orderId);
+      // Limpiar URL
+      window.history.replaceState({}, '', '/tienda');
+    }
+  }, [cartOpen]);
+
+  const fetchOrderResult = async (orderId: string) => {
+    setCheckingOut(true);
+    try {
+      const res = await fetch(`/api/payments/webhook?order=${orderId}`);
+      const data = await res.json();
+      if (data.success) {
+        setOrderResult(data);
+        clearCart();
+        setCartOpen(true);
+      }
+    } catch {
+      // Silenciar - el webhook puede tardar unos segundos
+      setTimeout(() => fetchOrderResult(orderId), 3000);
+    }
+    setCheckingOut(false);
+  };
 
   const handleCheckout = async () => {
     if (!email) return;
     setCheckingOut(true);
+    setConfigError(null);
+
     try {
-      const res = await fetch('/api/checkout', {
+      // Crear pago en MercadoPago
+      const res = await fetch('/api/payments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -293,16 +312,32 @@ export function CartDrawer() {
           })),
         }),
       });
+
       const data = await res.json();
-      if (data.success) {
-        setOrderResult(data);
-        clearCart();
+
+      if (data.success && data.paymentUrl) {
+        // Redirigir a MercadoPago para que el cliente pague
+        window.location.href = data.paymentUrl;
+        return; // No cerrar el drawer ni limpiar el carrito aún
+      }
+
+      if (data.error === 'payment_not_configured') {
+        setConfigError(data.setupUrl || 'https://www.mercadopago.com.co');
+        setOrderResult({
+          success: false,
+          message: data.message,
+          setupUrl: data.setupUrl,
+        });
       } else {
-        setOrderResult({ success: false, message: data.message || 'Error al procesar el pedido' });
+        setOrderResult({
+          success: false,
+          message: data.message || 'Error al procesar el pago',
+        });
       }
     } catch {
-      setOrderResult({ success: false, message: 'Error al procesar el pedido' });
+      setOrderResult({ success: false, message: 'Error de conexion. Intenta de nuevo.' });
     }
+
     setCheckingOut(false);
   };
 
@@ -311,8 +346,11 @@ export function CartDrawer() {
     setTimeout(() => {
       setOrderResult(null);
       setEmail('');
+      setConfigError(null);
     }, 300);
   };
+
+  const total = cartTotal();
 
   return (
     <Sheet open={cartOpen} onOpenChange={closeAndReset}>
@@ -325,7 +363,7 @@ export function CartDrawer() {
               <ShoppingCart className="w-5 h-5" />
             )}
             {orderResult?.success ? 'Entrega de Productos' : 'Tu Carrito'}
-            {!orderResult?.success && cart.length > 0 && (
+            {!orderResult && cart.length > 0 && (
               <span className="text-sm font-normal text-muted-foreground">
                 ({cart.reduce((c, i) => c + i.quantity, 0)} items)
               </span>
@@ -340,13 +378,21 @@ export function CartDrawer() {
             <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
               <CreditCard className="w-8 h-8 text-amber-600" />
             </div>
-            <h3 className="text-lg font-bold mb-2">Pasarela de Pagos Próximamente</h3>
+            <h3 className="text-lg font-bold mb-2">Configuracion Requerida</h3>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Estamos configurando la pasarela de pagos para que puedas recibir tus códigos digitales reales de forma segura.
+              {orderResult.message || 'La pasarela de pagos necesita ser configurada para procesar tu compra.'}
             </p>
-            <p className="text-xs text-muted-foreground mt-3">
-              Tu carrito se ha guardado. Vuelve pronto para completar tu compra.
-            </p>
+            {configError && (
+              <a
+                href={configError}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 text-sm text-blue-600 hover:underline cursor-pointer"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Configurar cuenta MercadoPago
+              </a>
+            )}
           </div>
         ) : (
           <>
@@ -368,14 +414,13 @@ export function CartDrawer() {
                       className="flex gap-3 py-4"
                     >
                       <div className="w-14 h-14 rounded-lg bg-muted/80 flex items-center justify-center text-2xl shrink-0">
-                        {item.product.platform === 'Fortnite' ? '🎯' :
-                         item.product.platform === 'Spotify' ? '🎵' :
-                         item.product.platform === 'Netflix' ? '🎬' :
-                         item.product.platform === 'Steam' ? '🎮' :
-                         item.product.platform === 'Windows' ? '🖥️' :
-                         item.product.platform === 'Xbox' ? '🟢' :
-                         item.product.platform === 'YouTube' ? '▶️' :
-                         item.product.platform === 'Microsoft' ? '📊' : '📦'}
+                        {item.product.platform === 'Fortnite' ? '\uD83C\uDFAF' :
+                         item.product.platform === 'Spotify' ? '\uD83C\DFB5' :
+                         item.product.platform === 'Netflix' ? '\uD83C\DFAC' :
+                         item.product.platform === 'Steam' ? '\uD83C\DFAE' :
+                         item.product.platform === 'Xbox' ? '\uD83D\DFE2' :
+                         item.product.platform === 'YouTube' ? '\u25B6\uFE0F' :
+                         item.product.platform === 'Microsoft' ? '\uD83D\uDCCA' : '\uD83D\uDCE6'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{item.product.name}</p>
@@ -420,7 +465,7 @@ export function CartDrawer() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>${cartTotal().toFixed(2)}</span>
+                      <span>${total.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Envio</span>
@@ -429,35 +474,44 @@ export function CartDrawer() {
                     <Separator />
                     <div className="flex justify-between font-bold">
                       <span>Total</span>
-                      <span className="text-lg">${cartTotal().toFixed(2)}</span>
+                      <span className="text-lg">${total.toFixed(2)} USD</span>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Input
                       type="email"
-                      placeholder="tu@email.com"
+                      placeholder="tu@email.com - para recibir tus codigos"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="text-sm"
                     />
                     <Button
-                      className="w-full gap-2 cursor-pointer"
+                      className="w-full gap-2 cursor-pointer bg-[#009ee3] hover:bg-[#0086c1]"
                       size="lg"
                       disabled={!email || checkingOut}
                       onClick={handleCheckout}
                     >
                       {checkingOut ? (
-                        <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       ) : (
                         <>
                           <CreditCard className="w-4 h-4" />
-                          Pagar Ahora
+                          Pagar con MercadoPago
+                          <ArrowRight className="w-4 h-4" />
                         </>
                       )}
                     </Button>
-                    <p className="text-[10px] text-muted-foreground text-center">
-                      Pago seguro · Entrega instantanea · Garantia de reembolso
-                    </p>
+                    <div className="flex items-center justify-center gap-3 pt-1">
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3" /> Pago seguro
+                      </span>
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <Zap className="w-3 h-3" /> Entrega instantanea
+                      </span>
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <KeyRound className="w-3 h-3" /> Codigos reales
+                      </span>
+                    </div>
                   </div>
                 </div>
               </>
@@ -467,16 +521,6 @@ export function CartDrawer() {
 
         {orderResult?.success && (
           <SheetFooter className="p-4 border-t">
-            {orderResult.error === 'supplier_not_configured' && orderResult.setupUrl && (
-              <a
-                href={orderResult.setupUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full mb-2 text-center text-xs text-blue-600 hover:underline"
-              >
-                Configurar proveedor de productos →
-              </a>
-            )}
             <Button onClick={closeAndReset} className="w-full gap-2 cursor-pointer">
               Seguir Comprando <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
