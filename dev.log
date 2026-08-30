@@ -1,11 +1,22 @@
-⨯ Failed to start server
-Error: listen EADDRINUSE: address already in use :::3000
-    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
-    at new Promise (<anonymous>) {
-  code: 'EADDRINUSE',
-  errno: -98,
-  syscall: 'listen',
-  address: '::',
-  port: 3000
-}
-[?25h
+▲ Next.js 16.1.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://21.0.12.154:3000
+- Environments: .env
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 721ms
+○ Compiling / ...
+ GET / 200 in 1751ms (compile: 1241ms, render: 510ms)
+ GET / 200 in 86ms (compile: 3ms, render: 83ms)
+ GET / 200 in 300ms (compile: 6ms, render: 294ms)
+ GET /tienda/producto/g4 200 in 2.9s (compile: 2.8s, render: 150ms)
+⚠ Cross origin request detected from preview-chat-922ac4c0-8125-475d-b347-263939878674.space-z.ai to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 263ms (compile: 6ms, render: 258ms)
+ GET / 200 in 131ms (compile: 4ms, render: 127ms)
+ GET / 200 in 104ms (compile: 4ms, render: 100ms)
