@@ -36,3 +36,4 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  GET / 200 in 326ms (compile: 3ms, render: 323ms)
  GET /tienda/producto/g4 200 in 54ms (compile: 28ms, render: 26ms)
  GET / 200 in 119ms (compile: 3ms, render: 115ms)
+ GET / 200 in 174ms (compile: 5ms, render: 168ms)
