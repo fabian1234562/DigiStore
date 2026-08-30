@@ -433,7 +433,6 @@ export default function ProductoPage() {
   const { addToCart, setCartOpen } = useStore();
   const [qty, setQty] = useState(1);
   const [liked, setLiked] = useState(false);
-  const [selectedThumb, setSelectedThumb] = useState(0);
   const productId = params.id as string;
   const product = PRODUCTS.find((p) => p.id === productId);
 
@@ -481,8 +480,7 @@ export default function ProductoPage() {
     setCartOpen(true);
   };
 
-  /* Thumbnail images: use the main image for all 3 (simulated gallery) */
-  const thumbnails = [product.image, product.image, product.image];
+  /* ── Image info badges (no fake gallery for digital products) ── */
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAFA]">
@@ -531,20 +529,20 @@ export default function ProductoPage() {
                   </div>
                 )}
               </div>
-              <div className="mt-3 flex gap-3">
-                {thumbnails.map((thumb, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedThumb(i)}
-                    className={`w-20 h-20 rounded-lg border-2 overflow-hidden cursor-pointer transition-colors ${i === selectedThumb ? 'border-amber-400 ring-1 ring-amber-400/30' : 'border-zinc-200 hover:border-amber-300'}`}
-                  >
-                    <img
-                      src={thumb}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
+              {/* Product info badges */}
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="flex flex-col items-center gap-1 bg-gray-50 rounded-lg py-2.5 px-2">
+                  <Zap className="w-4 h-4 text-amber-500" />
+                  <span className="text-[10px] font-semibold text-gray-600 text-center leading-tight">Entrega<br/>instantanea</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 bg-gray-50 rounded-lg py-2.5 px-2">
+                  <Shield className="w-4 h-4 text-emerald-500" />
+                  <span className="text-[10px] font-semibold text-gray-600 text-center leading-tight">Oficial<br/>100%</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 bg-gray-50 rounded-lg py-2.5 px-2">
+                  <RotateCcw className="w-4 h-4 text-blue-500" />
+                  <span className="text-[10px] font-semibold text-gray-600 text-center leading-tight">Garantia<br/>30 dias</span>
+                </div>
               </div>
             </div>
 

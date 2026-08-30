@@ -60,3 +60,26 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  POST /api/chat 200 in 5.0s (compile: 3ms, render: 5.0s)
  GET /tienda 200 in 827ms (compile: 805ms, render: 22ms)
  GET /tienda/producto/s8 200 in 75ms (compile: 43ms, render: 33ms)
+ GET / 200 in 124ms (compile: 4ms, render: 120ms)
+ GET / 200 in 251ms (compile: 3ms, render: 248ms)
+ GET /tienda/producto/s2 200 in 51ms (compile: 33ms, render: 18ms)
+✓ Compiled in 179ms
+✓ Compiled in 426ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /tienda/producto/s2 200 in 546ms (compile: 86ms, render: 461ms)
+✓ Compiled in 250ms
+✓ Compiled in 334ms
+✓ Compiled in 225ms
+✓ Compiled in 286ms
+✓ Compiled in 256ms
+✓ Compiled in 302ms
+✓ Compiled in 962ms
+✓ Compiled in 265ms
+✓ Compiled in 248ms
+ GET /tienda/producto/s2 200 in 241ms (compile: 88ms, render: 153ms)
+ GET / 200 in 121ms (compile: 86ms, render: 35ms)
+ GET / 200 in 112ms (compile: 3ms, render: 109ms)
+ GET /tienda/producto/s2 200 in 108ms (compile: 37ms, render: 71ms)
+ GET / 200 in 71ms (compile: 4ms, render: 67ms)
+ GET /tienda/producto/s2 200 in 54ms (compile: 37ms, render: 17ms)
+✓ Compiled in 352ms
