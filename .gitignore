@@ -44,3 +44,7 @@ scripts/*.log
 .idea/
 *.swp
 *.swo
+zshop-*.json
+zshop-*.png
+digistore-*.png
+comparison-*.json
