@@ -92,3 +92,6 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  GET /tienda/producto/gc17 200 in 63ms (compile: 42ms, render: 21ms)
  POST /api/checkout 200 in 10ms (compile: 2ms, render: 7ms)
  POST /api/checkout 200 in 8ms (compile: 2ms, render: 6ms)
+ GET / 200 in 243ms (compile: 7ms, render: 236ms)
+ GET / 200 in 244ms (compile: 114ms, render: 130ms)
+✓ Compiled in 403ms
