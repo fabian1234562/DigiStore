@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DigiStore - Productos Digitales | Gaming, Streaming, Software",
-  description: "Tu tienda de productos digitales. Gaming, streaming, software, gift cards y más con entrega instantánea a todo el mundo.",
-  keywords: ["productos digitales", "gaming", "streaming", "gift cards", "software", "skins", "v-bucks", "robux"],
+  title: "DigiStore — Productos Digitales al Instante",
+  description: "Tu tienda de productos digitales. Gaming, streaming, software, gift cards y mas con entrega instantanea a todo el mundo.",
+  keywords: ["productos digitales", "gaming", "streaming", "gift cards", "software", "skins", "v-bucks", "robux", "fortnite", "roblox"],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },
