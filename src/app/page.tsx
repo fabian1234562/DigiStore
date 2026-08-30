@@ -1,16 +1,17 @@
 'use client';
 
 import { useStore, PRODUCTS, CATEGORIES } from '@/lib/store';
-import { CartDrawer } from '@/components/store/CartDrawer';
-import { AuthDialog } from '@/components/auth/AuthDialog';
+import dynamic from 'next/dynamic';
+const CartDrawer = dynamic(() => import('@/components/store/CartDrawer').then(m => ({ default: m.CartDrawer })), { ssr: false });
+const AuthDialog = dynamic(() => import('@/components/auth/AuthDialog').then(m => ({ default: m.AuthDialog })), { ssr: false });
+import { AIChatWidget } from '@/components/store/AIChatWidget';
 import {
   ShoppingCart, Search, Zap, Shield, Headphones, LogIn,
   ArrowRight, Sparkles, CreditCard, Flame, Heart, Star,
   ChevronLeft, ChevronRight, Truck, RotateCcw, Globe, Tag,
-  Menu, MapPin, DollarSign, ChevronDown, Eye, GitCompare, Sun, Moon,
-  MessageCircle, Gamepad2, Tv, Gift, AppWindow, RefreshCw,
-  Package, Check, Send, Crown, Clock, ArrowLeft, Monitor,
-  Smartphone, KeyRound, Ticket,
+  Menu, MapPin, ChevronDown, Eye, GitCompare, Sun, Moon,
+  Gamepad2, Tv, Gift, AppWindow, RefreshCw,
+  Package, Check, Send, Crown, Clock, KeyRound, Ticket,
 } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
@@ -329,27 +330,31 @@ function HeroCarousel() {
     >
       <div className="relative rounded-2xl overflow-hidden">
         {/* Slides container */}
-        <div className="relative h-[200px] sm:h-[280px] md:h-[340px] lg:h-[400px]">
+        <div className="relative h-[180px] sm:h-[260px] md:h-[320px] lg:h-[380px]">
           {heroSlides.map((s, i) => (
             <div
               key={i}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={s.title}
               className={`absolute inset-0 bg-gradient-to-r ${s.bg} transition-all duration-700 ease-in-out flex items-center ${
                 i === current ? 'opacity-100 translate-x-0' : i < current ? 'opacity-0 -translate-x-8' : 'opacity-0 translate-x-8'
               }`}
+              aria-hidden={i !== current}
             >
-              <div className="px-6 sm:px-10 md:px-14 lg:px-16 max-w-xl z-10">
-                <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-[11px] font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider">
+              <div className="px-5 sm:px-10 md:px-14 lg:px-16 max-w-xl z-10">
+                <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full mb-2 sm:mb-3 uppercase tracking-wider">
                   {s.badge}
                 </span>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-2">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-1.5 sm:mb-2">
                   {s.title}
                 </h2>
-                <p className="text-white/90 text-sm sm:text-base mb-5 max-w-md">
+                <p className="text-white/90 text-xs sm:text-sm md:text-base mb-4 sm:mb-5 max-w-md line-clamp-2 sm:line-clamp-none">
                   {s.subtitle}
                 </p>
-                <button className={`bg-white ${s.ctaColor} px-5 py-2.5 rounded-lg text-sm font-semibold hover:shadow-lg transition-all hover:scale-105 flex items-center gap-2`}>
+                <button className={`bg-white ${s.ctaColor} px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:shadow-lg transition-all hover:scale-105 flex items-center gap-1.5 sm:gap-2`}>
                   {s.cta}
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </div>
               <div className="absolute right-6 sm:right-10 md:right-16 bottom-4 text-7xl sm:text-8xl md:text-9xl opacity-20 select-none">
@@ -665,7 +670,7 @@ function DealsSection() {
         </div>
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
           {deals.map((p) => (
-            <div key={p.id} className="flex-shrink-0 w-[200px] sm:w-[220px]">
+            <div key={p.id} className="flex-shrink-0 w-[170px] sm:w-[210px]">
               <ProductCard product={p} compact />
             </div>
           ))}
@@ -693,7 +698,7 @@ function FeaturedProducts() {
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {featured.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
@@ -786,7 +791,7 @@ function NewArrivals() {
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {items.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
@@ -910,56 +915,7 @@ function Footer() {
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   CHAT BUTTON — floating, bottom-right, purple
-   ══════════════════════════════════════════════════════════════ */
-function ChatButton() {
-  const [open, setOpen] = useState(false);
 
-  return (
-    <>
-      <button
-        onClick={() => setOpen(!open)}
-        className="fixed bottom-5 right-5 z-50 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg px-4 py-3 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
-      >
-        <MessageCircle className="w-5 h-5" />
-        <span className="text-sm font-semibold">Chat</span>
-      </button>
-      {open && (
-        <div className="fixed bottom-20 right-5 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-          <div className="bg-purple-600 text-white px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5" />
-              <span className="font-semibold text-sm">Chat de soporte</span>
-            </div>
-            <button onClick={() => setOpen(false)} className="hover:bg-purple-700 rounded-full p-1 transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          </div>
-          <div className="p-4 h-64 flex flex-col">
-            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
-              <div className="text-center">
-                <MessageCircle className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-                <p className="font-medium text-gray-500">Hola! 👋</p>
-                <p className="text-xs mt-1">¿En que podemos ayudarte?</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Escribe un mensaje..."
-                className="flex-1 px-3 py-2 text-sm bg-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 transition-shadow"
-              />
-              <button className="px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
 
 /* ══════════════════════════════════════════════════════════════
    TRUST STRIP — simple trust badges above footer
@@ -1014,7 +970,7 @@ export default function HomePage() {
       </main>
 
       <Footer />
-      <ChatButton />
+      <AIChatWidget />
       <CartDrawer />
       <AuthDialog />
 

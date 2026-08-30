@@ -4,12 +4,13 @@ import { useParams } from 'next/navigation';
 import { PRODUCTS, CATEGORIES, useStore, Product } from '@/lib/store';
 import { CartDrawer } from '@/components/store/CartDrawer';
 import { AuthDialog } from '@/components/auth/AuthDialog';
+import { AIChatWidget } from '@/components/store/AIChatWidget';
 import {
   ShoppingCart, Star, Zap, Shield,
   CheckCircle2, Package, ArrowLeft, Truck, RotateCcw,
   Heart, Share2, Minus, Plus, Search,
   LogIn, MapPin, Menu, ChevronDown, GitCompare,
-  Sun, Moon, Globe, Tag, ShieldCheck, MessageCircle,
+  Sun, Moon, Globe, Tag, ShieldCheck,
   CreditCard, ChevronRight, Sparkles, ArrowRight, Send,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -703,24 +704,6 @@ export default function ProductoPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Help Widget */}
-              <div className="rounded-xl border border-purple-100 bg-purple-50 p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <MessageCircle className="w-5 h-5 text-purple-600" />
-                  <h3 className="text-sm font-bold text-purple-700">
-                    Necesitas ayuda?
-                  </h3>
-                </div>
-                <p className="text-xs leading-relaxed text-purple-500 mb-4">
-                  Nuestro equipo de expertos esta disponible 24/7 para resolver
-                  cualquier duda sobre tu compra, activacion o garantia.
-                </p>
-                <button className="flex w-full items-center justify-center gap-2 h-10 rounded-lg border-2 border-purple-300 bg-white text-sm font-semibold text-purple-600 hover:bg-purple-50 hover:border-purple-400 transition-colors cursor-pointer">
-                  <Send className="w-4 h-4" />
-                  Chatea con un experto
-                </button>
-              </div>
             </div>
           </div>
 
@@ -846,6 +829,7 @@ export default function ProductoPage() {
       </main>
 
       <Footer />
+      <AIChatWidget />
       <CartDrawer />
       <AuthDialog />
     </div>

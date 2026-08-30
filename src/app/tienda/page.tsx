@@ -1,9 +1,11 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useStore, PRODUCTS, CATEGORIES } from '@/lib/store';
 import { ProductCard } from '@/components/store/ProductCard';
-import { CartDrawer } from '@/components/store/CartDrawer';
-import { AuthDialog } from '@/components/auth/AuthDialog';
+const CartDrawer = dynamic(() => import('@/components/store/CartDrawer').then(m => ({ default: m.CartDrawer })), { ssr: false });
+const AuthDialog = dynamic(() => import('@/components/auth/AuthDialog').then(m => ({ default: m.AuthDialog })), { ssr: false });
+import { AIChatWidget } from '@/components/store/AIChatWidget';
 import {
   ShoppingCart, Search, Zap, Shield, Sparkles, LogIn,
   Flame, Heart, Star,
@@ -886,6 +888,7 @@ function ShopContent() {
         />
       )}
 
+      <AIChatWidget />
       <CartDrawer />
       <AuthDialog />
 
