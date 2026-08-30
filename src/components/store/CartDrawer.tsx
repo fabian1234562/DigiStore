@@ -280,6 +280,8 @@ export function CartDrawer() {
       if (data.success) {
         setOrderResult(data);
         clearCart();
+      } else {
+        setOrderResult({ success: false, message: data.message || 'Error al procesar el pedido' });
       }
     } catch {
       setOrderResult({ success: false, message: 'Error al procesar el pedido' });
@@ -316,6 +318,19 @@ export function CartDrawer() {
 
         {orderResult?.success ? (
           <OrderSuccess result={orderResult} />
+        ) : orderResult && !orderResult.success ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+              <CreditCard className="w-8 h-8 text-amber-600" />
+            </div>
+            <h3 className="text-lg font-bold mb-2">Pasarela de Pagos Próximamente</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              Estamos configurando la pasarela de pagos para que puedas recibir tus códigos digitales reales de forma segura.
+            </p>
+            <p className="text-xs text-muted-foreground mt-3">
+              Tu carrito se ha guardado. Vuelve pronto para completar tu compra.
+            </p>
+          </div>
         ) : (
           <>
             <ScrollArea className="flex-1 px-6">
