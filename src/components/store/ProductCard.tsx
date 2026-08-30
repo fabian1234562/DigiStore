@@ -1,10 +1,17 @@
 'use client';
 
 import { Product, useStore } from '@/lib/store';
-import { Button } from '@/components/ui/button';
 import { Star, ShoppingCart, Heart, Eye, GitCompare } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+
+function formatSold(count: number): string {
+  if (count >= 1000) {
+    const k = count / 1000;
+    return `${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}K`;
+  }
+  return String(count);
+}
 
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useStore();
@@ -14,54 +21,60 @@ export function ProductCard({ product }: { product: Product }) {
     : 0;
 
   return (
-    <div className="group rounded-lg border border-border/60 bg-card overflow-hidden hover:shadow-md transition-all">
-      {/* Image with hover overlay */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100 cursor-pointer">
-        <Link href={`/tienda/producto/${product.id}`}>
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-        </Link>
+    <div className="group bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+      {/* Image Area */}
+      <div className="relative aspect-square overflow-hidden bg-gray-50">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
 
-        {/* Discount badge */}
+        {/* Discount Badge */}
         {discount > 0 && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+          <span className="absolute top-2.5 left-2.5 bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-md">
             -{discount}%
-          </div>
+          </span>
         )}
 
-        {/* Wishlist heart — always visible on hover */}
+        {/* Heart / Wishlist Button */}
         <button
-          onClick={(e) => { e.stopPropagation(); setLiked(!liked); }}
-          className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-colors cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setLiked(!liked);
+          }}
+          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-colors flex items-center justify-center"
         >
-          <Heart className={`w-4 h-4 transition-colors ${liked ? 'fill-red-500 text-red-500' : 'text-zinc-500 hover:text-red-400'}`} />
+          <Heart
+            className={`w-4 h-4 transition-colors ${
+              liked ? 'fill-red-500 text-red-500' : 'text-gray-400'
+            }`}
+          />
         </button>
 
-        {/* Hover overlay — Quick View + Compare */}
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {/* Hover Overlay — Vista rapida + Comparar */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
           <Link
             href={`/tienda/producto/${product.id}`}
-            className="flex items-center gap-1 rounded-md bg-white px-3 py-1.5 text-xs font-medium text-zinc-900 shadow-sm hover:bg-zinc-100 transition-colors"
+            className="bg-white rounded-md px-3 py-1.5 text-xs font-medium text-zinc-900 shadow-sm hover:bg-gray-100 transition-colors flex items-center gap-1"
           >
-            <Eye className="w-3 h-3" /> Vista rapida
+            <Eye className="w-3 h-3" />
+            Vista rapida
           </Link>
-          <button className="flex items-center gap-1 rounded-md bg-white px-3 py-1.5 text-xs font-medium text-zinc-900 shadow-sm hover:bg-zinc-100 transition-colors cursor-pointer">
-            <GitCompare className="w-3 h-3" /> Comparar
+          <button className="bg-white rounded-md px-3 py-1.5 text-xs font-medium text-zinc-900 shadow-sm hover:bg-gray-100 transition-colors flex items-center gap-1">
+            <GitCompare className="w-3 h-3" />
+            Comparar
           </button>
         </div>
       </div>
 
-      {/* Content — Z Shop style */}
-      <div className="p-3">
-        {/* Brand + Sold count */}
-        <div className="flex items-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
-          <span>{product.platform}</span>
-          <span>({product.reviews.toLocaleString()})</span>
-        </div>
+      {/* Content Area */}
+      <div className="p-3.5">
+        {/* Brand / Platform line */}
+        <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">
+          {product.platform} ({product.reviews.toLocaleString()})
+        </p>
 
         {/* Title */}
         <Link href={`/tienda/producto/${product.id}`}>
@@ -72,12 +85,10 @@ export function ProductCard({ product }: { product: Product }) {
 
         {/* Rating + Sold */}
         <div className="flex items-center gap-1 mt-1.5">
-          <div className="flex items-center gap-0.5">
-            <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-            <span className="text-xs font-semibold">{product.rating}</span>
-          </div>
-          <span className="text-[10px] text-muted-foreground">
-            {product.sold >= 1000 ? `${(product.sold / 1000).toFixed(0)}K` : product.sold} vendidos
+          <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+          <span className="text-xs font-semibold">{product.rating}</span>
+          <span className="text-[10px] text-gray-400">
+            {formatSold(product.sold)} vendidos
           </span>
         </div>
 
@@ -85,16 +96,22 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="flex items-baseline gap-2 mt-2">
           <span className="text-base font-bold">${product.price.toFixed(2)}</span>
           {product.originalPrice && (
-            <span className="text-xs text-muted-foreground line-through">${product.originalPrice.toFixed(2)}</span>
+            <span className="text-xs text-gray-400 line-through">
+              ${product.originalPrice.toFixed(2)}
+            </span>
           )}
         </div>
 
-        {/* Add to cart */}
+        {/* Add to Cart Button */}
         <button
-          onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-md bg-zinc-900 px-3 py-2 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            addToCart(product);
+          }}
+          className="mt-3 w-full h-10 rounded-lg bg-zinc-900 text-white text-xs font-semibold hover:bg-zinc-800 transition-colors flex items-center justify-center gap-1.5"
         >
-          <ShoppingCart className="w-3.5 h-3.5" /> Agregar al carrito
+          <ShoppingCart className="w-3.5 h-3.5" />
+          Agregar al carrito
         </button>
       </div>
     </div>
