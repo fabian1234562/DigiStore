@@ -4,6 +4,7 @@
 
 import { NextResponse } from 'next/server';
 import { gameScanner } from '@/lib/game-scanner';
+import { SEED_STATS } from '@/lib/game-scanner/seed-data';
 
 export async function GET() {
   const summary = gameScanner.getSummary();
@@ -15,5 +16,6 @@ export async function GET() {
     history,
     isScanning: gameScanner.getIsScanning(),
     totalGamesInStore: gameScanner.totalGames,
+    seedStats: SEED_STATS,
   });
 }
