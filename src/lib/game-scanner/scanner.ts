@@ -293,7 +293,5 @@ export function getScannedGamesAsProducts() {
     tags: [...game.tags, 'free-game', '100-profit'],
     stock: game.unlimitedStock ? 999 : game.stock,
     featured: game.status === 'expiring',
-    // Metadatos del escaneo
-    scannedGame: game,
   }));
 }

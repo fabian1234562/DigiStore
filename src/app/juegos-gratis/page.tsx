@@ -196,9 +196,9 @@ export default function JuegosGratisPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={() => setSelectedSource('all')} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${selectedSource === 'all' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>Todas</button>
-            {GAME_SOURCES.filter(s => ['epic-games','gog','steam','indiegala'].includes(s.id)).map(source => {
+            {GAME_SOURCES.filter(s => ['epic-games','prime-gaming','gog','humble','indiegala','fanatical','steam'].includes(s.id)).map(source => {
               const Icon = sourceIcons[source.id] || Gamepad2;
-              const label = source.id === 'gog' ? 'Indie Games' : source.id === 'indiegala' ? 'Software' : source.name.split(' ')[0];
+              const label = source.name.split(' ')[0];
               return (<button key={source.id} onClick={() => setSelectedSource(source.id as GameSource)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${selectedSource === source.id ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
                 <Icon className="w-3.5 h-3.5" />{label}
@@ -227,7 +227,7 @@ export default function JuegosGratisPage() {
                   {game.status === 'expiring' && (<div className="absolute top-3 right-3 z-10 flex items-center gap-1 rounded-full bg-red-500/90 px-2 py-0.5 text-[10px] font-bold text-white"><Clock className="w-3 h-3" />Expirando</div>)}
                   <div className="absolute top-3 left-3 z-10 flex items-center gap-1 rounded-full bg-green-500/90 px-2 py-0.5 text-[10px] font-bold text-white"><Zap className="w-3 h-3" />100% Ganancia</div>
                   <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
-                    {game.imageUrl ? (<img src={game.imageUrl} alt={game.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" onError={e => { (e.target as HTMLImageElement).src = '/products/gen/gaming-cat.png'; }} />) : (<div className="flex h-full items-center justify-center"><SrcIcon className="w-12 h-12 text-gray-700" /></div>)}
+                    {game.imageUrl ? (<img src={game.imageUrl} alt={game.title} width={616} height={353} decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" onError={e => { (e.target as HTMLImageElement).src = '/products/gen/gaming-cat.png'; }} />) : (<div className="flex h-full items-center justify-center"><SrcIcon className="w-12 h-12 text-gray-700" /></div>)}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                     <div className="absolute bottom-3 left-3">
                       <div className="text-2xl font-extrabold text-green-400">${game.sellPrice.toFixed(2)}</div>

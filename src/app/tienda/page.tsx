@@ -174,8 +174,8 @@ export default function TiendaPage() {
                   const discount = game.originalPrice ? Math.round((1 - game.price / game.originalPrice) * 100) : 0;
                   return (
                     <div key={game.id} className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                      <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                        <Gamepad2 className="w-12 h-12 text-gray-300" />
+                      <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+                        <img src={game.image} alt={game.name} width={616} height={353} decoding="async" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                         {discount > 0 && <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">-{discount}%</span>}
                         <span className="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">GRATIS</span>
                       </div>

@@ -1,0 +1,17 @@
+{
+  "found": {
+    "epic-2": "https://cdn.akamai.steamstatic.com/steam/apps/1203220/capsule_616x353.jpg",
+    "epic-3": "https://cdn.akamai.steamstatic.com/steam/apps/2685400/capsule_616x353.jpg",
+    "epic-4": "https://cdn.akamai.steamstatic.com/steam/apps/1449230/capsule_616x353.jpg",
+    "epic-8": "https://cdn.akamai.steamstatic.com/steam/apps/1966720/capsule_616x353.jpg",
+    "prime-2": "https://cdn.akamai.steamstatic.com/steam/apps/50130/capsule_616x353.jpg",
+    "humble-1": "https://cdn.akamai.steamstatic.com/steam/apps/403640/capsule_616x353.jpg"
+  },
+  "still_missing": [
+    "epic-16",
+    "epic-21",
+    "epic-22",
+    "epic-47",
+    "prime-6"
+  ]
+}

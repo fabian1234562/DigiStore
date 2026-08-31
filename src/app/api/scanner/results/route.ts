@@ -47,7 +47,6 @@ export async function GET(request: Request) {
         tags: [...g.tags, 'free-game'],
         stock: 999,
         featured: g.status === 'expiring',
-        _scannedGame: g,
       }));
       return NextResponse.json({ success: true, products, total: products.length });
     }

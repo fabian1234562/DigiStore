@@ -199,8 +199,8 @@ function GameCard({ game, compact = false }: { game: GameProduct; compact?: bool
 
   return (
     <div className={`group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${compact ? 'w-64 shrink-0' : ''}`}>
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
-        <Gamepad2 className="w-16 h-16 text-gray-300" />
+      <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+        <img src={game.image} alt={game.name} width={616} height={353} decoding="async" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         {discount > 0 && (
           <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">-{discount}%</span>
         )}
