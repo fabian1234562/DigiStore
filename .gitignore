@@ -39,6 +39,14 @@ tool-results/
 worklog.md
 scripts/*.log
 
+# Web search/scraper temp files
+search-*.json
+page-*.json
+dev.log
+scripts/extract_*.py
+scripts/compile_*.py
+scripts/parse*.py
+
 # IDE
 .vscode/
 .idea/
