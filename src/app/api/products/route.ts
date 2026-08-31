@@ -1,47 +1,31 @@
 import { NextResponse } from 'next/server';
-import { PRODUCTS } from '@/lib/store';
+import { getScannedGamesAsProducts } from '@/lib/game-scanner';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const category = searchParams.get('category') || 'all';
-  const subcategory = searchParams.get('subcategory') || 'all';
   const search = searchParams.get('search') || '';
   const sort = searchParams.get('sort') || 'popular';
+  const source = searchParams.get('source') || '';
 
-  let filtered = [...PRODUCTS];
+  let products = getScannedGamesAsProducts();
 
-  if (category !== 'all') {
-    filtered = filtered.filter((p) => p.category === category);
-  }
-  if (subcategory !== 'all') {
-    filtered = filtered.filter((p) => p.subcategory === subcategory);
+  if (source) {
+    products = products.filter(p => p.subcategory?.toLowerCase().includes(source.toLowerCase()));
   }
   if (search) {
     const q = search.toLowerCase();
-    filtered = filtered.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.platform.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q))
+    products = products.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (p.description || '').toLowerCase().includes(q) ||
+      (p.platform || '').toLowerCase().includes(q)
     );
   }
 
   switch (sort) {
-    case 'price-asc':
-      filtered.sort((a, b) => a.price - b.price);
-      break;
-    case 'price-desc':
-      filtered.sort((a, b) => b.price - a.price);
-      break;
-    case 'rating':
-      filtered.sort((a, b) => b.rating - a.rating);
-      break;
-    case 'popular':
-    default:
-      filtered.sort((a, b) => b.sold - a.sold);
-      break;
+    case 'price-asc': products.sort((a, b) => a.price - b.price); break;
+    case 'price-desc': products.sort((a, b) => b.price - a.price); break;
+    case 'rating': products.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
   }
 
-  return NextResponse.json({ products: filtered, total: filtered.length });
+  return NextResponse.json({ products, total: products.length });
 }
