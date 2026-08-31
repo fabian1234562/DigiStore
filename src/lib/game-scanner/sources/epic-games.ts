@@ -2,7 +2,8 @@
  * EPIC GAMES STORE - Scraper de juegos gratis
  * 
  * Epic Games regala 1-2 juegos cada semana (jueves a jueves).
- * Usamos su API pública GraphQL para obtener los juegos actuales.
+ * La API devuelve: data.Catalog.searchStore.elements
+ * Cada elemento con discountPrice=0 esta gratis.
  */
 
 import { ScannedGame, ScanResult, GameSource, FREE_GAME_PRICING, DeliveryType } from '../types';
@@ -11,111 +12,92 @@ const EPIC_API = 'https://store-site-backend-static.ak.epicgames.com';
 const COUNTRY = 'US';
 const LOCALE = 'en-US';
 
-interface EpicPromotion {
-  promotions: {
-    upcoming: any[];
-    active: any[];
-  };
-}
-
-interface EpicGame {
-  id: string;
-  title: string;
-  description: string;
-  keyImages: { type: string; url: string }[];
-  price: {
-    totalPrice: {
-      discountPrice: number;
-      originalPrice: number;
-      fmtPrice: {
-        originalPrice: string;
-        discountPrice: string;
-        interimPrice: string;
-      };
-    };
-  };
-  offerMappings?: any[];
-  catalogNs: { mappings: { pageSlug: string; productSlug: string }[] }[];
-  meta?: any;
-}
-
 export async function scanEpicGames(): Promise<ScanResult> {
   const startTime = Date.now();
   const games: ScannedGame[] = [];
 
   try {
-    // Obtener promociones activas y próximas
     const url = `${EPIC_API}/freeGamesPromotions?locale=${LOCALE}&country=${COUNTRY}&allowCountries=${COUNTRY}`;
     const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-      next: { revalidate: 3600 }, // Cache 1 hora
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json() as { data: EpicPromotion };
-    const promotions = data.data?.promotions;
+    const data = await response.json() as any;
 
-    if (!promotions) {
-      throw new Error('No se encontraron promociones');
-    }
+    // Estructura actual: data.Catalog.searchStore.elements
+    const elements: any[] = data?.data?.Catalog?.searchStore?.elements || [];
 
-    // Procesar juegos ACTIVOS (gratis ahora)
-    for (const promo of [...promotions.active, ...promotions.upcoming]) {
-      const game = promo.product as EpicGame | undefined;
-      if (!game) continue;
+    for (const el of elements) {
+      const title = el.title || 'Juego sin titulo';
+      const totalPrice = el.price?.totalPrice || {};
+      const discountPrice = totalPrice.discountPrice; // 0 = gratis
+      const originalPrice = totalPrice.originalPrice || 0; // en centavos
 
-      // Solo juegos con precio 0 o que estarán gratis
-      const price = game.price?.totalPrice;
-      const isFree = price?.discountPrice === 0 || price?.originalPrice === 0;
-      
-      if (!isFree) continue;
+      // Solo procesar juegos GRATIS (discountPrice === 0)
+      if (discountPrice !== undefined && discountPrice !== 0) continue;
+      // Si no tiene precio, verificar que tenga promocion activa
+      const hasPromo = el.promotions?.promotionalOffers?.some((po: any) =>
+        po.offers?.some((o: any) => {
+          const now = new Date();
+          const start = new Date(o.startDate);
+          const end = new Date(o.endDate);
+          return now >= start && now <= end;
+        })
+      );
+      if (discountPrice === undefined && !hasPromo) continue;
 
-      // Obtener la imagen principal
-      const keyImage = game.keyImages?.find(
-        (img: any) => img.type === 'DieselStoreFrontWide' || img.type === 'OfferImageWide'
-      ) || game.keyImages?.[0];
+      // Imagen principal
+      const keyImages = el.keyImages || [];
+      const wideImg = keyImages.find((i: any) => i.type === 'OfferImageWide' || i.type === 'DieselStoreFrontWide');
+      const tallImg = keyImages.find((i: any) => i.type === 'OfferImageTall' || i.type === 'Thumbnail');
+      const imageUrl = wideImg?.url || tallImg?.url || keyImages[0]?.url || '';
 
-      // Slug del juego para enlace
-      const slug = game.catalogNs?.mappings?.[0]?.pageSlug || game.offerMappings?.[0]?.pageSlug || '';
+      // Slug para enlace
+      const catalogNs = el.catalogNs?.mappings?.[0] || {};
+      const slug = catalogNs.pageSlug || '';
 
-      // Fecha de fin
-      const endDate = promo.end_date || null;
-
-      // Determinar estado
-      const isActive = promotions.active.includes(promo);
-      const now = new Date();
-      const end = endDate ? new Date(endDate) : null;
-      let status: ScannedGame['status'] = 'active';
-      if (end && (end.getTime() - now.getTime()) < 24 * 60 * 60 * 1000) {
-        status = 'expiring';
+      // Fechas de promocion
+      let startDate = new Date().toISOString();
+      let endDate: string | undefined;
+      for (const po of el.promotions?.promotionalOffers || []) {
+        for (const o of po.offers || []) {
+          if (o.startDate) startDate = o.startDate;
+          if (o.endDate) endDate = o.endDate;
+        }
       }
 
-      const originalPrice = price?.originalPrice || 0;
+      // Verificar si esta proximo a expirar (24h)
+      const now = new Date();
+      const end = endDate ? new Date(endDate) : null;
+      const status: ScannedGame['status'] = (end && (end.getTime() - now.getTime()) < 24 * 60 * 60 * 1000) ? 'expiring' : 'active';
+
+      // Precio original en USD (Epic usa centavos)
+      const origPriceUsd = originalPrice > 0 ? originalPrice / 100 : 0;
 
       games.push({
-        id: `epic-${game.id}`,
-        sourceId: game.id,
+        id: `epic-${el.id || slug}`,
+        sourceId: String(el.id || ''),
         source: 'epic-games' as GameSource,
-        title: game.title || 'Juego sin título',
-        description: (game.description || '').substring(0, 200),
-        imageUrl: keyImage?.url || '',
-        originalPrice: originalPrice > 0 ? originalPrice / 100 : 0, // Epic usa centavos
-        sellPrice: FREE_GAME_PRICING.calculate(originalPrice / 100, 'claim-link'),
+        title,
+        description: (el.description || '').substring(0, 200) || `Juego gratis en Epic Games Store. Precio original: $${origPriceUsd}`,
+        imageUrl,
+        originalPrice: origPriceUsd,
+        sellPrice: FREE_GAME_PRICING.calculate(origPriceUsd, 'claim-link' as DeliveryType),
         deliveryType: 'claim-link' as DeliveryType,
         platform: ['Epic Games'],
         genre: [],
         claimUrl: slug ? `https://store.epicgames.com/en-US/p/${slug}` : 'https://store.epicgames.com/en-US/free-games',
-        claimInstructions: '1. Ve a la Epic Games Store (necesitas cuenta gratuita)\n2. Haz clic en "Get" para reclamar el juego\n3. El juego se agregará a tu biblioteca de Epic Games\n4. Descárgalo cuando quieras desde el launcher de Epic',
+        claimInstructions: '1. Ve a la Epic Games Store (necesitas cuenta gratuita)\n2. Haz clic en "Get" para reclamar el juego\n3. El juego se agregara a tu biblioteca de Epic Games\n4. Descargalo cuando quieras desde el launcher de Epic',
         stock: 0,
         unlimitedStock: true,
         status,
-        startDate: promo.start_date || new Date().toISOString(),
-        endDate: endDate || undefined,
+        startDate,
+        endDate,
         scannedAt: new Date().toISOString(),
         lastChecked: new Date().toISOString(),
         tags: ['free', 'epic-games', 'weekly'],

@@ -412,3 +412,29 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  GET / 200 in 17ms (compile: 3ms, render: 13ms)
 ✓ Compiled in 544ms
 ✓ Compiled in 441ms
+ GET / 200 in 610ms (compile: 57ms, render: 553ms)
+ GET / 200 in 299ms (compile: 4ms, render: 295ms)
+ GET / 200 in 287ms (compile: 5ms, render: 282ms)
+ GET / 200 in 194ms (compile: 3ms, render: 191ms)
+ GET /juegos-gratis 200 in 945ms (compile: 916ms, render: 29ms)
+ GET /api/scanner/results 200 in 506ms (compile: 491ms, render: 15ms)
+ GET /api/scanner/summary 200 in 128ms (compile: 122ms, render: 6ms)
+[GameScanner] Iniciando escaneo completo de todas las fuentes...
+[GOG Scanner] Error: HTTP 404: Not Found
+[EpicGames Scanner] Error: No se encontraron promociones
+[Humble Scanner] Error: HTTP 404
+ POST /api/scanner/run 200 in 7ms (compile: 3ms, render: 4ms)
+[GameScanner] Escaneo completado: 15 juegos encontrados en 8 fuentes
+ POST /api/scanner/run 200 in 1717ms (compile: 145ms, render: 1573ms)
+ GET /api/scanner/results 200 in 9ms (compile: 3ms, render: 6ms)
+ GET /api/scanner/summary 200 in 6ms (compile: 2ms, render: 4ms)
+[GameScanner] Iniciando escaneo completo de todas las fuentes...
+[EpicGames Scanner] Error: No se encontraron promociones
+[GOG Scanner] Error: HTTP 404: Not Found
+[Humble Scanner] Error: HTTP 404
+[GameScanner] Escaneo completado: 15 juegos encontrados en 8 fuentes
+ POST /api/scanner/run 200 in 588ms (compile: 2ms, render: 586ms)
+ GET /api/scanner/results 200 in 7ms (compile: 3ms, render: 4ms)
+ GET /api/scanner/summary 200 in 8ms (compile: 3ms, render: 5ms)
+ POST /api/payments/create 200 in 446ms (compile: 439ms, render: 7ms)
+[?25h

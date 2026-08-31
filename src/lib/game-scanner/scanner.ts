@@ -7,26 +7,21 @@
 
 import { ScannedGame, ScanResult, ScanSummary, GameSource, GAME_SOURCES } from './types';
 import { scanEpicGames } from './sources/epic-games';
-import { scanGOG } from './sources/gog';
-import { scanSteam } from './sources/steam';
+import { scanCheapShark } from './sources/cheapshark';
 import { scanIndieGala } from './sources/indiegala';
-import { scanFanatical } from './sources/fanatical';
 import { scanHumble } from './sources/humble';
-import { scanPrimeGaming } from './sources/prime-gaming';
 
 /** Función de escaneo por fuente */
 type ScanFunction = () => Promise<ScanResult>;
 
 /** Registro de todas las funciones de escaneo */
 const SCANNERS: Record<GameSource, { fn: ScanFunction; name: string }> = {
+  // FUENTES QUE FUNCIONAN (API real comprobada)
   'epic-games': { fn: scanEpicGames, name: 'Epic Games Store' },
-  'gog': { fn: scanGOG, name: 'GOG.com' },
-  'steam': { fn: scanSteam, name: 'Steam' },
+  'steam': { fn: scanCheapShark, name: 'CheapShark (Multi-tienda)' },
+  // FUENTES EXPERIMENTALES (SPAs, pueden fallar)
   'indiegala': { fn: scanIndieGala, name: 'IndieGala' },
-  'fanatical': { fn: scanFanatical, name: 'Fanatical' },
   'humble': { fn: scanHumble, name: 'Humble Bundle' },
-  'prime-gaming': { fn: scanPrimeGaming, name: 'Prime Gaming' },
-  'apple': { fn: async () => ({ source: 'apple', sourceName: 'Apple', success: false, gamesFound: [], scannedAt: new Date().toISOString(), duration: 0, error: 'Apple scanner no disponible aún' }), name: 'Apple App Store' },
 };
 
 /** Almacenamiento en memoria de los juegos escaneados */
