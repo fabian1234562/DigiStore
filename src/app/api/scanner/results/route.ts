@@ -35,8 +35,16 @@ export async function GET(request: Request) {
         description: g.description,
         price: g.sellPrice,
         originalPrice: g.originalPrice > 0 ? g.originalPrice : undefined,
-        category: 'Juegos Gratis',
-        subcategory: g.source,
+        category: g.tags.includes('software') ? 'Software y Licencias' : 'Juegos Gratis',
+        subcategory: g.source === 'epic-games' ? 'Epic Games' :
+                   g.source === 'prime-gaming' ? 'Prime Gaming' :
+                   g.source === 'gog' ? 'GOG.com' :
+                   g.source === 'humble' ? 'Humble Bundle' :
+                   g.source === 'indiegala' ? 'IndieGala' :
+                   g.source === 'fanatical' ? 'Fanatical' :
+                   g.source === 'steam' ? 'Steam F2P' :
+                   g.source === 'software' ? 'Software Gratis' :
+                   g.source,
         image: g.imageUrl || '/products/gen/gaming-cat.png',
         rating: g.rating || 4,
         reviews: 0,

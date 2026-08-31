@@ -15,6 +15,7 @@ export type GameSource =
   | 'fanatical'
   | 'humble'
   | 'prime-gaming'
+  | 'software'
   | 'apple';
 
 /** Tipo de entrega del juego */
@@ -199,6 +200,15 @@ export const GAME_SOURCES: SourceInfo[] = [
     color: '#00A8E1',
     description: 'Juegos gratis con Amazon Prime',
     scanFrequency: 'monthly',
+  },
+  {
+    id: 'software',
+    name: 'Software Gratis',
+    url: 'https://giveawayoftheday.com/',
+    icon: 'Monitor',
+    color: '#6366F1',
+    description: 'Licencias de software, antivirus, VPN y herramientas gratis',
+    scanFrequency: 'daily',
   },
   {
     id: 'apple',

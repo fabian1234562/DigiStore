@@ -31,7 +31,7 @@ interface GameProduct {
   featured: boolean;
 }
 
-const SOURCES = ['all', 'Epic Games', 'Prime Gaming', 'GOG.com', 'Humble Bundle', 'IndieGala', 'Fanatical', 'Steam F2P'];
+const SOURCES = ['all', 'Epic Games', 'Prime Gaming', 'GOG.com', 'Humble Bundle', 'IndieGala', 'Fanatical', 'Steam F2P', 'Software Gratis'];
 
 function StoreHeader() {
   const { cartOpen, setCartOpen, authOpen, setAuthOpen, cartCount } = useStore();

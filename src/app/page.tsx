@@ -119,9 +119,9 @@ function Header() {
    ══════════════════════════════════════════════════════════════ */
 function HeroCarousel({ gamesCount, valueTotal }: { gamesCount: number; valueTotal: number }) {
   const slides = [
-    { title: 'Juegos Gratis Escaneados', sub: `${gamesCount} juegos encontrados en tiempo real`, desc: 'Escaneamos Epic Games, Prime Gaming, GOG, Steam y mas. Te los vendemos al mejor precio con 100% ganancia.', cta: 'Ver Juegos Gratis', href: '/juegos-gratis', gradient: 'from-violet-600 via-purple-600 to-indigo-700', icon: Crown },
-    { title: 'Ganancia del 100%', sub: `Valor total: $${valueTotal.toFixed(0)}`, desc: 'Productos obtenidos gratis y revendidos. Sin inventario, sin proveedores, sin riesgo. Puro beneficio.', cta: 'Ir a la Tienda', href: '/tienda', gradient: 'from-emerald-500 via-teal-500 to-cyan-600', icon: Zap },
-    { title: 'Entrega Instantanea', sub: 'Pago aprobado = juego entregado', desc: 'MercadoPago, PayPal y Bitcoin disponibles. Recibe instrucciones de reclamo inmediatas tras pagar.', cta: 'Comprar Ahora', href: '/juegos-gratis', gradient: 'from-amber-500 via-orange-500 to-red-500', icon: Send },
+    { title: 'Juegos y Software Gratis', sub: `${gamesCount} productos escaneados`, desc: 'Escaneamos Epic Games, Prime Gaming, GOG, Steam, GiveawayOfTheDay y mas. Juegos + licencias de software con 100% ganancia.', cta: 'Ver Todo', href: '/juegos-gratis', gradient: 'from-violet-900/90 via-purple-900/80', bgImage: 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg', icon: Crown },
+    { title: 'Ganancia del 100%', sub: `Valor total: $${valueTotal.toFixed(0)}`, desc: 'Productos obtenidos gratis y revendidos. Sin inventario, sin proveedores, sin riesgo. Puro beneficio en cada venta.', cta: 'Ir a la Tienda', href: '/tienda', gradient: 'from-emerald-900/90 via-teal-900/80', bgImage: 'https://cdn.akamai.steamstatic.com/steam/apps/1408650/capsule_616x353.jpg', icon: Zap },
+    { title: 'Entrega Instantanea', sub: 'Pago aprobado = producto entregado', desc: 'MercadoPago, PayPal, Bitcoin y USDT disponibles. Recibe instrucciones o licencias inmediatas tras pagar.', cta: 'Comprar Ahora', href: '/juegos-gratis', gradient: 'from-amber-900/90 via-orange-900/80', bgImage: 'https://cdn.akamai.steamstatic.com/steam/apps/736260/capsule_616x353.jpg', icon: Send },
   ];
   const [current, setCurrent] = useState(0);
 
@@ -135,15 +135,18 @@ function HeroCarousel({ gamesCount, valueTotal }: { gamesCount: number; valueTot
       <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${current * 100}%)` }}>
         {slides.map((s, i) => (
           <div key={i} className="min-w-full">
-            <div className={`bg-gradient-to-br ${s.gradient} text-white`}>
-              <div className="mx-auto max-w-7xl px-3 sm:px-6 py-12 md:py-20 flex items-center min-h-[280px] md:min-h-[340px]">
+            <div className="relative text-white">
+              <img src={s.bgImage} alt="" className="absolute inset-0 w-full h-full object-cover" loading="eager" />
+              <div className={`absolute inset-0 bg-gradient-to-r ${s.gradient} to-black/70`} />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="relative mx-auto max-w-7xl px-3 sm:px-6 py-12 md:py-20 flex items-center min-h-[280px] md:min-h-[380px]">
                 <div className="max-w-xl">
                   <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-sm font-medium px-3 py-1 rounded-full mb-4">
                     <s.icon className="w-4 h-4" /> {s.sub}
                   </div>
-                  <h1 className="text-3xl md:text-5xl font-extrabold mb-3 leading-tight">{s.title}</h1>
-                  <p className="text-sm md:text-base text-white/80 mb-6 leading-relaxed">{s.desc}</p>
-                  <Link href={s.href} className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors text-sm">
+                  <h1 className="text-3xl md:text-5xl font-extrabold mb-3 leading-tight drop-shadow-lg">{s.title}</h1>
+                  <p className="text-sm md:text-base text-white/90 mb-6 leading-relaxed drop-shadow-md">{s.desc}</p>
+                  <Link href={s.href} className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors text-sm shadow-lg">
                     {s.cta} <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -152,7 +155,7 @@ function HeroCarousel({ gamesCount, valueTotal }: { gamesCount: number; valueTot
           </div>
         ))}
       </div>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {slides.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)} className={`w-2.5 h-2.5 rounded-full transition-all ${i === current ? 'bg-white w-8' : 'bg-white/40'}`} />
         ))}
@@ -277,6 +280,30 @@ function DealsGames({ games }: { games: GameProduct[] }) {
   );
 }
 
+function SoftwareProducts({ games }: { games: GameProduct[] }) {
+  const software = games.filter(g => g.category === 'Software y Licencias');
+  if (software.length === 0) return null;
+  return (
+    <section className="mx-auto max-w-7xl px-3 sm:px-6 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-indigo-500" />
+            <h2 className="text-xl md:text-2xl font-extrabold">Software y Licencias</h2>
+          </div>
+          <p className="text-sm text-gray-500">Antivirus, VPN, utilidades y mas — todo gratis</p>
+        </div>
+        <Link href="/tienda" className="text-sm font-semibold text-violet-600 hover:text-violet-700 flex items-center gap-1">
+          Ver mas <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        {software.slice(0, 5).map(g => <GameCard key={g.id} game={g} />)}
+      </div>
+    </section>
+  );
+}
+
 function NewGames({ games }: { games: GameProduct[] }) {
   const recent = [...games].slice(0, 8);
   if (recent.length === 0) return null;
@@ -302,21 +329,27 @@ function CTABanners() {
   return (
     <section className="mx-auto max-w-7xl px-3 sm:px-6 py-8">
       <div className="grid md:grid-cols-2 gap-4">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white p-6 md:p-8">
-          <Crown className="absolute right-4 bottom-4 w-24 h-24 text-white/10" />
-          <h3 className="text-xl font-extrabold mb-2">Escaneo en Tiempo Real</h3>
-          <p className="text-sm text-white/80 mb-4">Buscamos juegos gratis en 7 plataformas y los agregamos automaticamente a la tienda.</p>
-          <Link href="/juegos-gratis" className="inline-flex items-center gap-1.5 bg-white text-violet-700 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-            Explorar <ArrowRight className="w-4 h-4" />
-          </Link>
+        <div className="relative overflow-hidden rounded-2xl text-white p-6 md:p-8 min-h-[180px]">
+          <img src="https://cdn.akamai.steamstatic.com/steam/apps/1504530/capsule_616x353.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-900/95 via-indigo-900/90 to-violet-800/85" />
+          <div className="relative">
+            <h3 className="text-xl font-extrabold mb-2">Escaneo en Tiempo Real</h3>
+            <p className="text-sm text-white/80 mb-4">Buscamos juegos y software gratis en 8 plataformas y los agregamos automaticamente.</p>
+            <Link href="/juegos-gratis" className="inline-flex items-center gap-1.5 bg-white text-violet-700 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+              Explorar <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-6 md:p-8">
-          <Zap className="absolute right-4 bottom-4 w-24 h-24 text-white/10" />
-          <h3 className="text-xl font-extrabold mb-2">100% Ganancia</h3>
-          <p className="text-sm text-white/80 mb-4">Productos obtenidos gratis. Cada venta es ganancia pura sin costos de inventario.</p>
-          <Link href="/tienda" className="inline-flex items-center gap-1.5 bg-white text-emerald-700 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-            Ver Tienda <ArrowRight className="w-4 h-4" />
-          </Link>
+        <div className="relative overflow-hidden rounded-2xl text-white p-6 md:p-8 min-h-[180px]">
+          <img src="https://cdn.akamai.steamstatic.com/steam/apps/1147560/capsule_616x353.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/95 via-teal-900/90 to-emerald-800/85" />
+          <div className="relative">
+            <h3 className="text-xl font-extrabold mb-2">100% Ganancia</h3>
+            <p className="text-sm text-white/80 mb-4">Productos obtenidos gratis. Cada venta es ganancia pura sin costos de inventario.</p>
+            <Link href="/tienda" className="inline-flex items-center gap-1.5 bg-white text-emerald-700 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+              Ver Tienda <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>
@@ -434,6 +467,7 @@ export default function HomePage() {
         <>
           <DealsGames games={games} />
           <FeaturedGames games={games} />
+          <SoftwareProducts games={games} />
           <CTABanners />
           <NewGames games={games} />
         </>

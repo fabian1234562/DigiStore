@@ -274,7 +274,6 @@ export function getScannedGamesAsProducts() {
     description: game.description,
     price: game.sellPrice,
     originalPrice: game.originalPrice > 0 ? game.originalPrice : undefined,
-    category: 'Juegos Gratis',
     subcategory: game.source === 'epic-games' ? 'Epic Games' :
                game.source === 'prime-gaming' ? 'Prime Gaming' :
                game.source === 'gog' ? 'GOG.com' :
@@ -282,7 +281,9 @@ export function getScannedGamesAsProducts() {
                game.source === 'indiegala' ? 'IndieGala' :
                game.source === 'fanatical' ? 'Fanatical' :
                game.source === 'steam' ? 'Steam F2P' :
+               game.source === 'software' ? 'Software Gratis' :
                'Otras Fuentes',
+    category: game.tags.includes('software') ? 'Software y Licencias' : 'Juegos Gratis',
     image: game.imageUrl || '/products/gen/gaming-cat.png',
     rating: game.rating || 4,
     reviews: 0,
