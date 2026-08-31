@@ -189,6 +189,14 @@ function Header() {
               <GitCompare className="w-4 h-4" />
               Comparar productos
             </button>
+            <Link
+              href="/juegos-gratis"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-green-500/40 text-sm font-bold text-gray-800 transition-colors"
+            >
+              <Zap className="w-4 h-4 text-green-600" />
+              Juegos Gratis
+              <span className="rounded bg-green-700 px-1.5 py-0.5 text-[9px] font-bold text-white">100% ganancia</span>
+            </Link>
             <button
               onClick={() => setDark(!dark)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-500/40 text-sm font-medium text-gray-800 transition-colors"
@@ -232,6 +240,15 @@ function CategoryNav() {
             className="px-2.5 py-1.5 rounded-md text-xs font-medium text-gray-900 whitespace-nowrap hover:bg-amber-400/60 transition-colors shrink-0"
           >
             Todo
+          </Link>
+          <div className="w-px h-4 bg-amber-600/40 mx-0.5 shrink-0" />
+          <Link
+            href="/juegos-gratis"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-bold text-gray-900 whitespace-nowrap hover:bg-green-400/60 bg-green-400/30 transition-colors shrink-0"
+          >
+            <Zap className="w-3.5 h-3.5 text-green-700" />
+            Juegos Gratis
+            <span className="ml-0.5 rounded bg-green-700 px-1 py-0.5 text-[8px] font-bold text-white">100%</span>
           </Link>
           <div className="w-px h-4 bg-amber-600/40 mx-0.5 shrink-0" />
           {CATEGORIES.map((cat) => (

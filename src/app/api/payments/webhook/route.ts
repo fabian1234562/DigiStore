@@ -23,6 +23,7 @@ interface PendingOrder {
   items: any[];
   total: number;
   status: string;
+  paymentMethod?: string;
   createdAt: string;
 }
 
@@ -79,6 +80,30 @@ export async function POST(request: Request) {
     const deliveries = [];
 
     for (const item of order.items) {
+      // ═══ JUEGOS GRATIS (free-game) ═══
+      if (item.id?.startsWith('free-') || item.category === 'Juegos Gratis') {
+        const gameData = item.scannedGameData || item._scannedGame;
+        deliveries.push({
+          success: true,
+          productId: item.id,
+          productName: item.name,
+          type: 'free-game',
+          typeLabel: 'Juego Gratis - Entrega Inmediata',
+          icon: 'Gamepad2',
+          details: [
+            { label: 'Juego', value: item.name },
+            { label: 'Plataforma', value: gameData?.platform?.join(', ') || 'N/A' },
+            { label: 'Tipo de entrega', value: gameData?.deliveryType === 'key' ? 'Clave digital' : gameData?.deliveryType === 'drm-free' ? 'DRM-Free' : 'Link de reclamacion' },
+            ...(gameData?.claimUrl ? [{ label: 'Link de reclamacion', value: gameData.claimUrl }] : []),
+            { label: 'Tu ganancia', value: `$${item.price.toFixed(2)} USD (100%)` },
+          ],
+          instructions: gameData?.claimInstructions || `1. Ve a la plataforma correspondiente\n2. Crea cuenta si no tienes\n3. Reclama el juego usando el link proporcionado\n4. El juego se agregara a tu biblioteca`,
+          claimUrl: gameData?.claimUrl,
+        });
+        continue;
+      }
+
+      // ═══ GIFT CARDS NORMALES (Reloadly / proveedores) ═══
       const mapping = PRODUCT_MAP[item.id];
 
       if (!mapping) {
