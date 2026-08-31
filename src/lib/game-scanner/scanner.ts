@@ -8,20 +8,22 @@
 import { ScannedGame, ScanResult, ScanSummary, GameSource, GAME_SOURCES } from './types';
 import { scanEpicGames } from './sources/epic-games';
 import { scanCheapShark } from './sources/cheapshark';
-import { scanIndieGala } from './sources/indiegala';
-import { scanHumble } from './sources/humble';
+import { scanItchio } from './sources/itchio';
+import { scanSoftwareGiveaways } from './sources/software-giveaways';
 
 /** Función de escaneo por fuente */
 type ScanFunction = () => Promise<ScanResult>;
 
 /** Registro de todas las funciones de escaneo */
 const SCANNERS: Record<GameSource, { fn: ScanFunction; name: string }> = {
-  // FUENTES QUE FUNCIONAN (API real comprobada)
+  // JUEGOS - APIs reales comprobadas
   'epic-games': { fn: scanEpicGames, name: 'Epic Games Store' },
   'steam': { fn: scanCheapShark, name: 'CheapShark (Multi-tienda)' },
-  // FUENTES EXPERIMENTALES (SPAs, pueden fallar)
-  'indiegala': { fn: scanIndieGala, name: 'IndieGala' },
-  'humble': { fn: scanHumble, name: 'Humble Bundle' },
+  'gog': { fn: scanItchio, name: 'itch.io (Indie Games)' },
+  // SOFTWARE Y LICENCIAS
+  'indiegala': { fn: scanSoftwareGiveaways, name: 'Software & Licencias' },
+  // Fuentes deshabilitadas (SPAs que necesitan navegador headless)
+  // 'humble': { fn: scanHumble, name: 'Humble Bundle' },
 };
 
 /** Almacenamiento en memoria de los juegos escaneados */
@@ -241,9 +243,9 @@ export function getScannedGamesAsProducts() {
     originalPrice: game.originalPrice > 0 ? game.originalPrice : undefined,
     category: 'Juegos Gratis',
     subcategory: game.source === 'epic-games' ? 'Epic Games' :
-               game.source === 'gog' ? 'GOG' :
-               game.source === 'steam' ? 'Steam' :
-               game.source === 'prime-gaming' ? 'Prime Gaming' :
+               game.source === 'gog' ? 'itch.io Indie' :
+               game.source === 'steam' ? 'Multi-tienda' :
+               game.source === 'indiegala' ? 'Software & Licencias' :
                'Otras Fuentes',
     image: game.imageUrl || '/products/gen/gaming-cat.png',
     rating: game.rating || 4,

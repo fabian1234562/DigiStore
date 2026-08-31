@@ -196,11 +196,12 @@ export default function JuegosGratisPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={() => setSelectedSource('all')} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${selectedSource === 'all' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>Todas</button>
-            {GAME_SOURCES.filter(s => ['epic-games','gog','steam','indiegala','fanatical','humble','prime-gaming'].includes(s.id)).map(source => {
+            {GAME_SOURCES.filter(s => ['epic-games','gog','steam','indiegala'].includes(s.id)).map(source => {
               const Icon = sourceIcons[source.id] || Gamepad2;
+              const label = source.id === 'gog' ? 'Indie Games' : source.id === 'indiegala' ? 'Software' : source.name.split(' ')[0];
               return (<button key={source.id} onClick={() => setSelectedSource(source.id as GameSource)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${selectedSource === source.id ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
-                <Icon className="w-3.5 h-3.5" />{source.name.split(' ')[0]}
+                <Icon className="w-3.5 h-3.5" />{label}
               </button>);
             })}
           </div>
