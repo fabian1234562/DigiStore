@@ -1,22 +1,20 @@
 import { NextResponse } from 'next/server';
 import { getPaymentStatus } from '@/lib/mercadopago';
-import { PRODUCT_MAP, searchProducts, orderGiftCard } from '@/lib/reloadly';
+import { PRODUCT_MAP } from '@/lib/reloadly';
+import { findBestPrice, orderFromCheapest, getEnabledSuppliers } from '@/lib/suppliers';
 
 /**
- * WEBHOOK DE MERCADOPAGO
- * 
- * MercadoPago llama a este endpoint cada vez que un pago cambia de estado.
+ * WEBHOOK DE MERCADOPAGO - MÚLTIPLES PROVEEDORES
  * 
  * FLUJO:
  * 1. Recibe notificación de pago aprobado
- * 2. Consulta los detalles del pago a MercadoPago
- * 3. Obtiene la orden pendiente (guardada al crear el pago)
- * 4. Ordena los códigos REALES al proveedor (Reloadly)
- * 5. Almacena los códigos para que el cliente los vea
- * 
- * IMPORTANTE: Este webhook DEBE estar configurado en tu dashboard de MercadoPago:
- * URL: https://tudominio.com/api/payments/webhook
- * Evento: payment
+ * 2. Consulta detalles del pago a MercadoPago
+ * 3. Obtiene la orden pendiente
+ * 4. Para CADA producto: consulta TODOS los proveedores en paralelo
+ * 5. Elige el MÁS BARATO
+ * 6. Ordena el código real desde ese proveedor
+ * 7. Si falla, intenta con el siguiente más barato (fallback automático)
+ * 8. Almacena los códigos para entrega al cliente
  */
 
 interface PendingOrder {
@@ -28,7 +26,6 @@ interface PendingOrder {
   createdAt: string;
 }
 
-// Almacenamiento temporal de entregas (en producción: base de datos)
 if (!globalThis.completedOrders) {
   (globalThis as any).completedOrders = {};
 }
@@ -37,7 +34,6 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // MercadoPago envía { type: 'payment', data: { id: 123 } }
     if (body.type !== 'payment' || !body.data?.id) {
       return NextResponse.json({ ok: true, message: 'Evento ignorado' });
     }
@@ -45,7 +41,7 @@ export async function POST(request: Request) {
     const paymentId = String(body.data.id);
     console.log(`[Webhook] Pago recibido: ${paymentId}`);
 
-    // 1. Consultar detalles del pago a MercadoPago
+    // 1. Consultar pago en MercadoPago
     let payment: any;
     try {
       payment = await getPaymentStatus(paymentId);
@@ -59,13 +55,13 @@ export async function POST(request: Request) {
     const payerEmail = payment.payer?.email || '';
 
     console.log(`[Webhook] Estado: ${paymentStatus}, Orden: ${externalRef}, Email: ${payerEmail}`);
+    console.log(`[Webhook] Proveedores activos: ${getEnabledSuppliers().map(s => s.name).join(', ') || 'NINGUNO'}`);
 
-    // Solo procesar pagos aprobados
     if (paymentStatus !== 'approved') {
       return NextResponse.json({ ok: true, message: `Pago ${paymentStatus}, no procesado` });
     }
 
-    // 2. Obtener la orden pendiente
+    // 2. Obtener orden pendiente
     const pendingOrders = (globalThis as any).pendingOrders as Record<string, PendingOrder>;
     const order = pendingOrders?.[externalRef];
 
@@ -74,13 +70,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, message: 'Orden no encontrada (puede ser duplicada)' });
     }
 
-    // Verificar que no ya fue procesada
     const completedOrders = (globalThis as any).completedOrders as Record<string, any>;
     if (completedOrders[externalRef]) {
       return NextResponse.json({ ok: true, message: 'Orden ya procesada' });
     }
 
-    // 3. Ordenar códigos REALES al proveedor (Reloadly)
+    // 3. Ordenar códigos usando el PROVEEDOR MÁS BARATO
     const deliveries = [];
 
     for (const item of order.items) {
@@ -91,58 +86,60 @@ export async function POST(request: Request) {
           success: false,
           productId: item.id,
           productName: item.name,
-          message: 'Producto sin mapeo al proveedor. Contacta soporte.',
+          message: 'Producto sin mapeo a proveedores. Contacta soporte.',
         });
         continue;
       }
 
       try {
-        // Buscar producto real en Reloadly
-        const products = await searchProducts(mapping.reloadlyBrand, mapping.countryIso);
-        const match = products.find((p: any) => {
-          const fv = p.displayedFaceValue || p.minRecipientDenomination;
-          return Math.abs(fv - mapping.faceValue) < 1;
+        // CONSULTAR TODOS LOS PROVEEDORES EN PARALELO y elegir el más barato
+        const bestPrice = await findBestPrice({
+          brand: mapping.reloadlyBrand,
+          faceValue: mapping.faceValue,
+          country: mapping.countryIso,
+          category: item.category || '',
         });
 
-        if (!match) {
+        if (!bestPrice.cheapest) {
           deliveries.push({
             success: false,
             productId: item.id,
             productName: item.name,
-            message: `Producto ${mapping.reloadlyBrand} $${mapping.faceValue} no disponible. Contacta soporte.`,
+            message: `${mapping.reloadlyBrand} $${mapping.faceValue} no disponible en ningún proveedor. Contacta soporte.`,
           });
           continue;
         }
 
-        // Ordenar el código real
+        const cheapest = bestPrice.cheapest;
+        console.log(`[Webhook] ${mapping.reloadlyBrand} $${mapping.faceValue}: mejor precio $${cheapest.costPrice} (${cheapest.supplierId}) - ${bestPrice.allOffers.length} ofertas`);
+
+        // Ordenar desde el más barato, con fallback automático al siguiente
         for (let i = 0; i < item.quantity; i++) {
-          const realOrder = await orderGiftCard({
-            productId: match.productId,
-            countryId: mapping.countryIso,
-            currencyCode: mapping.currencyCode,
+          const { result, supplierUsed } = await orderFromCheapest({
+            offers: bestPrice.allOffers,
             quantity: 1,
-            unitPrice: match.price,
-            recipientEmail: payerEmail || order.email,
-            senderName: 'DigiStore',
+            email: payerEmail || order.email,
             customIdentifier: `${externalRef}-${item.id}-${i}`,
           });
 
-          const realCode = realOrder.code || realOrder.pin || '';
-
-          if (realOrder.status === 'SUCCESS' || realOrder.status === 'SUCCESSFUL' || realCode) {
+          if (result.success) {
+            const realCode = result.code || result.pin || '';
             deliveries.push({
               success: true,
               productId: item.id,
               productName: item.name,
               type: 'giftcard',
-              typeLabel: 'Tarjeta de Regalo - Código Real',
+              typeLabel: `Código Real - ${supplierUsed}`,
               icon: 'Ticket',
               details: [
                 { label: 'Código de Tarjeta', value: realCode },
                 { label: 'Monto', value: `$${mapping.faceValue} USD` },
                 { label: 'Plataforma', value: mapping.reloadlyBrand },
-                { label: 'Vigencia', value: realOrder.validUntil || 'Sin fecha de expiración' },
-                { label: 'Orden Proveedor', value: String(realOrder.transactionId) },
+                { label: 'Proveedor', value: supplierUsed },
+                { label: 'Costo Proveedor', value: `$${cheapest.costPrice} USD` },
+                { label: 'Tu Ganancia', value: `$${(mapping.faceValue - cheapest.costPrice).toFixed(2)} USD` },
+                { label: 'Vigencia', value: 'Sin fecha de expiración' },
+                { label: 'Orden Proveedor', value: result.transactionId || '' },
               ],
               instructions: getRedemptionInstructions(mapping.reloadlyBrand, mapping.faceValue),
             });
@@ -151,7 +148,7 @@ export async function POST(request: Request) {
               success: false,
               productId: item.id,
               productName: item.name,
-              message: `Error del proveedor: ${realOrder.status}. Pago aprobado pero código falló. Contacta soporte con orden ${externalRef}.`,
+              message: `Error de proveedor: ${result.error}. Pago aprobado - contacta soporte con orden ${externalRef}.`,
             });
           }
         }
@@ -160,14 +157,13 @@ export async function POST(request: Request) {
           success: false,
           productId: item.id,
           productName: item.name,
-          message: `Error al obtener código: ${err.message}. Pago aprobado - contacta soporte.`,
+          message: `Error al buscar proveedor: ${err.message}. Pago aprobado - contacta soporte.`,
         });
       }
     }
 
     const successfulDeliveries = deliveries.filter((d: any) => d.success);
 
-    // 4. Guardar resultado de la orden
     const orderResult = {
       orderId: externalRef,
       paymentId,
@@ -179,16 +175,14 @@ export async function POST(request: Request) {
       deliveries,
       success: successfulDeliveries.length > 0,
       message: successfulDeliveries.length > 0
-        ? `¡Pedido completado! ${successfulDeliveries.length} producto(s) entregados con código real.`
+        ? `¡Pedido completado! ${successfulDeliveries.length} producto(s) entregados con código real (mejor proveedor seleccionado automáticamente).`
         : 'No se pudieron entregar los productos. Contacta soporte.',
     };
 
     completedOrders[externalRef] = orderResult;
-
-    // Limpiar orden pendiente
     delete pendingOrders[externalRef];
 
-    console.log(`[Webhook] Orden ${externalRef} procesada: ${successfulDeliveries.length}/${deliveries.length} entregados`);
+    console.log(`[Webhook] Orden ${externalRef}: ${successfulDeliveries.length}/${deliveries.length} entregados`);
 
     return NextResponse.json({ ok: true, processed: true, orderId: externalRef });
   } catch (error: any) {
@@ -197,10 +191,6 @@ export async function POST(request: Request) {
   }
 }
 
-/**
- * GET - Permite al frontend consultar el resultado de una orden
- * Usa query param ?order=DG-xxxxx
- */
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const orderId = url.searchParams.get('order');
@@ -239,6 +229,9 @@ function getRedemptionInstructions(brand: string, faceValue: number): string {
     'HBO': `1. Ve a hbomax.com/redeem desde tu navegador\n2. Inicia sesión con tu cuenta\n3. Ingresa el código y se aplicará a tu suscripción`,
     'Discord': `1. Abre Discord > Configuración de Usuario > Inventario de regalos\n2. Haz clic en Canjear Código\n3. Ingresa el código y Nitro se activará`,
     'Amazon': `1. Ve a amazon.com/gc/redeem desde tu navegador\n2. Inicia sesión con tu cuenta de Amazon\n3. Ingresa el código y el saldo se agregará`,
+    'Canva': `1. Ve a canva.com/gift desde tu navegador\n2. Inicia sesión con tu cuenta de Canva\n3. Ingresa el código y el crédito se agregará`,
+    'Epic Games': `1. Abre la Epic Games Store\n2. Ve a tu perfil > Canjear código\n3. Ingresa el código y el saldo se agregará`,
+    'League of Legends': `1. Abre la tienda de League of Legends\n2. Ve a la sección de códigos\n3. Ingresa el código y los RP se agregarán`,
   };
   return instructions[brand] || `1. Ve a la página oficial de ${brand}\n2. Busca la opción de canjear código o agregar saldo\n3. Ingresa el código y el saldo se acreditará en tu cuenta`;
 }
