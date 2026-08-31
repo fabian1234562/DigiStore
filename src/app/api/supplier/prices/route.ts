@@ -1,20 +1,20 @@
 import { NextResponse } from 'next/server';
 import { searchProducts } from '@/lib/reloadly';
-import { calculateSellPrice, calculateProfit, calculateMargin, getPricingSummary } from '@/lib/pricing';
+import { getPricingSummary, usdToCop, formatPriceUSD, formatPriceCOP, USD_TO_COP, PRICING_EXAMPLES } from '@/lib/pricing';
 import { PRODUCT_MAP } from '@/lib/reloadly';
 
 /**
- * API DE PRECIOS DEL PROVEEDOR
+ * API DE PRECIOS DEL PROVEEDOR - MODELO DE REVENTA
  * 
- * Consulta los precios REALES de Reloadly y calcula
- * el precio de venta con margen de ganancia.
+ * Consulta los costos REALES de Reloadly y calcula:
+ * - A qué precio vender (siempre ≤ valor facial)
+ * - Cuánto ganas por venta (en USD y COP)
+ * - El descuento que le das al cliente vs mercado
  * 
- * GET /api/supplier/prices?category=gaming
- * GET /api/supplier/prices?productId=gc17
- * GET /api/supplier/prices?all=true  (sincronizar todos)
- * 
- * Retorna el costo del proveedor, precio de venta sugerido,
- * y ganancia estimada por producto.
+ * GET /api/supplier/prices?all=true       → Sincronizar todos los productos
+ * GET /api/supplier/prices?productId=gc17  → Ver un producto específico
+ * GET /api/supplier/prices?category=gaming → Ver por categoría
+ * GET /api/supplier/prices?examples=true   → Ver ejemplos del modelo
  */
 export async function GET(request: Request) {
   try {
@@ -22,13 +22,33 @@ export async function GET(request: Request) {
     const category = url.searchParams.get('category');
     const productId = url.searchParams.get('productId');
     const syncAll = url.searchParams.get('all') === 'true';
+    const showExamples = url.searchParams.get('examples') === 'true';
+
+    // Mostrar ejemplos del modelo de reventa
+    if (showExamples) {
+      return NextResponse.json({
+        success: true,
+        model: 'REVENTA: Compras barato al proveedor, vendes al precio de mercado',
+        tasaCambio: { usd: 1, cop: USD_TO_COP },
+        examples: PRICING_EXAMPLES.map(ex => ({
+          producto: ex.product,
+          valorFacial: formatPriceUSD(ex.faceValue) + ` (${formatPriceCOP(usdToCop(ex.faceValue))})`,
+          pagasAlProveedor: formatPriceUSD(ex.supplierCost) + ` (${formatPriceCOP(usdToCop(ex.supplierCost))})`,
+          vendesA: formatPriceUSD(ex.sellPrice) + ` (${formatPriceCOP(usdToCop(ex.sellPrice))})`,
+          gananciaPorUnidad: formatPriceUSD(ex.profit) + ` (${formatPriceCOP(ex.profitCOP)})`,
+          margen: `${ex.margin}%`,
+          descuentoProveedor: `${ex.supplierDiscount}%`,
+          descuentoAlCliente: formatPriceUSD(ex.faceValue - ex.sellPrice),
+        })),
+      });
+    }
 
     // Verificar que Reloadly está configurado
     if (!process.env.RELOADLY_CLIENT_ID || !process.env.RELOADLY_CLIENT_SECRET) {
       return NextResponse.json({
         success: false,
         error: 'supplier_not_configured',
-        message: 'Configura RELOADLY_CLIENT_ID y RELOADLY_CLIENT_SECRET',
+        message: 'Configura RELOADLY_CLIENT_ID y RELOADLY_CLIENT_SECRET en .env.local',
         setupUrl: 'https://www.reloadly.com',
       });
     }
@@ -50,26 +70,29 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Producto no disponible en el proveedor' }, { status: 404 });
       }
 
-      const categoryForMarkup = getCategoryFromProductId(productId);
-      const pricing = getPricingSummary(match.price, categoryForMarkup);
+      const pricing = getPricingSummary(match.price, mapping.faceValue);
 
       return NextResponse.json({
         success: true,
         productId,
+        producto: mapping.reloadlyBrand + ' $' + mapping.faceValue + ' USD',
         supplier: {
           name: mapping.reloadlyBrand,
           faceValue: mapping.faceValue,
           costPrice: match.price,
-          currency: match.currencyCode,
+          costPriceCOP: usdToCop(match.price),
           discountPercentage: match.discountPercentage,
           supplierProductId: match.productId,
         },
-        pricing,
-        recommendation: {
-          sellPrice: pricing.sellPrice,
-          originalPrice: pricing.originalPrice,
-          profitPerUnit: pricing.profit,
-          marginPercent: pricing.margin,
+        pricing: {
+          vendesA: pricing.sellPrice,
+          vendesACOP: pricing.sellPriceCOP,
+          valorFacial: pricing.faceValue,
+          valorFacialCOP: pricing.faceValueCOP,
+          gananciaUSD: pricing.profit,
+          gananciaCOP: pricing.profitCOP,
+          margen: pricing.margin + '%',
+          descuentoAlCliente: formatPriceUSD(pricing.customerSavings) + ` (${formatPriceCOP(pricing.customerSavingsCOP)})`,
         },
       });
     }
@@ -79,7 +102,6 @@ export async function GET(request: Request) {
       const results: any[] = [];
       const uniqueBrands = new Map<string, { brand: string; country: string; ids: string[] }>();
 
-      // Agrupar por marca para minimizar llamadas API
       for (const [id, mapping] of Object.entries(PRODUCT_MAP)) {
         const key = `${mapping.reloadlyBrand}-${mapping.countryIso}`;
         if (!uniqueBrands.has(key)) {
@@ -88,7 +110,6 @@ export async function GET(request: Request) {
         uniqueBrands.get(key)!.ids.push(id);
       }
 
-      // Consultar cada marca una vez
       for (const [key, group] of uniqueBrands) {
         try {
           const products = await searchProducts(group.brand, group.country);
@@ -101,25 +122,25 @@ export async function GET(request: Request) {
             });
 
             if (match) {
-              const cat = getCategoryFromProductId(id);
-              const pricing = getPricingSummary(match.price, cat);
+              const pricing = getPricingSummary(match.price, mapping.faceValue);
               results.push({
                 productId: id,
-                brand: mapping.reloadlyBrand,
-                faceValue: mapping.faceValue,
-                supplierCost: match.price,
-                sellPrice: pricing.sellPrice,
-                originalPrice: pricing.originalPrice,
-                profit: pricing.profit,
-                margin: pricing.margin,
-                available: true,
+                producto: mapping.reloadlyBrand + ' $' + mapping.faceValue,
+                valorFacial: mapping.faceValue,
+                pagasAlProveedor: match.price,
+                vendesA: pricing.sellPrice,
+                gananciaUSD: pricing.profit,
+                gananciaCOP: pricing.profitCOP,
+                margen: pricing.margin,
+                descuentoProveedor: match.discountPercentage,
+                disponible: true,
               });
             } else {
               results.push({
                 productId: id,
-                brand: mapping.reloadlyBrand,
-                faceValue: mapping.faceValue,
-                available: false,
+                producto: mapping.reloadlyBrand + ' $' + mapping.faceValue,
+                valorFacial: mapping.faceValue,
+                disponible: false,
               });
             }
           }
@@ -127,30 +148,32 @@ export async function GET(request: Request) {
           for (const id of group.ids) {
             results.push({
               productId: id,
-              brand: group.brand,
+              producto: group.brand,
               error: err.message,
-              available: false,
+              disponible: false,
             });
           }
         }
       }
 
-      const available = results.filter(r => r.available);
-      const totalProfit = available.reduce((sum, r) => sum + r.profit, 0);
-      const avgMargin = available.length > 0 
-        ? available.reduce((sum, r) => sum + r.margin, 0) / available.length 
-        : 0;
+      const available = results.filter(r => r.disponible);
+      const totalProfitPerSale = available.reduce((sum, r) => sum + r.gananciaUSD, 0);
+      const totalProfitCOP = available.reduce((sum, r) => sum + r.gananciaCOP, 0);
+      const bestProducts = [...available].sort((a, b) => b.gananciaCOP - a.gananciaCOP).slice(0, 10);
 
       return NextResponse.json({
         success: true,
-        summary: {
-          total: results.length,
-          available: available.length,
-          unavailable: results.length - available.length,
-          totalPotentialProfit: Math.round(totalProfit * 100) / 100,
-          averageMargin: Math.round(avgMargin * 100) / 100,
+        modelo: 'REVENTA - Compras barato, vendes a precio de mercado',
+        tasaCambio: `1 USD = ${USD_TO_COP} COP`,
+        resumen: {
+          totalProductos: results.length,
+          disponibles: available.length,
+          noDisponibles: results.length - available.length,
+          gananciaTotalPorVentaTodos: '$' + Math.round(totalProfitPerSale * 100) / 100 + ' USD',
+          gananciaTotalCOP: '$' + totalProfitCOP.toLocaleString('es-CO') + ' COP',
+          mejorMargen: bestProducts,
         },
-        products: results,
+        productos: results,
       });
     }
 
@@ -180,16 +203,17 @@ export async function GET(request: Request) {
               return Math.abs(fv - mapping.faceValue) < 1;
             });
             if (match) {
-              const pricing = getPricingSummary(match.price, category);
+              const pricing = getPricingSummary(match.price, mapping.faceValue);
               results.push({
                 productId: id,
-                brand,
-                faceValue: mapping.faceValue,
-                supplierCost: match.price,
-                sellPrice: pricing.sellPrice,
-                profit: pricing.profit,
-                margin: pricing.margin,
-                available: true,
+                producto: brand + ' $' + mapping.faceValue,
+                valorFacial: mapping.faceValue,
+                pagasAlProveedor: match.price,
+                vendesA: pricing.sellPrice,
+                gananciaUSD: pricing.profit,
+                gananciaCOP: pricing.profitCOP,
+                margen: pricing.margin,
+                disponible: true,
               });
             }
           }
@@ -198,13 +222,13 @@ export async function GET(request: Request) {
         }
       }
 
-      return NextResponse.json({ success: true, category, products: results });
+      return NextResponse.json({ success: true, category, productos: results });
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Usa ?category=gaming, ?productId=gc17, o ?all=true',
-      mappedProducts: Object.keys(PRODUCT_MAP).length,
+      message: 'Usa ?all=true, ?productId=gc17, ?category=gaming, o ?examples=true',
+      productosMapeados: Object.keys(PRODUCT_MAP).length,
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
