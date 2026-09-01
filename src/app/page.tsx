@@ -1,6 +1,7 @@
 'use client';
 
 import { useStore } from '@/lib/store';
+import { t } from '@/lib/i18n';
 import dynamic from 'next/dynamic';
 const CartDrawer = dynamic(() => import('@/components/store/CartDrawer').then(m => ({ default: m.CartDrawer })), { ssr: false });
 const AuthDialog = dynamic(() => import('@/components/auth/AuthDialog').then(m => ({ default: m.AuthDialog })), { ssr: false });
@@ -13,7 +14,7 @@ import {
   ChevronLeft, ChevronRight, Truck, RotateCcw, Globe, Tag,
   Menu, Eye, Gamepad2, Crown, Clock, Package, Check, Send,
   Monitor, Download, Sword, Puzzle, Car, Target, Users, TrendingUp,
-  MousePointerClick, Gift, DollarSign, Percent, Layers, Cpu,
+  MousePointerClick, Gift, DollarSign, Percent, Layers, Cpu, Languages,
 } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
@@ -101,7 +102,7 @@ function AnnouncementBar() {
    HEADER
    ══════════════════════════════════════════════════════════════ */
 function Header() {
-  const { cartOpen, setCartOpen, authOpen, setAuthOpen, cartCount } = useStore();
+  const { cartOpen, setCartOpen, authOpen, setAuthOpen, cartCount, lang, setLang } = useStore();
   const [mobileMenu, setMobileMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -129,6 +130,10 @@ function Header() {
           <Link href="/tienda" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">Tienda</Link>
         </nav>
         <div className="flex items-center gap-1.5">
+          <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full hover:bg-gray-100 transition-colors text-xs font-bold text-gray-600" title={lang === 'es' ? 'Switch to English' : 'Cambiar a Espanol'}>
+            <Languages className="w-4 h-4" />
+            <span>{lang === 'es' ? 'EN' : 'ES'}</span>
+          </button>
           <button className="relative p-2.5 rounded-full hover:bg-gray-100 transition-colors" onClick={() => setCartOpen(true)}>
             <ShoppingCart className="w-5 h-5" />
             {cartCount() > 0 && <span className="absolute -top-0.5 -right-0.5 bg-violet-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white">{cartCount()}</span>}

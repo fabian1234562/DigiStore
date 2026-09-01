@@ -7,6 +7,7 @@ import {
   Play, ChevronLeft, ChevronRight, Sparkles, Eye,
   Download, Tag, ThumbsUp, Users, Truck, RotateCcw,
 } from 'lucide-react';
+import { PRODUCT_SCREENSHOTS } from '@/lib/game-scanner/screenshots';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 /* ══════════════════════════════════════════════════════════════
@@ -40,25 +41,26 @@ function getTrailerSearchUrl(name: string): string {
   return `https://www.youtube.com/results?search_query=${q}`;
 }
 
-// Generate images from Steam CDN — ONLY verified variants (tested all 72 apps, 100% HTTP 200)
-// capsule_236x.jpg = 0% success, page_bg_raw.jpg = 58% fail, library_600x900.jpg = 28% fail
+// Get all product images: Steam CDN variants + real screenshots from Steam API
 function getProductImages(product: GameProduct): string[] {
-  const images: string[] = [];
+  const images: string[] = [product.image];
 
   if (product.image.includes('cdn.akamai.steamstatic.com/steam/apps/')) {
     const match = product.image.match(/steam\/apps\/(\d+)/);
     if (match) {
       const appId = match[1];
-      // 1. Wide capsule (616x353, 16:9 landscape) — 100% verified
-      images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_616x353.jpg`);
-      // 2. Header (460x215, wider crop, different framing) — 100% verified
-      images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`);
-      // 3. Small capsule (231x87, compact banner) — 100% verified
-      images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_231x87.jpg`);
+      // Add real gameplay screenshots from Steam API (1920x1080)
+      const realScreenshots = PRODUCT_SCREENSHOTS[appId];
+      if (realScreenshots) {
+        images.push(...realScreenshots);
+      }
     }
   } else {
-    // For non-Steam images (software products with z-cdn URLs)
-    images.push(product.image);
+    // For software products (z-cdn URLs), add their specific images
+    const swScreenshots = PRODUCT_SCREENSHOTS[product.id];
+    if (swScreenshots) {
+      images.push(...swScreenshots);
+    }
   }
 
   return [...new Set(images)];
