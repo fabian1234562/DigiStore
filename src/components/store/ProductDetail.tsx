@@ -94,7 +94,7 @@ function getDeliveryInfo(product: GameProduct) {
     typeLabel: 'Link de Reclamo + Instrucciones',
     color: 'bg-violet-50 border-violet-200 text-violet-800',
     whatYouReceive: [
-      'Link directo para reclamar el juego gratis',
+      'Link directo para reclamar el producto digital',
       'Instrucciones paso a paso para canjear en ' + product.platform,
       'El juego se vincula permanentemente a tu cuenta',
       'Descarga inmediata desde la plataforma oficial',
@@ -227,7 +227,7 @@ function MiniProductCard({ game, onClick }: { game: GameProduct; onClick: () => 
       <div className="relative aspect-[4/3] bg-gray-900 overflow-hidden">
         <img src={game.image} alt={game.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" width={200} height={150} />
         {discount > 0 && <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg shadow">-{discount}%</span>}
-        <span className="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg shadow">GRATIS</span>
+
       </div>
       <div className="p-3">
         <p className="text-[10px] text-violet-600 font-bold uppercase tracking-wider mb-1">{game.subcategory}</p>
@@ -459,10 +459,10 @@ export function ProductDetail({ product: initialProduct, onClose, allProducts: i
                 {!isSoftware && (
                   <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 space-y-3">
                     <p className="text-base font-bold text-violet-800 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5" /> Juego Gratis — 100% Ganancia
+                      <Sparkles className="w-5 h-5" /> Producto Digital — Entrega Inmediata
                     </p>
                     <p className="text-sm text-violet-700 leading-relaxed">
-                      Este juego fue obtenido gratuitamente de {currentProduct.subcategory}. Al comprar, recibiras las instrucciones paso a paso para reclamarlo y agregarlo permanentemente a tu cuenta personal. El juego es 100% original, se descarga directamente desde la plataforma oficial y es tuyo para siempre. Sin costos ocultos, sin suscripciones.
+                      Este juego fue escaneado desde {currentProduct.subcategory}. Al comprar, recibiras las instrucciones paso a paso para reclamarlo y agregarlo permanentemente a tu cuenta personal. El juego es 100% original, se descarga directamente desde la plataforma oficial y es tuyo para siempre. Sin costos ocultos, sin suscripciones.
                     </p>
                   </div>
                 )}

@@ -269,7 +269,7 @@ export async function runFullScan(): Promise<{
 /** Obtener juegos como productos para la tienda */
 export function getScannedGamesAsProducts() {
   return gameScanner.getActiveGames().map(game => ({
-    id: `free-${game.id}`,
+    id: `prod-${game.id}`,
     name: game.title,
     description: game.description,
     price: game.sellPrice,
@@ -280,10 +280,10 @@ export function getScannedGamesAsProducts() {
                game.source === 'humble' ? 'Humble Bundle' :
                game.source === 'indiegala' ? 'IndieGala' :
                game.source === 'fanatical' ? 'Fanatical' :
-               game.source === 'steam' ? 'Steam F2P' :
-               game.source === 'software' ? 'Software Gratis' :
+               game.source === 'steam' ? 'Steam' :
+               game.source === 'software' ? 'Software' :
                'Otras Fuentes',
-    category: game.tags.includes('software') ? 'Software y Licencias' : 'Juegos Gratis',
+    category: game.tags.includes('software') ? 'Software y Licencias' : 'Juegos Digitales',
     image: game.imageUrl || '/products/gen/gaming-cat.png',
     rating: game.rating || 4,
     reviews: 0,
@@ -291,7 +291,7 @@ export function getScannedGamesAsProducts() {
     deliveryTime: 'Inmediato',
     platform: game.platform.join(', '),
     region: 'Global',
-    tags: [...game.tags, 'free-game', '100-profit'],
+    tags: [...game.tags, 'digital', '100-profit'],
     stock: game.unlimitedStock ? 999 : game.stock,
     featured: game.status === 'expiring',
   }));

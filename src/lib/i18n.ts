@@ -4,7 +4,6 @@ const translations: Record<Lang, Record<string, string>> = {
   es: {
     // Header
     'nav.home': 'Inicio',
-    'nav.freeGames': 'Juegos Gratis',
     'nav.store': 'Tienda',
     'nav.cart': 'Tu Carrito',
     'nav.login': 'Iniciar Sesion',
@@ -13,20 +12,20 @@ const translations: Record<Lang, Record<string, string>> = {
     // Announcement bar
     'announce.delivery': 'Entrega instantanea en pedidos digitales',
     'announce.deliveryShort': 'Entrega instantanea',
-    'announce.profit': '100% Ganancia en juegos gratis',
+    'announce.profit': 'Juegos y software desde $1 USD',
     'announce.coupon': 'Usa DIGI10 para 10% OFF',
 
     // Hero
     'hero.featured': 'DESTACADO DE LA SEMANA',
-    'hero.freeGames': 'PRODUCTOS GRATIS',
+    'hero.freeGames': 'PRODUCTOS',
     'hero.noInventory': 'SIN INVENTARIO',
     'hero.seeDetail': 'Ver Detalle',
-    'hero.seeFreeGames': 'Ver Juegos Gratis',
+    'hero.seeFreeGames': 'Ver Tienda',
     'hero.goStore': 'Ir a la Tienda',
     'hero.explore': 'Explorar',
     'hero.seeStore': 'Ver Tienda',
-    'hero.scanDesc': 'Escaneamos {count} productos en Epic Games, Prime Gaming, GOG, Steam y mas. Juegos + licencias de software con 100% ganancia para ti.',
-    'hero.profitDesc': 'Valor total: ${value} USD. Productos obtenidos gratis y revendidos sin inventario, sin proveedores, sin riesgo. Puro beneficio.',
+    'hero.scanDesc': 'Escaneamos {count} productos en Epic Games, Prime Gaming, GOG, Steam y mas. Juegos + licencias de software a los mejores precios.',
+    'hero.profitDesc': 'Valor en mercado: ${value} USD. Productos digitales escaneados y ofrecidos a precios desde $1 USD. Sin inventario, sin riesgo.',
     'hero.ctaDesc': 'Escaneamos {count} productos en Epic Games, Prime Gaming, GOG, Steam y mas.',
 
     // Categories
@@ -40,18 +39,18 @@ const translations: Record<Lang, Record<string, string>> = {
     'cat.software': 'Software',
 
     // Features
-    'feat.100profit': '100% Ganancia',
-    'feat.100profitDesc': 'Productos obtenidos gratis y revendidos. Sin inventario, sin riesgo. ${value} USD en valor total.',
+    'feat.100profit': 'Precios Bajos',
+    'feat.100profitDesc': 'Los mejores precios en productos digitales. Escaneados desde multiples plataformas. ${value} USD en valor de mercado.',
     'feat.delivery': 'Entrega Instantanea',
     'feat.deliveryDesc': 'Pago aprobado = producto entregado al instante. MercadoPago, PayPal, Bitcoin y USDT disponibles 24/7.',
-    'feat.freeProducts': 'Juegos y Software Gratis',
-    'feat.freeProductsDesc': 'Escaneamos 8 plataformas automaticamente. {count} productos siempre disponibles sin costo.',
+    'feat.freeProducts': 'Catalogo Digital',
+    'feat.freeProductsDesc': 'Escaneamos 8 plataformas automaticamente. {count} productos siempre disponibles a los mejores precios.'
     'feat.value': 'Valor Total',
     'feat.deliveryTime': 'Tiempo Entrega',
     'feat.products': 'Productos',
     'feat.goStore': 'Ir a Tienda',
     'feat.buyNow': 'Comprar Ahora',
-    'feat.seeFree': 'Ver Juegos Gratis',
+    'feat.seeFree': 'Ver Tienda',
 
     // Deals
     'deals.title': 'Ofertas del Dia',
@@ -60,13 +59,13 @@ const translations: Record<Lang, Record<string, string>> = {
 
     // Sections
     'section.premium': 'Juegos Premium',
-    'section.premiumDesc': 'Los mejores juegos gratis con mayor valor original',
+    'section.premiumDesc': 'Los mejores juegos con mayor valor original',
     'section.action': 'Accion y Aventura',
     'section.actionDesc': 'Juegos de accion, combate y aventuras emocionantes',
     'section.rpg': 'RPG y Estrategia',
     'section.rpgDesc': 'Mundos abiertos, rol por turnos y estrategia profunda',
     'section.software': 'Software y Licencias',
-    'section.softwareDesc': 'Antivirus, VPN, utilidades y mas — todo gratis',
+    'section.softwareDesc': 'Antivirus, VPN, utilidades y mas — a los mejores precios',
     'section.recent': 'Recien Escaneados',
     'section.recentDesc': 'Los ultimos productos agregados a la tienda',
     'section.seeAll': 'Ver todos',
@@ -74,9 +73,9 @@ const translations: Record<Lang, Record<string, string>> = {
     'section.seeSoftware': 'Ver software',
 
     // CTA Banner
-    'cta.badge': 'NEGOCIO DIGITAL SIN INVERSION',
-    'cta.title': 'Empieza a vender hoy mismo',
-    'cta.desc': '{count} productos listos para revender. Escaneo automatico de 8 plataformas. 100% ganancia, 0 inversion.',
+    'cta.badge': 'TIENDA DIGITAL',
+    'cta.title': 'Los mejores precios en digital',
+    'cta.desc': '{count} productos disponibles. Escaneo automatico de 8 plataformas. Precios desde $1 USD.',
     'cta.products': 'Productos',
     'cta.value': 'Valor USD',
     'cta.start': 'Empezar',
@@ -87,7 +86,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
     // Product Card
     'card.buy': 'Comprar',
-    'card.free': 'GRATIS',
+    'card.free': 'OFERTA',
 
     // Product Detail
     'detail.back': 'Volver a la tienda',
@@ -119,8 +118,8 @@ const translations: Record<Lang, Record<string, string>> = {
     'detail.buyMobile': 'Comprar',
     'detail.softwareBadge': 'Software Original con Licencia',
     'detail.softwareDesc': 'Este producto es un software original con licencia valida. Recibiras una clave de activacion (Product Key) para activar la version completa. Licencia personal, valida para 1 dispositivo.',
-    'detail.gameBadge': 'Juego Gratis — 100% Ganancia',
-    'detail.gameDesc': 'Juego obtenido gratuitamente de {source}. Al comprar, recibiras instrucciones paso a paso para reclamarlo y agregarlo permanentemente a tu cuenta. 100% original, sin costos ocultos.',
+    'detail.gameBadge': 'Producto Digital — Entrega Inmediata',
+    'detail.gameDesc': 'Juego escaneado desde {source}. Al comprar, recibiras instrucciones paso a paso para reclamarlo y agregarlo permanentemente a tu cuenta. 100% original, sin costos ocultos.',
     'detail.trustSSL': 'Encriptacion SSL',
     'detail.trustDigital': 'Sin envios fisicos',
     'detail.trustRefund': 'Reembolso total',
@@ -134,7 +133,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'delivery.oneDevice': '1 activacion por clave (1 dispositivo)',
     'delivery.instructions': 'Instrucciones de descarga e instalacion paso a paso',
     'delivery.support': 'Soporte tecnico por 30 dias',
-    'delivery.claimLink': 'Link directo para reclamar el juego gratis',
+    'delivery.claimLink': 'Link directo para reclamar el producto digital',
     'delivery.claimInstructions': 'Instrucciones paso a paso para canjear en {platform}',
     'delivery.permanent': 'El juego se vincula permanentemente a tu cuenta',
     'delivery.officialDownload': 'Descarga inmediata desde la plataforma oficial',
@@ -157,7 +156,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'trust.guarantee': 'Garantia 30 Dias',
 
     // Footer
-    'footer.desc': 'Juegos y software digital al mejor precio. Escaneamos plataformas y te traemos los mejores productos gratis para revender.',
+    'footer.desc': 'Juegos y software digital al mejor precio. Escaneamos plataformas y te traemos los mejores productos digitales a precios desde $1 USD.',
     'footer.nav': 'Navegacion',
     'footer.sources': 'Fuentes',
     'footer.payments': 'Pagos',
@@ -171,14 +170,13 @@ const translations: Record<Lang, Record<string, string>> = {
     'cart.total': 'Total',
     'cart.subtotal': 'Subtotal',
     'cart.shipping': 'Envio',
-    'cart.free': 'Gratis',
+    'cart.free': 'Sin costo',
     'cart.pay': 'Pagar con MercadoPago',
     'cart.items': 'items',
   },
   en: {
     // Header
     'nav.home': 'Home',
-    'nav.freeGames': 'Free Games',
     'nav.store': 'Store',
     'nav.cart': 'Your Cart',
     'nav.login': 'Sign In',
@@ -187,20 +185,20 @@ const translations: Record<Lang, Record<string, string>> = {
     // Announcement bar
     'announce.delivery': 'Instant delivery on digital orders',
     'announce.deliveryShort': 'Instant delivery',
-    'announce.profit': '100% Profit on free games',
+    'announce.profit': 'Games & software from $1 USD',
     'announce.coupon': 'Use DIGI10 for 10% OFF',
 
     // Hero
     'hero.featured': 'WEEKLY FEATURED',
-    'hero.freeGames': 'FREE PRODUCTS',
+    'hero.freeGames': 'PRODUCTS',
     'hero.noInventory': 'NO INVENTORY',
     'hero.seeDetail': 'See Details',
-    'hero.seeFreeGames': 'See Free Games',
+    'hero.seeFreeGames': 'See Store',
     'hero.goStore': 'Go to Store',
     'hero.explore': 'Explore',
     'hero.seeStore': 'See Store',
-    'hero.scanDesc': 'We scan {count} products on Epic Games, Prime Gaming, GOG, Steam and more. Games + software licenses with 100% profit for you.',
-    'hero.profitDesc': 'Total value: ${value} USD. Products obtained for free and resold with no inventory, no suppliers, no risk. Pure profit.',
+    'hero.scanDesc': 'We scan {count} products on Epic Games, Prime Gaming, GOG, Steam and more. Games + software licenses at the best prices.',
+    'hero.profitDesc': 'Market value: ${value} USD. Digital products scanned and offered at prices from $1 USD. No inventory, no risk.',
     'hero.ctaDesc': 'We scan {count} products on Epic Games, Prime Gaming, GOG, Steam and more.',
 
     // Categories
@@ -214,18 +212,18 @@ const translations: Record<Lang, Record<string, string>> = {
     'cat.software': 'Software',
 
     // Features
-    'feat.100profit': '100% Profit',
-    'feat.100profitDesc': 'Products obtained for free and resold. No inventory, no risk. ${value} USD in total value.',
+    'feat.100profit': 'Low Prices',
+    'feat.100profitDesc': 'Best prices on digital products. Scanned from multiple platforms. ${value} USD in market value.',
     'feat.delivery': 'Instant Delivery',
     'feat.deliveryDesc': 'Payment approved = product delivered instantly. MercadoPago, PayPal, Bitcoin and USDT available 24/7.',
-    'feat.freeProducts': 'Free Games & Software',
-    'feat.freeProductsDesc': 'We automatically scan 8 platforms. {count} products always available at no cost.',
+    'feat.freeProducts': 'Digital Catalog',
+    'feat.freeProductsDesc': 'We automatically scan 8 platforms. {count} products always available at the best prices.',
     'feat.value': 'Total Value',
     'feat.deliveryTime': 'Delivery Time',
     'feat.products': 'Products',
     'feat.goStore': 'Go to Store',
     'feat.buyNow': 'Buy Now',
-    'feat.seeFree': 'See Free Games',
+    'feat.seeFree': 'See Store',
 
     // Deals
     'deals.title': 'Daily Deals',
@@ -234,13 +232,13 @@ const translations: Record<Lang, Record<string, string>> = {
 
     // Sections
     'section.premium': 'Premium Games',
-    'section.premiumDesc': 'Best free games with highest original value',
+    'section.premiumDesc': 'Best games with highest original value',
     'section.action': 'Action & Adventure',
     'section.actionDesc': 'Exciting action, combat and adventure games',
     'section.rpg': 'RPG & Strategy',
     'section.rpgDesc': 'Open worlds, turn-based RPGs and deep strategy',
     'section.software': 'Software & Licenses',
-    'section.softwareDesc': 'Antivirus, VPN, utilities and more — all free',
+    'section.softwareDesc': 'Antivirus, VPN, utilities and more — at the best prices',
     'section.recent': 'Recently Scanned',
     'section.recentDesc': 'Latest products added to the store',
     'section.seeAll': 'See all',
@@ -248,9 +246,9 @@ const translations: Record<Lang, Record<string, string>> = {
     'section.seeSoftware': 'See software',
 
     // CTA Banner
-    'cta.badge': 'DIGITAL BUSINESS WITH ZERO INVESTMENT',
-    'cta.title': 'Start selling today',
-    'cta.desc': '{count} products ready to resell. Automatic scanning of 8 platforms. 100% profit, 0 investment.',
+    'cta.badge': 'DIGITAL STORE',
+    'cta.title': 'Best digital prices',
+    'cta.desc': '{count} products available. Automatic scanning of 8 platforms. Prices from $1 USD.',
     'cta.products': 'Products',
     'cta.value': 'Value USD',
     'cta.start': 'Get Started',
@@ -261,7 +259,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
     // Product Card
     'card.buy': 'Buy',
-    'card.free': 'FREE',
+    'card.free': 'DEAL',
 
     // Product Detail
     'detail.back': 'Back to store',
@@ -293,8 +291,8 @@ const translations: Record<Lang, Record<string, string>> = {
     'detail.buyMobile': 'Buy',
     'detail.softwareBadge': 'Original Software with License',
     'detail.softwareDesc': 'This is original software with a valid license. You will receive an activation key (Product Key) to activate the full version. Personal license, valid for 1 device.',
-    'detail.gameBadge': 'Free Game — 100% Profit',
-    'detail.gameDesc': 'Game obtained for free from {source}. Upon purchase, you receive step-by-step instructions to claim it and add it permanently to your account. 100% original, no hidden costs.',
+    'detail.gameBadge': 'Digital Product — Instant Delivery',
+    'detail.gameDesc': 'Game scanned from {source}. Upon purchase, you receive step-by-step instructions to claim it and add it permanently to your account. 100% original, no hidden costs.',
     'detail.trustSSL': 'SSL Encryption',
     'detail.trustDigital': 'No physical shipping',
     'detail.trustRefund': 'Full refund',
@@ -308,7 +306,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'delivery.oneDevice': '1 activation per key (1 device)',
     'delivery.instructions': 'Step-by-step download and installation instructions',
     'delivery.support': 'Technical support for 30 days',
-    'delivery.claimLink': 'Direct link to claim the free game',
+    'delivery.claimLink': 'Direct link to claim the digital product',
     'delivery.claimInstructions': 'Step-by-step instructions to redeem on {platform}',
     'delivery.permanent': 'The game is permanently linked to your account',
     'delivery.officialDownload': 'Immediate download from the official platform',
@@ -331,7 +329,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'trust.guarantee': '30-Day Warranty',
 
     // Footer
-    'footer.desc': 'Digital games and software at the best price. We scan platforms and bring you the best free products to resell.',
+    'footer.desc': 'Digital games and software at the best price. We scan platforms and bring you the best digital products at prices from $1 USD.',
     'footer.nav': 'Navigation',
     'footer.sources': 'Sources',
     'footer.payments': 'Payments',
@@ -345,7 +343,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'cart.total': 'Total',
     'cart.subtotal': 'Subtotal',
     'cart.shipping': 'Shipping',
-    'cart.free': 'Free',
+    'cart.free': 'No cost',
     'cart.pay': 'Pay with MercadoPago',
     'cart.items': 'items',
   },

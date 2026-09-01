@@ -86,7 +86,7 @@ function AnnouncementBar() {
         <div className="hidden items-center gap-4 md:flex">
           <span className="flex items-center gap-1">
             <Shield className="w-3.5 h-3.5 text-emerald-400" />
-            100% Ganancia en juegos gratis
+            Juegos y software desde $1 USD
           </span>
           <span className="flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -126,8 +126,7 @@ function Header() {
         </div>
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-gray-600">
           <Link href="/" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">Inicio</Link>
-          <Link href="/juegos-gratis" className="hover:text-violet-600 transition-colors flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-violet-50">Juegos Gratis <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span></Link>
-          <Link href="/tienda" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">Tienda</Link>
+          <Link href="/tienda" className="hover:text-violet-600 transition-colors flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-violet-50">Tienda <span className="bg-violet-100 text-violet-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
         </nav>
         <div className="flex items-center gap-1.5">
           <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full hover:bg-gray-100 transition-colors text-xs font-bold text-gray-600" title={lang === 'es' ? 'Switch to English' : 'Cambiar a Espanol'}>
@@ -144,8 +143,7 @@ function Header() {
       {mobileMenu && (
         <div className="lg:hidden border-t bg-white px-4 py-3 space-y-1">
           <Link href="/" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>Inicio</Link>
-          <Link href="/juegos-gratis" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg flex items-center gap-1" onClick={() => setMobileMenu(false)}>Juegos Gratis <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span></Link>
-          <Link href="/tienda" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>Tienda</Link>
+          <Link href="/tienda" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg flex items-center gap-1" onClick={() => setMobileMenu(false)}>Tienda <span className="bg-violet-100 text-violet-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
         </div>
       )}
     </header>
@@ -174,20 +172,20 @@ function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; 
       href: '#',
     },
     {
-      title: 'Juegos y Software Gratis',
-      desc: `Escaneamos ${gamesCount} productos en Epic Games, Prime Gaming, GOG, Steam y mas. Juegos + licencias de software con 100% ganancia para ti.`,
+      title: 'Juegos y Software Digital',
+      desc: `${gamesCount} productos escaneados de Epic Games, Prime Gaming, GOG, Steam y mas. Juegos + licencias de software a los mejores precios.`,
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg',
       originalPrice: valueTotal,
       sellPrice: 0,
       gradient: 'from-emerald-950/95 via-teal-950/90 to-green-950/80',
-      badge: `${gamesCount} PRODUCTOS GRATIS`,
+      badge: `${gamesCount} PRODUCTOS`,
       badgeColor: 'bg-emerald-500',
-      cta: 'Ver Juegos Gratis',
-      href: '/juegos-gratis',
+      cta: 'Ver Tienda',
+      href: '/tienda',
     },
     {
-      title: 'Ganancia del 100%',
-      desc: `Valor total: $${valueTotal.toFixed(0)} USD. Productos obtenidos gratis y revendidos sin inventario, sin proveedores, sin riesgo. Puro beneficio.`,
+      title: 'Precios Inmejorables',
+      desc: `Valor total en mercado: $${valueTotal.toFixed(0)} USD. Productos digitales escaneados y ofrecidos a precios desde $1 USD. Sin inventario, sin riesgo.`,
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1408650/capsule_616x353.jpg',
       originalPrice: valueTotal,
       sellPrice: 0,
@@ -199,8 +197,8 @@ function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; 
     },
   ] : [
     {
-      title: 'Juegos y Software Gratis',
-      desc: `Escaneamos ${gamesCount} productos en Epic Games, Prime Gaming, GOG, Steam y mas.`,
+      title: 'Juegos y Software Digital',
+      desc: `${gamesCount} productos escaneados de Epic Games, Prime Gaming, GOG, Steam y mas. Precios desde $1 USD.`,
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg',
       originalPrice: valueTotal,
       sellPrice: 0,
@@ -208,7 +206,7 @@ function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; 
       badge: `${gamesCount} PRODUCTOS`,
       badgeColor: 'bg-amber-500',
       cta: 'Explorar',
-      href: '/juegos-gratis',
+      href: '/tienda',
     },
   ];
 
@@ -255,7 +253,7 @@ function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; 
               <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-white/10 group">
                 <div className="aspect-[16/10] bg-gray-800">
                   <img src={topGame.image} alt={topGame.name} width={616} height={353}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" />
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" fetchPriority="high" decoding="async" />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -330,12 +328,12 @@ function FeatureBanners({ gamesCount, valueTotal }: { gamesCount: number; valueT
   const features = [
     {
       icon: DollarSign,
-      title: '100% Ganancia',
-      desc: `Productos obtenidos gratis y revendidos. Sin inventario, sin riesgo. $${valueTotal.toFixed(0)} USD en valor total.`,
+      title: 'Precios Bajos',
+      desc: `Los mejores precios en productos digitales. Juegos y software escaneados desde multiples plataformas. $${valueTotal.toFixed(0)} USD en valor de mercado.`,
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1504530/capsule_616x353.jpg',
       gradient: 'from-violet-600 via-purple-600 to-indigo-700',
       stat: `$${valueTotal.toFixed(0)}`,
-      statLabel: 'Valor Total',
+      statLabel: 'Valor Mercado',
       cta: 'Ir a Tienda',
       href: '/tienda',
     },
@@ -348,18 +346,18 @@ function FeatureBanners({ gamesCount, valueTotal }: { gamesCount: number; valueT
       stat: '< 1 min',
       statLabel: 'Tiempo Entrega',
       cta: 'Comprar Ahora',
-      href: '/juegos-gratis',
+      href: '/tienda',
     },
     {
       icon: Download,
-      title: 'Juegos y Software Gratis',
-      desc: `Escaneamos 8 plataformas automaticamente. ${gamesCount} productos siempre disponibles sin costo.`,
+      title: 'Catalogo Digital',
+      desc: `Escaneamos 8 plataformas automaticamente. ${gamesCount} productos siempre disponibles a los mejores precios.`,
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1147560/capsule_616x353.jpg',
       gradient: 'from-amber-500 via-orange-500 to-red-600',
       stat: `${gamesCount}`,
       statLabel: 'Productos',
-      cta: 'Ver Juegos Gratis',
-      href: '/juegos-gratis',
+      cta: 'Ver Tienda',
+      href: '/tienda',
     },
   ];
 
@@ -423,7 +421,7 @@ function GameCard({ game, compact = false, onSelect }: { game: GameProduct; comp
         {discount > 0 && (
           <span className="absolute top-2.5 left-2.5 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg">-{discount}%</span>
         )}
-        <span className="absolute top-2.5 right-2.5 bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg">GRATIS</span>
+
         {/* Hover overlay with eye icon */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
@@ -569,8 +567,8 @@ function BigCTABanner({ gamesCount, valueTotal }: { gamesCount: number; valueTot
             <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm text-[11px] font-bold text-white px-3 py-1 rounded-full mb-3 tracking-wide">
               <TrendingUp className="w-3.5 h-3.5" /> NEGOCIO DIGITAL SIN INVERSION
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black mb-2">Empieza a vender hoy mismo</h3>
-            <p className="text-sm text-white/75 leading-relaxed">{gamesCount} productos listos para revender. Escaneo automatico de 8 plataformas. 100% ganancia, 0 inversion.</p>
+            <h3 className="text-2xl sm:text-3xl font-black mb-2">Los mejores precios en digital</h3>
+            <p className="text-sm text-white/75 leading-relaxed">{gamesCount} productos disponibles. Escaneo automatico de 8 plataformas. Precios desde $1 USD.</p>
           </div>
           <div className="flex items-center gap-6 sm:gap-8 shrink-0">
             <div className="text-center text-white">
@@ -690,13 +688,12 @@ function Footer() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center"><Gamepad2 className="w-5 h-5" /></div>
               <span className="font-bold">DigiStore</span>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed">Juegos y software digital al mejor precio. Escaneamos plataformas y te traemos los mejores productos gratis para revender.</p>
+            <p className="text-xs text-gray-400 leading-relaxed">Juegos y software digital al mejor precio. Escaneamos plataformas y te traemos los mejores productos digitales a precios desde $1 USD.</p>
           </div>
           <div>
             <h4 className="font-semibold text-sm mb-3">Navegacion</h4>
             <ul className="space-y-2 text-xs text-gray-400">
               <li><Link href="/" className="hover:text-white transition-colors">Inicio</Link></li>
-              <li><Link href="/juegos-gratis" className="hover:text-white transition-colors">Juegos Gratis</Link></li>
               <li><Link href="/tienda" className="hover:text-white transition-colors">Tienda</Link></li>
             </ul>
           </div>
@@ -781,12 +778,12 @@ export default function HomePage() {
       ) : (
         <>
           <DealsCarousel games={games} onSelect={openDetail} />
-          <FeaturedSection games={games} title="Juegos Premium" subtitle="Los mejores juegos gratis con mayor valor original — hasta $39.99" icon={Crown} filterFn={g => (g.originalPrice || 0) >= 20} href="/tienda" ctaText="Ver todos" onSelect={openDetail} />
+          <FeaturedSection games={games} title="Juegos Premium" subtitle="Los mejores juegos con mayor valor original — hasta $39.99" icon={Crown} filterFn={g => (g.originalPrice || 0) >= 20} href="/tienda" ctaText="Ver todos" onSelect={openDetail} />
           <FeaturedSection games={games} title="Accion y Aventura" subtitle="Juegos de accion, combate y aventuras emocionantes" icon={Sword} filterFn={g => g.tags.some(t => ['action', 'adventure', 'fighting'].includes(t))} href="/tienda" ctaText="Ver mas" onSelect={openDetail} />
           <FeaturedSection games={games} title="RPG y Estrategia" subtitle="Mundos abiertos, rol por turnos y estrategia profunda" icon={Crown} filterFn={g => g.tags.some(t => ['rpg', 'strategy', 'tower-defense', 'simulation'].includes(t))} href="/tienda" ctaText="Ver mas" onSelect={openDetail} />
-          <FeaturedSection games={games} title="Software y Licencias" subtitle="Antivirus, VPN, utilidades y mas — todo gratis" icon={Monitor} filterFn={g => g.category === 'Software y Licencias' || g.tags.some(t => ['software', 'utility', 'tools'].includes(t))} href="/tienda" ctaText="Ver software" columns={5} onSelect={openDetail} />
+          <FeaturedSection games={games} title="Software y Licencias" subtitle="Antivirus, VPN, utilidades y mas — a los mejores precios" icon={Monitor} filterFn={g => g.category === 'Software y Licencias' || g.tags.some(t => ['software', 'utility', 'tools'].includes(t))} href="/tienda" ctaText="Ver software" columns={5} onSelect={openDetail} />
           <BigCTABanner gamesCount={gamesCount} valueTotal={valueTotal} />
-          <FeaturedSection games={games} title="Recien Escaneados" subtitle="Los ultimos productos agregados a la tienda" icon={Sparkles} filterFn={() => true} href="/juegos-gratis" ctaText="Ver todos" onSelect={openDetail} />
+          <FeaturedSection games={games} title="Recien Escaneados" subtitle="Los ultimos productos agregados a la tienda" icon={Sparkles} filterFn={() => true} href="/tienda" ctaText="Ver todos" onSelect={openDetail} />
           {lastViewed && <Recommendations games={games} currentGame={lastViewed} onSelect={openDetail} />}
         </>
       )}
