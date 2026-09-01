@@ -44,7 +44,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'feat.delivery': 'Entrega Instantanea',
     'feat.deliveryDesc': 'Pago aprobado = producto entregado al instante. MercadoPago, PayPal, Bitcoin y USDT disponibles 24/7.',
     'feat.freeProducts': 'Catalogo Digital',
-    'feat.freeProductsDesc': 'Escaneamos 8 plataformas automaticamente. {count} productos siempre disponibles a los mejores precios.'
+    'feat.freeProductsDesc': 'Escaneamos 8 plataformas automaticamente. {count} productos siempre disponibles a los mejores precios.',
     'feat.value': 'Valor Total',
     'feat.deliveryTime': 'Tiempo Entrega',
     'feat.products': 'Productos',

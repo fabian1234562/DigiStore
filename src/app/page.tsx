@@ -16,7 +16,13 @@ import {
   Monitor, Download, Sword, Puzzle, Car, Target, Users, TrendingUp,
   MousePointerClick, Gift, DollarSign, Percent, Layers, Cpu, Languages,
 } from 'lucide-react';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+
+/* ═══ Hook de traducción rápida ═══ */
+function useT() {
+  const lang = useStore(s => s.lang);
+  return useCallback((key: string, vars?: Record<string, string | number>) => t(key, lang, vars), [lang]);
+}
 
 /* ══════════════════════════════════════════════════════════════
    ERROR BOUNDARY — Previene que errores crasheen toda la pagina
@@ -75,22 +81,23 @@ interface GameProduct {
    ANNOUNCEMENT BAR
    ══════════════════════════════════════════════════════════════ */
 function AnnouncementBar() {
+  const t = useT();
   return (
     <div className="bg-[#212529] text-white text-xs">
       <div className="mx-auto flex max-w-7xl items-center justify-between h-9 px-3 sm:px-6">
         <div className="flex items-center gap-1.5">
           <Truck className="w-3.5 h-3.5 text-amber-400" />
-          <span className="hidden sm:inline">Entrega instantanea en pedidos digitales</span>
-          <span className="sm:hidden">Entrega instantanea</span>
+          <span className="hidden sm:inline">{t('announce.delivery')}</span>
+          <span className="sm:hidden">{t('announce.deliveryShort')}</span>
         </div>
         <div className="hidden items-center gap-4 md:flex">
           <span className="flex items-center gap-1">
             <Shield className="w-3.5 h-3.5 text-emerald-400" />
-            Juegos y software desde $1 USD
+            {t('announce.profit')}
           </span>
           <span className="flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            Usa DIGI10 para 10% OFF
+            {t('announce.coupon')}
           </span>
         </div>
       </div>
@@ -103,6 +110,7 @@ function AnnouncementBar() {
    ══════════════════════════════════════════════════════════════ */
 function Header() {
   const { cartOpen, setCartOpen, authOpen, setAuthOpen, cartCount, lang, setLang } = useStore();
+  const t = useT();
   const [mobileMenu, setMobileMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -125,8 +133,8 @@ function Header() {
           </Link>
         </div>
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">Inicio</Link>
-          <Link href="/tienda" className="hover:text-violet-600 transition-colors flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-violet-50">Tienda <span className="bg-violet-100 text-violet-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
+          <Link href="/" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">{t('nav.home')}</Link>
+          <Link href="/tienda" className="hover:text-violet-600 transition-colors flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-violet-50">{t('nav.store')} <span className="bg-violet-100 text-violet-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
         </nav>
         <div className="flex items-center gap-1.5">
           <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full hover:bg-gray-100 transition-colors text-xs font-bold text-gray-600" title={lang === 'es' ? 'Switch to English' : 'Cambiar a Espanol'}>
@@ -142,8 +150,8 @@ function Header() {
       </div>
       {mobileMenu && (
         <div className="lg:hidden border-t bg-white px-4 py-3 space-y-1">
-          <Link href="/" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>Inicio</Link>
-          <Link href="/tienda" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg flex items-center gap-1" onClick={() => setMobileMenu(false)}>Tienda <span className="bg-violet-100 text-violet-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
+          <Link href="/" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>{t('nav.home')}</Link>
+          <Link href="/tienda" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg flex items-center gap-1" onClick={() => setMobileMenu(false)}>{t('nav.store')} <span className="bg-violet-100 text-violet-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
         </div>
       )}
     </header>
@@ -155,6 +163,7 @@ function Header() {
      imagen del producto destacado visible
    ══════════════════════════════════════════════════════════════ */
 function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; gamesCount: number; valueTotal: number }) {
+  const t = useT();
   const topGame = games.length > 0 ? games.reduce((a, b) => (b.originalPrice || 0) > (a.originalPrice || 0) ? b : a) : null;
   const [current, setCurrent] = useState(0);
 
@@ -166,53 +175,53 @@ function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; 
       originalPrice: topGame.originalPrice,
       sellPrice: topGame.price,
       gradient: 'from-violet-950/95 via-indigo-950/90 to-purple-950/80',
-      badge: 'DESTACADO DE LA SEMANA',
+      badge: t('hero.featured'),
       badgeColor: 'bg-amber-500',
-      cta: 'Ver Detalle',
+      cta: t('hero.seeDetail'),
       href: '#',
     },
     {
-      title: 'Juegos y Software Digital',
-      desc: `${gamesCount} productos escaneados de Epic Games, Prime Gaming, GOG, Steam y mas. Juegos + licencias de software a los mejores precios.`,
+      title: t('hero.scanDesc', { count: gamesCount }).split('.')[0] || t('feat.freeProducts'),
+      desc: t('hero.scanDesc', { count: gamesCount }),
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg',
       originalPrice: valueTotal,
       sellPrice: 0,
       gradient: 'from-emerald-950/95 via-teal-950/90 to-green-950/80',
-      badge: `${gamesCount} PRODUCTOS`,
+      badge: `${gamesCount} ${t('hero.freeGames')}`,
       badgeColor: 'bg-emerald-500',
-      cta: 'Ver Tienda',
+      cta: t('hero.seeStore'),
       href: '/tienda',
     },
     {
-      title: 'Precios Inmejorables',
-      desc: `Valor total en mercado: $${valueTotal.toFixed(0)} USD. Productos digitales escaneados y ofrecidos a precios desde $1 USD. Sin inventario, sin riesgo.`,
+      title: t('feat.100profit'),
+      desc: t('hero.profitDesc', { value: valueTotal.toFixed(0) }),
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1408650/capsule_616x353.jpg',
       originalPrice: valueTotal,
       sellPrice: 0,
       gradient: 'from-amber-950/95 via-orange-950/90 to-red-950/80',
-      badge: 'SIN INVENTARIO',
+      badge: t('hero.noInventory'),
       badgeColor: 'bg-orange-500',
-      cta: 'Ir a la Tienda',
+      cta: t('hero.goStore'),
       href: '/tienda',
     },
   ] : [
     {
-      title: 'Juegos y Software Digital',
-      desc: `${gamesCount} productos escaneados de Epic Games, Prime Gaming, GOG, Steam y mas. Precios desde $1 USD.`,
+      title: t('feat.freeProducts'),
+      desc: t('hero.ctaDesc', { count: gamesCount }),
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg',
       originalPrice: valueTotal,
       sellPrice: 0,
       gradient: 'from-violet-950/95 via-indigo-950/90 to-purple-950/80',
-      badge: `${gamesCount} PRODUCTOS`,
+      badge: `${gamesCount} ${t('hero.freeGames')}`,
       badgeColor: 'bg-amber-500',
-      cta: 'Explorar',
+      cta: t('hero.explore'),
       href: '/tienda',
     },
   ];
 
   useEffect(() => {
-    const t = setInterval(() => setCurrent(c => (c + 1) % heroSlides.length), 6000);
-    return () => clearInterval(t);
+    const interval = setInterval(() => setCurrent(c => (c + 1) % heroSlides.length), 6000);
+    return () => clearInterval(interval);
   }, [heroSlides.length]);
 
   const slide = heroSlides[current];
@@ -289,15 +298,16 @@ function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; 
    CATEGORÍAS — Barra horizontal con iconos e imágenes
    ══════════════════════════════════════════════════════════════ */
 function CategoryBar({ games }: { games: GameProduct[] }) {
+  const t = useT();
   const categories = [
-    { name: 'Todos', icon: Layers, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg', count: games.length },
-    { name: 'Accion', icon: Sword, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1426210/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('action'))).length },
-    { name: 'RPG', icon: Crown, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1086940/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('rpg'))).length },
-    { name: 'Aventura', icon: Puzzle, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1659420/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('adventure'))).length },
-    { name: 'Carreras', icon: Car, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1551360/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('racing'))).length },
-    { name: 'Estrategia', icon: Target, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1147560/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('strategy'))).length },
-    { name: 'Indie', icon: Heart, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1057090/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('indie'))).length },
-    { name: 'Software', icon: Monitor, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/736260/capsule_616x353.jpg', count: games.filter(g => g.category === 'Software y Licencias').length },
+    { name: t('cat.all'), icon: Layers, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg', count: games.length },
+    { name: t('cat.action'), icon: Sword, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1426210/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('action'))).length },
+    { name: t('cat.rpg'), icon: Crown, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1086940/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('rpg'))).length },
+    { name: t('cat.adventure'), icon: Puzzle, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1659420/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('adventure'))).length },
+    { name: t('cat.racing'), icon: Car, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1551360/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('racing'))).length },
+    { name: t('cat.strategy'), icon: Target, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1147560/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('strategy'))).length },
+    { name: t('cat.indie'), icon: Heart, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/1057090/capsule_616x353.jpg', count: games.filter(g => g.tags.some(t => t.includes('indie'))).length },
+    { name: t('cat.software'), icon: Monitor, href: '/tienda', image: 'https://cdn.akamai.steamstatic.com/steam/apps/736260/capsule_616x353.jpg', count: games.filter(g => g.category === 'Software y Licencias').length },
   ];
 
   return (
@@ -325,38 +335,39 @@ function CategoryBar({ games }: { games: GameProduct[] }) {
    FEATURES VISUALES — 100% Ganancia, Entrega, etc. con imágenes
    ══════════════════════════════════════════════════════════════ */
 function FeatureBanners({ gamesCount, valueTotal }: { gamesCount: number; valueTotal: number }) {
+  const t = useT();
   const features = [
     {
       icon: DollarSign,
-      title: 'Precios Bajos',
-      desc: `Los mejores precios en productos digitales. Juegos y software escaneados desde multiples plataformas. $${valueTotal.toFixed(0)} USD en valor de mercado.`,
+      title: t('feat.100profit'),
+      desc: t('feat.100profitDesc', { value: valueTotal.toFixed(0) }),
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1504530/capsule_616x353.jpg',
       gradient: 'from-violet-600 via-purple-600 to-indigo-700',
       stat: `$${valueTotal.toFixed(0)}`,
-      statLabel: 'Valor Mercado',
-      cta: 'Ir a Tienda',
+      statLabel: t('feat.value'),
+      cta: t('feat.goStore'),
       href: '/tienda',
     },
     {
       icon: Send,
-      title: 'Entrega Instantanea',
-      desc: 'Pago aprobado = producto entregado al instante. MercadoPago, PayPal, Bitcoin y USDT disponibles 24/7.',
+      title: t('feat.delivery'),
+      desc: t('feat.deliveryDesc'),
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1408650/capsule_616x353.jpg',
       gradient: 'from-emerald-600 via-teal-600 to-green-700',
       stat: '< 1 min',
-      statLabel: 'Tiempo Entrega',
-      cta: 'Comprar Ahora',
+      statLabel: t('feat.deliveryTime'),
+      cta: t('feat.buyNow'),
       href: '/tienda',
     },
     {
       icon: Download,
-      title: 'Catalogo Digital',
-      desc: `Escaneamos 8 plataformas automaticamente. ${gamesCount} productos siempre disponibles a los mejores precios.`,
+      title: t('feat.freeProducts'),
+      desc: t('feat.freeProductsDesc', { count: gamesCount }),
       image: 'https://cdn.akamai.steamstatic.com/steam/apps/1147560/capsule_616x353.jpg',
       gradient: 'from-amber-500 via-orange-500 to-red-600',
       stat: `${gamesCount}`,
-      statLabel: 'Productos',
-      cta: 'Ver Tienda',
+      statLabel: t('feat.products'),
+      cta: t('feat.seeFree'),
       href: '/tienda',
     },
   ];
@@ -403,6 +414,7 @@ function FeatureBanners({ gamesCount, valueTotal }: { gamesCount: number; valueT
    ══════════════════════════════════════════════════════════════ */
 function GameCard({ game, compact = false, onSelect }: { game: GameProduct; compact?: boolean; onSelect?: (g: GameProduct) => void }) {
   const addToCart = useStore(s => s.addToCart);
+  const t = useT();
   const discount = game.originalPrice && game.originalPrice > 0
     ? Math.round((1 - game.price / game.originalPrice) * 100) : 0;
 
@@ -445,7 +457,7 @@ function GameCard({ game, compact = false, onSelect }: { game: GameProduct; comp
           </div>
           <button onClick={(e) => { e.stopPropagation(); addToCart(game as any); }}
             className="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all hover:scale-105 shadow-md shadow-violet-500/20">
-            Comprar
+            {t('card.buy')}
           </button>
         </div>
       </div>
@@ -498,6 +510,7 @@ function FeaturedSection({ games, title, subtitle, icon: Icon, filterFn, href, c
    OFERTAS DEL DIA — Scroll horizontal con cards compactos
    ══════════════════════════════════════════════════════════════ */
 function DealsCarousel({ games, onSelect }: { games: GameProduct[]; onSelect?: (g: GameProduct) => void }) {
+  const t = useT();
   const deals = games.filter(g => g.price <= 2.99).slice(0, 12);
   if (deals.length === 0) return null;
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -525,12 +538,12 @@ function DealsCarousel({ games, onSelect }: { games: GameProduct[]; onSelect?: (
             <Flame className="w-5 h-5 text-orange-500" />
           </div>
           <div>
-            <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">Ofertas del Dia</h2>
-            <p className="text-xs sm:text-sm text-gray-500">Juegos desde $1.99 — ganancia directa</p>
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">{t('deals.title')}</h2>
+            <p className="text-xs sm:text-sm text-gray-500">{t('deals.subtitle')}</p>
           </div>
         </div>
         <Link href="/tienda" className="text-sm font-bold text-violet-600 hover:text-violet-700 flex items-center gap-1 group">
-          Ver mas <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {t('deals.seeMore')} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
       <div className="relative group/carousel">
@@ -556,6 +569,7 @@ function DealsCarousel({ games, onSelect }: { games: GameProduct[]; onSelect?: (
    GRAN BANNER CTA — Imagen de fondo, estadísticas, CTA
    ══════════════════════════════════════════════════════════════ */
 function BigCTABanner({ gamesCount, valueTotal }: { gamesCount: number; valueTotal: number }) {
+  const t = useT();
   return (
     <section className="mx-auto max-w-7xl px-3 sm:px-6 py-4">
       <div className="relative overflow-hidden rounded-3xl min-h-[200px]">
@@ -565,24 +579,24 @@ function BigCTABanner({ gamesCount, valueTotal }: { gamesCount: number; valueTot
         <div className="relative mx-auto max-w-7xl px-6 sm:px-10 py-8 sm:py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="text-white max-w-lg">
             <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm text-[11px] font-bold text-white px-3 py-1 rounded-full mb-3 tracking-wide">
-              <TrendingUp className="w-3.5 h-3.5" /> NEGOCIO DIGITAL SIN INVERSION
+              <TrendingUp className="w-3.5 h-3.5" /> {t('cta.badge')}
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black mb-2">Los mejores precios en digital</h3>
-            <p className="text-sm text-white/75 leading-relaxed">{gamesCount} productos disponibles. Escaneo automatico de 8 plataformas. Precios desde $1 USD.</p>
+            <h3 className="text-2xl sm:text-3xl font-black mb-2">{t('cta.title')}</h3>
+            <p className="text-sm text-white/75 leading-relaxed">{t('cta.desc', { count: gamesCount })}</p>
           </div>
           <div className="flex items-center gap-6 sm:gap-8 shrink-0">
             <div className="text-center text-white">
               <p className="text-3xl sm:text-4xl font-black">{gamesCount}</p>
-              <p className="text-[10px] uppercase tracking-wider text-white/60 font-bold">Productos</p>
+              <p className="text-[10px] uppercase tracking-wider text-white/60 font-bold">{t('cta.products')}</p>
             </div>
             <div className="w-px h-12 bg-white/20" />
             <div className="text-center text-white">
               <p className="text-3xl sm:text-4xl font-black">${valueTotal.toFixed(0)}</p>
-              <p className="text-[10px] uppercase tracking-wider text-white/60 font-bold">Valor USD</p>
+              <p className="text-[10px] uppercase tracking-wider text-white/60 font-bold">{t('cta.value')}</p>
             </div>
             <div className="w-px h-12 bg-white/20" />
             <Link href="/tienda" className="bg-white text-violet-700 font-bold text-sm px-6 py-3 rounded-xl hover:bg-gray-100 transition-all hover:scale-105 shadow-xl whitespace-nowrap">
-              Empezar <ArrowRight className="w-4 h-4 inline" />
+              {t('cta.start')} <ArrowRight className="w-4 h-4 inline" />
             </Link>
           </div>
         </div>
@@ -595,9 +609,10 @@ function BigCTABanner({ gamesCount, valueTotal }: { gamesCount: number; valueTot
    RECOMENDACIONES — Productos relacionados con etiquetas
    ══════════════════════════════════════════════════════════════ */
 function Recommendations({ games, currentGame, onSelect }: { games: GameProduct[]; currentGame: GameProduct | null; onSelect?: (g: GameProduct) => void }) {
+  const t = useT();
   if (!currentGame) return null;
   const related = games
-    .filter(g => g.id !== currentGame.id && g.tags.some(t => currentGame.tags.includes(t)))
+    .filter(g => g.id !== currentGame.id && g.tags.some(tag => currentGame.tags.includes(tag)))
     .slice(0, 4);
   if (related.length === 0) return null;
 
@@ -608,8 +623,8 @@ function Recommendations({ games, currentGame, onSelect }: { games: GameProduct[
           <Sparkles className="w-5 h-5 text-amber-500" />
         </div>
         <div>
-          <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">Recomendaciones</h2>
-          <p className="text-xs sm:text-sm text-gray-500">Productos similares a &ldquo;{currentGame.name}&rdquo;</p>
+          <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">{t('rec.title')}</h2>
+          <p className="text-xs sm:text-sm text-gray-500">{t('rec.subtitle', { name: currentGame.name })}</p>
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -623,6 +638,7 @@ function Recommendations({ games, currentGame, onSelect }: { games: GameProduct[
    METODOS DE PAGO
    ══════════════════════════════════════════════════════════════ */
 function PaymentMethods() {
+  const t = useT();
   const methods = [
     { name: 'MercadoPago', color: 'from-blue-600 to-cyan-500', icon: CreditCard },
     { name: 'PayPal', color: 'from-blue-700 to-blue-500', icon: Shield },
@@ -631,7 +647,7 @@ function PaymentMethods() {
   ];
   return (
     <section className="mx-auto max-w-7xl px-3 sm:px-6 py-6">
-      <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Metodos de pago aceptados</p>
+      <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">{t('payment.title')}</p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         {methods.map(m => (
           <div key={m.name} className={`flex items-center gap-2 bg-gradient-to-r ${m.color} text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg`}>
@@ -648,11 +664,12 @@ function PaymentMethods() {
    TRUST STRIP
    ══════════════════════════════════════════════════════════════ */
 function TrustStrip() {
+  const t = useT();
   const items = [
-    { icon: Shield, text: 'Pago Seguro', desc: 'Encriptacion SSL' },
-    { icon: Zap, text: 'Entrega Inmediata', desc: '< 1 minuto' },
-    { icon: Globe, text: 'Juegos Globales', desc: '8 plataformas' },
-    { icon: RotateCcw, text: 'Garantia 30 Dias', desc: 'Reembolso total' },
+    { icon: Shield, text: t('trust.secure'), desc: t('detail.trustSSL') },
+    { icon: Zap, text: t('trust.instant'), desc: '< 1 min' },
+    { icon: Globe, text: t('trust.global'), desc: '8 platforms' },
+    { icon: RotateCcw, text: t('trust.guarantee'), desc: t('detail.days30') },
   ];
   return (
     <div className="border-t bg-gray-50">
@@ -679,6 +696,7 @@ function TrustStrip() {
    FOOTER
    ══════════════════════════════════════════════════════════════ */
 function Footer() {
+  const t = useT();
   return (
     <footer className="bg-[#212529] text-white">
       <div className="mx-auto max-w-7xl px-3 sm:px-6 py-10">
@@ -688,17 +706,17 @@ function Footer() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center"><Gamepad2 className="w-5 h-5" /></div>
               <span className="font-bold">DigiStore</span>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed">Juegos y software digital al mejor precio. Escaneamos plataformas y te traemos los mejores productos digitales a precios desde $1 USD.</p>
+            <p className="text-xs text-gray-400 leading-relaxed">{t('footer.desc')}</p>
           </div>
           <div>
-            <h4 className="font-semibold text-sm mb-3">Navegacion</h4>
+            <h4 className="font-semibold text-sm mb-3">{t('footer.nav')}</h4>
             <ul className="space-y-2 text-xs text-gray-400">
-              <li><Link href="/" className="hover:text-white transition-colors">Inicio</Link></li>
-              <li><Link href="/tienda" className="hover:text-white transition-colors">Tienda</Link></li>
+              <li><Link href="/" className="hover:text-white transition-colors">{t('nav.home')}</Link></li>
+              <li><Link href="/tienda" className="hover:text-white transition-colors">{t('nav.store')}</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold text-sm mb-3">Fuentes</h4>
+            <h4 className="font-semibold text-sm mb-3">{t('footer.sources')}</h4>
             <ul className="space-y-2 text-xs text-gray-400">
               <li>Epic Games Store</li>
               <li>Prime Gaming</li>
@@ -709,7 +727,7 @@ function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold text-sm mb-3">Pagos</h4>
+            <h4 className="font-semibold text-sm mb-3">{t('footer.payments')}</h4>
             <ul className="space-y-2 text-xs text-gray-400">
               <li>MercadoPago</li>
               <li>PayPal</li>
@@ -729,6 +747,7 @@ function Footer() {
    MAIN PAGE
    ══════════════════════════════════════════════════════════════ */
 export default function HomePage() {
+  const t = useT();
   const [games, setGames] = useState<GameProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastViewed, setLastViewed] = useState<GameProduct | null>(null);
@@ -773,17 +792,17 @@ export default function HomePage() {
       {loading ? (
         <div className="mx-auto max-w-7xl px-3 sm:px-6 py-20 text-center">
           <div className="animate-spin w-12 h-12 border-4 border-violet-200 border-t-violet-600 rounded-full mx-auto mb-4" />
-          <p className="text-gray-500 text-sm font-medium">Cargando {gamesCount} productos escaneados...</p>
+          <p className="text-gray-500 text-sm font-medium">{t('loading.text', { count: gamesCount })}</p>
         </div>
       ) : (
         <>
           <DealsCarousel games={games} onSelect={openDetail} />
-          <FeaturedSection games={games} title="Juegos Premium" subtitle="Los mejores juegos con mayor valor original — hasta $39.99" icon={Crown} filterFn={g => (g.originalPrice || 0) >= 20} href="/tienda" ctaText="Ver todos" onSelect={openDetail} />
-          <FeaturedSection games={games} title="Accion y Aventura" subtitle="Juegos de accion, combate y aventuras emocionantes" icon={Sword} filterFn={g => g.tags.some(t => ['action', 'adventure', 'fighting'].includes(t))} href="/tienda" ctaText="Ver mas" onSelect={openDetail} />
-          <FeaturedSection games={games} title="RPG y Estrategia" subtitle="Mundos abiertos, rol por turnos y estrategia profunda" icon={Crown} filterFn={g => g.tags.some(t => ['rpg', 'strategy', 'tower-defense', 'simulation'].includes(t))} href="/tienda" ctaText="Ver mas" onSelect={openDetail} />
-          <FeaturedSection games={games} title="Software y Licencias" subtitle="Antivirus, VPN, utilidades y mas — a los mejores precios" icon={Monitor} filterFn={g => g.category === 'Software y Licencias' || g.tags.some(t => ['software', 'utility', 'tools'].includes(t))} href="/tienda" ctaText="Ver software" columns={5} onSelect={openDetail} />
+          <FeaturedSection games={games} title={t('section.premium')} subtitle={t('section.premiumDesc')} icon={Crown} filterFn={g => (g.originalPrice || 0) >= 20} href="/tienda" ctaText={t('section.seeAll')} onSelect={openDetail} />
+          <FeaturedSection games={games} title={t('section.action')} subtitle={t('section.actionDesc')} icon={Sword} filterFn={g => g.tags.some(t => ['action', 'adventure', 'fighting'].includes(t))} href="/tienda" ctaText={t('section.seeMore')} onSelect={openDetail} />
+          <FeaturedSection games={games} title={t('section.rpg')} subtitle={t('section.rpgDesc')} icon={Crown} filterFn={g => g.tags.some(t => ['rpg', 'strategy', 'tower-defense', 'simulation'].includes(t))} href="/tienda" ctaText={t('section.seeMore')} onSelect={openDetail} />
+          <FeaturedSection games={games} title={t('section.software')} subtitle={t('section.softwareDesc')} icon={Monitor} filterFn={g => g.category === 'Software y Licencias' || g.tags.some(t => ['software', 'utility', 'tools'].includes(t))} href="/tienda" ctaText={t('section.seeSoftware')} columns={5} onSelect={openDetail} />
           <BigCTABanner gamesCount={gamesCount} valueTotal={valueTotal} />
-          <FeaturedSection games={games} title="Recien Escaneados" subtitle="Los ultimos productos agregados a la tienda" icon={Sparkles} filterFn={() => true} href="/tienda" ctaText="Ver todos" onSelect={openDetail} />
+          <FeaturedSection games={games} title={t('section.recent')} subtitle={t('section.recentDesc')} icon={Sparkles} filterFn={() => true} href="/tienda" ctaText={t('section.seeAll')} onSelect={openDetail} />
           {lastViewed && <Recommendations games={games} currentGame={lastViewed} onSelect={openDetail} />}
         </>
       )}
