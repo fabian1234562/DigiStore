@@ -228,10 +228,19 @@ function ImageGallery({ images }: { images: string[] }) {
    MAIN PRODUCT DETAIL COMPONENT
    ══════════════════════════════════════════════════════════════ */
 export function ProductDetail() {
-  const { selectedProduct, productDetailOpen, setProductDetailOpen, setSelectedProduct, addToCart, setCartOpen } = useStore();
+  const selectedProduct = useStore(s => s.selectedProduct);
+  const productDetailOpen = useStore(s => s.productDetailOpen);
+  const setProductDetailOpen = useStore(s => s.setProductDetailOpen);
+  const setSelectedProduct = useStore(s => s.setSelectedProduct);
+  const addToCart = useStore(s => s.addToCart);
+  const setCartOpen = useStore(s => s.setCartOpen);
   const [allProducts, setAllProducts] = useState<GameProduct[]>([]);
   const [imageTab, setImageTab] = useState<'images' | 'video'>('images');
+  const [mounted, setMounted] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Prevent hydration mismatch - only render modal after client mount
+  useEffect(() => { setMounted(true); }, []);
 
   // Fetch all products for recommendations
   useEffect(() => {
@@ -255,15 +264,16 @@ export function ProductDetail() {
     return () => window.removeEventListener('keydown', handler);
   }, [productDetailOpen, setProductDetailOpen, setSelectedProduct]);
 
-  // Lock body scroll when open
+  // Lock body scroll when open (only on client after mount)
   useEffect(() => {
+    if (!mounted) return;
     if (productDetailOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [productDetailOpen]);
+  }, [productDetailOpen, mounted]);
 
   const close = useCallback(() => {
     setProductDetailOpen(false);
@@ -282,7 +292,7 @@ export function ProductDetail() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [setSelectedProduct]);
 
-  if (!selectedProduct || !productDetailOpen) return null;
+  if (!selectedProduct || !productDetailOpen || !mounted) return null;
 
   const product = selectedProduct as unknown as GameProduct;
   const delivery = getDeliveryInfo(selectedProduct);

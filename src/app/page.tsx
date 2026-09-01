@@ -368,7 +368,7 @@ function FeatureBanners({ gamesCount, valueTotal }: { gamesCount: number; valueT
    PRODUCT CARD — Con descripción visible, al click abre detalle
    ══════════════════════════════════════════════════════════════ */
 function GameCard({ game, compact = false, onShowDetail }: { game: GameProduct; compact?: boolean; onShowDetail?: (g: GameProduct) => void }) {
-  const { addToCart, setSelectedProduct, setProductDetailOpen } = useStore();
+  const addToCart = useStore(s => s.addToCart);
   const discount = game.originalPrice && game.originalPrice > 0
     ? Math.round((1 - game.price / game.originalPrice) * 100) : 0;
 
@@ -376,8 +376,12 @@ function GameCard({ game, compact = false, onShowDetail }: { game: GameProduct; 
     if (onShowDetail) {
       onShowDetail(game);
     } else {
-      setSelectedProduct(game as any);
-      setProductDetailOpen(true);
+      // Defer store updates to avoid React error #310
+      const g = game;
+      requestAnimationFrame(() => {
+        useStore.getState().setSelectedProduct(g as any);
+        useStore.getState().setProductDetailOpen(true);
+      });
     }
   };
 
@@ -720,9 +724,11 @@ export default function HomePage() {
 
   const handleShowDetail = useCallback((game: GameProduct) => {
     setLastViewed(game);
-    const { setSelectedProduct, setProductDetailOpen } = useStore.getState();
-    setSelectedProduct(game as any);
-    setProductDetailOpen(true);
+    // Defer store updates to avoid React error #310
+    requestAnimationFrame(() => {
+      useStore.getState().setSelectedProduct(game as any);
+      useStore.getState().setProductDetailOpen(true);
+    });
   }, []);
 
   return (
