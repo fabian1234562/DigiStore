@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 const CartDrawer = dynamic(() => import('@/components/store/CartDrawer').then(m => ({ default: m.CartDrawer })), { ssr: false });
 const AuthDialog = dynamic(() => import('@/components/auth/AuthDialog').then(m => ({ default: m.AuthDialog })), { ssr: false });
 const ProductDetail = dynamic(() => import('@/components/store/ProductDetail').then(m => ({ default: m.ProductDetail })), { ssr: false });
+
+import { Component, type ReactNode } from 'react';
 import {
   ShoppingCart, Search, Zap, Shield, Headphones, LogIn,
   ArrowRight, Sparkles, CreditCard, Flame, Heart, Star,
@@ -14,6 +16,35 @@ import {
   MousePointerClick, Gift, DollarSign, Percent, Layers, Cpu,
 } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef } from 'react';
+
+/* ══════════════════════════════════════════════════════════════
+   ERROR BOUNDARY — Previene que errores crasheen toda la pagina
+   ══════════════════════════════════════════════════════════════ */
+interface ErrorBoundaryState { hasError: boolean; error: Error | null; }
+class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: Error) { return { hasError: true, error }; }
+  componentDidCatch(error: Error, info: React.ErrorInfo) { console.error('[ErrorBoundary]', error, info.componentStack); }
+  render() {
+    if (this.state.hasError) return (
+      <div className="flex items-center justify-center min-h-[400px] bg-gray-50">
+        <div className="text-center p-8 max-w-md">
+          <p className="text-4xl mb-4">!</p>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Algo salio mal</h2>
+          <p className="text-sm text-gray-500 mb-6">Hubo un error al cargar este contenido. Intenta recargar la pagina.</p>
+          <button onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}
+            className="bg-violet-600 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-violet-700 transition-colors">
+            Recargar Pagina
+          </button>
+        </div>
+      </div>
+    );
+    return this.props.children;
+  }
+}
 import Link from 'next/link';
 
 /* ══════════════════════════════════════════════════════════════
@@ -367,22 +398,13 @@ function FeatureBanners({ gamesCount, valueTotal }: { gamesCount: number; valueT
 /* ══════════════════════════════════════════════════════════════
    PRODUCT CARD — Con descripción visible, al click abre detalle
    ══════════════════════════════════════════════════════════════ */
-function GameCard({ game, compact = false, onShowDetail }: { game: GameProduct; compact?: boolean; onShowDetail?: (g: GameProduct) => void }) {
+function GameCard({ game, compact = false, onSelect }: { game: GameProduct; compact?: boolean; onSelect?: (g: GameProduct) => void }) {
   const addToCart = useStore(s => s.addToCart);
   const discount = game.originalPrice && game.originalPrice > 0
     ? Math.round((1 - game.price / game.originalPrice) * 100) : 0;
 
   const handleClick = () => {
-    if (onShowDetail) {
-      onShowDetail(game);
-    } else {
-      // Defer store updates to avoid React error #310
-      const g = game;
-      requestAnimationFrame(() => {
-        useStore.getState().setSelectedProduct(g as any);
-        useStore.getState().setProductDetailOpen(true);
-      });
-    }
+    if (onSelect) onSelect(game);
   };
 
   return (
@@ -431,7 +453,7 @@ function GameCard({ game, compact = false, onShowDetail }: { game: GameProduct; 
 /* ══════════════════════════════════════════════════════════════
    SECCION DE PRODUCTOS DESTACADOS
    ══════════════════════════════════════════════════════════════ */
-function FeaturedSection({ games, title, subtitle, icon: Icon, filterFn, href, ctaText, columns = 4 }: {
+function FeaturedSection({ games, title, subtitle, icon: Icon, filterFn, href, ctaText, columns = 4, onSelect }: {
   games: GameProduct[];
   title: string;
   subtitle: string;
@@ -440,6 +462,7 @@ function FeaturedSection({ games, title, subtitle, icon: Icon, filterFn, href, c
   href: string;
   ctaText: string;
   columns?: number;
+  onSelect?: (g: GameProduct) => void;
 }) {
   const items = games.filter(filterFn).slice(0, 8);
   if (items.length === 0) return null;
@@ -462,7 +485,7 @@ function FeaturedSection({ games, title, subtitle, icon: Icon, filterFn, href, c
         </Link>
       </div>
       <div className={`grid ${colClass} gap-4`}>
-        {items.map(g => <GameCard key={g.id} game={g} />)}
+        {items.map(g => <GameCard key={g.id} game={g} onSelect={onSelect} />)}
       </div>
     </section>
   );
@@ -471,7 +494,7 @@ function FeaturedSection({ games, title, subtitle, icon: Icon, filterFn, href, c
 /* ══════════════════════════════════════════════════════════════
    OFERTAS DEL DIA — Scroll horizontal con cards compactos
    ══════════════════════════════════════════════════════════════ */
-function DealsCarousel({ games }: { games: GameProduct[] }) {
+function DealsCarousel({ games, onSelect }: { games: GameProduct[]; onSelect?: (g: GameProduct) => void }) {
   const deals = games.filter(g => g.price <= 2.99).slice(0, 12);
   if (deals.length === 0) return null;
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -514,7 +537,7 @@ function DealsCarousel({ games }: { games: GameProduct[] }) {
           </button>
         )}
         <div ref={scrollRef} onScroll={checkScroll} className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-          {deals.map(g => <GameCard key={g.id} game={g} compact />)}
+          {deals.map(g => <GameCard key={g.id} game={g} compact onSelect={onSelect} />)}
         </div>
         {canScrollR && (
           <button onClick={() => scroll('r')} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-xl border flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-gray-50">
@@ -568,7 +591,7 @@ function BigCTABanner({ gamesCount, valueTotal }: { gamesCount: number; valueTot
 /* ══════════════════════════════════════════════════════════════
    RECOMENDACIONES — Productos relacionados con etiquetas
    ══════════════════════════════════════════════════════════════ */
-function Recommendations({ games, currentGame }: { games: GameProduct[]; currentGame: GameProduct | null }) {
+function Recommendations({ games, currentGame, onSelect }: { games: GameProduct[]; currentGame: GameProduct | null; onSelect?: (g: GameProduct) => void }) {
   if (!currentGame) return null;
   const related = games
     .filter(g => g.id !== currentGame.id && g.tags.some(t => currentGame.tags.includes(t)))
@@ -587,7 +610,7 @@ function Recommendations({ games, currentGame }: { games: GameProduct[]; current
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {related.map(g => <GameCard key={g.id} game={g} />)}
+        {related.map(g => <GameCard key={g.id} game={g} onSelect={onSelect} />)}
       </div>
     </section>
   );
@@ -722,13 +745,19 @@ export default function HomePage() {
   const gamesCount = games.length;
   const valueTotal = games.reduce((s, g) => s + (g.originalPrice || 0), 0);
 
-  const handleShowDetail = useCallback((game: GameProduct) => {
+  // Product selected for detail view (local state, not zustand)
+  const [selectedGame, setSelectedGame] = useState<GameProduct | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const openDetail = useCallback((game: GameProduct) => {
     setLastViewed(game);
-    // Defer store updates to avoid React error #310
-    requestAnimationFrame(() => {
-      useStore.getState().setSelectedProduct(game as any);
-      useStore.getState().setProductDetailOpen(true);
-    });
+    setSelectedGame(game);
+    setDetailOpen(true);
+  }, []);
+
+  const closeDetail = useCallback(() => {
+    setDetailOpen(false);
+    setTimeout(() => setSelectedGame(null), 300);
   }, []);
 
   return (
@@ -746,64 +775,25 @@ export default function HomePage() {
         </div>
       ) : (
         <>
-          <DealsCarousel games={games} />
-          <FeaturedSection
-            games={games}
-            title="Juegos Premium"
-            subtitle="Los mejores juegos gratis con mayor valor original — hasta $39.99"
-            icon={Crown}
-            filterFn={g => (g.originalPrice || 0) >= 20}
-            href="/tienda"
-            ctaText="Ver todos"
-          />
-          <FeaturedSection
-            games={games}
-            title="Accion y Aventura"
-            subtitle="Juegos de accion, combate y aventuras emocionantes"
-            icon={Sword}
-            filterFn={g => g.tags.some(t => ['action', 'adventure', 'fighting'].includes(t))}
-            href="/tienda"
-            ctaText="Ver mas"
-          />
-          <FeaturedSection
-            games={games}
-            title="RPG y Estrategia"
-            subtitle="Mundos abiertos, rol por turnos y estrategia profunda"
-            icon={Crown}
-            filterFn={g => g.tags.some(t => ['rpg', 'strategy', 'tower-defense', 'simulation'].includes(t))}
-            href="/tienda"
-            ctaText="Ver mas"
-          />
-          <FeaturedSection
-            games={games}
-            title="Software y Licencias"
-            subtitle="Antivirus, VPN, utilidades y mas — todo gratis"
-            icon={Monitor}
-            filterFn={g => g.category === 'Software y Licencias' || g.tags.some(t => ['software', 'utility', 'tools'].includes(t))}
-            href="/tienda"
-            ctaText="Ver software"
-            columns={5}
-          />
+          <DealsCarousel games={games} onSelect={openDetail} />
+          <FeaturedSection games={games} title="Juegos Premium" subtitle="Los mejores juegos gratis con mayor valor original — hasta $39.99" icon={Crown} filterFn={g => (g.originalPrice || 0) >= 20} href="/tienda" ctaText="Ver todos" onSelect={openDetail} />
+          <FeaturedSection games={games} title="Accion y Aventura" subtitle="Juegos de accion, combate y aventuras emocionantes" icon={Sword} filterFn={g => g.tags.some(t => ['action', 'adventure', 'fighting'].includes(t))} href="/tienda" ctaText="Ver mas" onSelect={openDetail} />
+          <FeaturedSection games={games} title="RPG y Estrategia" subtitle="Mundos abiertos, rol por turnos y estrategia profunda" icon={Crown} filterFn={g => g.tags.some(t => ['rpg', 'strategy', 'tower-defense', 'simulation'].includes(t))} href="/tienda" ctaText="Ver mas" onSelect={openDetail} />
+          <FeaturedSection games={games} title="Software y Licencias" subtitle="Antivirus, VPN, utilidades y mas — todo gratis" icon={Monitor} filterFn={g => g.category === 'Software y Licencias' || g.tags.some(t => ['software', 'utility', 'tools'].includes(t))} href="/tienda" ctaText="Ver software" columns={5} onSelect={openDetail} />
           <BigCTABanner gamesCount={gamesCount} valueTotal={valueTotal} />
-          <FeaturedSection
-            games={games}
-            title="Recien Escaneados"
-            subtitle="Los ultimos productos agregados a la tienda"
-            icon={Sparkles}
-            filterFn={() => true}
-            href="/juegos-gratis"
-            ctaText="Ver todos"
-          />
-          {lastViewed && <Recommendations games={games} currentGame={lastViewed} />}
+          <FeaturedSection games={games} title="Recien Escaneados" subtitle="Los ultimos productos agregados a la tienda" icon={Sparkles} filterFn={() => true} href="/juegos-gratis" ctaText="Ver todos" onSelect={openDetail} />
+          {lastViewed && <Recommendations games={games} currentGame={lastViewed} onSelect={openDetail} />}
         </>
       )}
 
       <PaymentMethods />
       <TrustStrip />
       <Footer />
-      <CartDrawer />
-      <AuthDialog />
-      <ProductDetail />
+      <ErrorBoundary>
+        <CartDrawer />
+        <AuthDialog />
+        {selectedGame && detailOpen && <ProductDetail product={selectedGame} onClose={closeDetail} allProducts={games} />}
+      </ErrorBoundary>
     </div>
   );
 }

@@ -227,97 +227,48 @@ function ImageGallery({ images }: { images: string[] }) {
 /* ══════════════════════════════════════════════════════════════
    MAIN PRODUCT DETAIL COMPONENT
    ══════════════════════════════════════════════════════════════ */
-export function ProductDetail() {
-  const selectedProduct = useStore(s => s.selectedProduct);
-  const productDetailOpen = useStore(s => s.productDetailOpen);
-  const setProductDetailOpen = useStore(s => s.setProductDetailOpen);
-  const setSelectedProduct = useStore(s => s.setSelectedProduct);
+export function ProductDetail({ product, onClose, allProducts: initialProducts }: { product: GameProduct; onClose: () => void; allProducts?: GameProduct[] }) {
   const addToCart = useStore(s => s.addToCart);
   const setCartOpen = useStore(s => s.setCartOpen);
-  const [allProducts, setAllProducts] = useState<GameProduct[]>([]);
+  const [allProducts, setAllProducts] = useState<GameProduct[]>(initialProducts || []);
   const [imageTab, setImageTab] = useState<'images' | 'video'>('images');
-  const [mounted, setMounted] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
-
-  // Prevent hydration mismatch - only render modal after client mount
-  useEffect(() => { setMounted(true); }, []);
-
-  // Fetch all products for recommendations
-  useEffect(() => {
-    if (productDetailOpen) {
-      fetch('/api/scanner/results?products=true')
-        .then(r => r.json())
-        .then(d => { if (d.success) setAllProducts(d.games || d.products || []); })
-        .catch(() => {});
-    }
-  }, [productDetailOpen]);
 
   // Close on ESC
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && productDetailOpen) {
-        setProductDetailOpen(false);
-        setTimeout(() => setSelectedProduct(null), 300);
-      }
+      if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [productDetailOpen, setProductDetailOpen, setSelectedProduct]);
+  }, [onClose]);
 
-  // Lock body scroll when open (only on client after mount)
+  // Lock body scroll when open
   useEffect(() => {
-    if (!mounted) return;
-    if (productDetailOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
-  }, [productDetailOpen, mounted]);
-
-  const close = useCallback(() => {
-    setProductDetailOpen(false);
-    setTimeout(() => setSelectedProduct(null), 300);
-  }, [setProductDetailOpen, setSelectedProduct]);
+  }, []);
 
   const handleAddToCart = () => {
-    if (!selectedProduct) return;
-    addToCart(selectedProduct);
-    close();
+    addToCart(product as any);
+    onClose();
     setTimeout(() => setCartOpen(true), 300);
   };
 
-  const navigateToProduct = useCallback((product: GameProduct) => {
-    setSelectedProduct(product as any);
+  const navigateToProduct = useCallback((_nextProduct: GameProduct) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [setSelectedProduct]);
+  }, []);
 
-  if (!selectedProduct || !productDetailOpen || !mounted) return null;
-
-  const product = selectedProduct as unknown as GameProduct;
-  const delivery = getDeliveryInfo(selectedProduct);
-  const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0;
-  const savings = product.originalPrice ? (product.originalPrice - product.price).toFixed(2) : null;
-  const extraImages = getExtraImages(product);
-  const isSoftware = product.category === 'Software y Licencias' || product.tags?.includes('software');
-
-  // Recommendations: products with matching tags, same category, or similar price range
   const recommendations = useMemo(() => {
     if (allProducts.length === 0) return [];
     return allProducts
       .filter(g => g.id !== product.id)
       .map(g => {
         let score = 0;
-        // Same category bonus
         if (g.category === product.category) score += 3;
-        // Matching tags bonus
         const commonTags = g.tags.filter(t => product.tags.includes(t));
         score += commonTags.length * 2;
-        // Same source bonus
         if (g.subcategory === product.subcategory) score += 2;
-        // Similar price range
         if (Math.abs(g.price - product.price) <= 1) score += 1;
         return { game: g, score };
       })
@@ -328,10 +279,18 @@ export function ProductDetail() {
 
   const trailerUrl = getTrailerSearchUrl(product.name);
 
+  const delivery = getDeliveryInfo(product as any);
+  const discount = product.originalPrice
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 0;
+  const savings = product.originalPrice ? (product.originalPrice - product.price).toFixed(2) : null;
+  const extraImages = getExtraImages(product);
+  const isSoftware = product.category === 'Software y Licencias' || product.tags?.includes('software');
+
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={close} />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
       {/* Modal */}
       <div ref={overlayRef} className="relative z-10 w-full max-w-4xl mx-4 my-4 sm:my-8 bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
@@ -611,6 +570,7 @@ export function ProductDetail() {
                     {recommendations.map(g => (
                       <MiniProductCard key={g.id} game={g} onClick={() => navigateToProduct(g)} />
                     ))}
+                    <p className="text-xs text-gray-400 text-center mt-3">Haz clic en un producto para ver sus detalles</p>
                   </div>
                 </div>
               </>
