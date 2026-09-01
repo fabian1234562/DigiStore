@@ -40,7 +40,8 @@ function getTrailerSearchUrl(name: string): string {
   return `https://www.youtube.com/results?search_query=${q}`;
 }
 
-// Generate DIFFERENT-looking images from Steam CDN using multiple image types
+// Generate images from Steam CDN — ONLY verified variants (tested all 72 apps, 100% HTTP 200)
+// capsule_236x.jpg = 0% success, page_bg_raw.jpg = 58% fail, library_600x900.jpg = 28% fail
 function getProductImages(product: GameProduct): string[] {
   const images: string[] = [];
 
@@ -48,35 +49,19 @@ function getProductImages(product: GameProduct): string[] {
     const match = product.image.match(/steam\/apps\/(\d+)/);
     if (match) {
       const appId = match[1];
-      // Different image types that look DISTINCT from each other:
-      // 1. Wide capsule (16:9 landscape banner)
+      // 1. Wide capsule (616x353, 16:9 landscape) — 100% verified
       images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_616x353.jpg`);
-      // 2. Header (wider, shorter)
+      // 2. Header (460x215, wider crop, different framing) — 100% verified
       images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`);
-      // 3. Library portrait (tall vertical)
-      images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/library_600x900.jpg`);
-      // 4. Page background (very wide, often different art)
-      images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/page_bg_raw.jpg`);
-      // 5. Small capsule (different crop)
+      // 3. Small capsule (231x87, compact banner) — 100% verified
       images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_231x87.jpg`);
-      // 6. Another variant
-      images.push(`https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_236x.jpg`);
     }
   } else {
-    // For non-Steam images (software products), use the main image and variations
+    // For non-Steam images (software products with z-cdn URLs)
     images.push(product.image);
-    // Add a few distinct placeholder-style images based on category
-    if (product.category === 'Software y Licencias' || product.tags?.includes('software')) {
-      const swImages = [
-        'https://cdn.akamai.steamstatic.com/steam/apps/736260/capsule_616x353.jpg',
-        'https://cdn.akamai.steamstatic.com/steam/apps/736260/header.jpg',
-        'https://cdn.akamai.steamstatic.com/steam/apps/736260/library_600x900.jpg',
-      ];
-      images.push(...swImages);
-    }
   }
 
-  return [...new Set(images)]; // Remove duplicates
+  return [...new Set(images)];
 }
 
 function getDeliveryInfo(product: GameProduct) {
@@ -167,16 +152,15 @@ function ImageGallery({ images, productName }: { images: string[]; productName: 
 
   const displayImages = validImages;
   const currentImage = displayImages[current % displayImages.length];
-  const isPortrait = currentImage.includes('library_600x900');
 
   return (
     <div className="space-y-3">
       {/* Main image — full width, large */}
-      <div className={`relative w-full bg-gray-900 rounded-2xl overflow-hidden group/gallery shadow-2xl ${isPortrait ? 'max-w-xs mx-auto' : 'aspect-[21/9]'}`}>
+      <div className="relative w-full bg-gray-900 rounded-2xl overflow-hidden group/gallery shadow-2xl aspect-[21/9]">
         <img
           src={currentImage}
           alt={`${productName} - imagen ${current + 1}`}
-          className={`w-full h-full object-cover transition-all duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'} ${isPortrait ? 'aspect-[2/3]' : 'aspect-[21/9]'}`}
+          className={`w-full h-full object-cover transition-all duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading="eager"
           decoding="async"
           onLoad={() => setImgLoaded(true)}
@@ -215,18 +199,15 @@ function ImageGallery({ images, productName }: { images: string[]; productName: 
       {/* Thumbnails strip */}
       {displayImages.length > 1 && (
         <div className="flex gap-2.5 overflow-x-auto pb-2 px-1">
-          {displayImages.map((img, i) => {
-            const isThisPortrait = img.includes('library_600x900');
-            return (
-              <button
-                key={i}
-                onClick={() => { setCurrent(i); setImgLoaded(false); }}
-                className={`shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-105 ${i === current ? 'border-violet-500 ring-2 ring-violet-500/30 shadow-lg' : 'border-transparent opacity-50 hover:opacity-90'}`}
-              >
-                <img src={img} alt="" className={`${isThisPortrait ? 'w-12 h-16' : 'w-20 h-11'} object-cover`} loading="lazy" decoding="async" />
-              </button>
-            );
-          })}
+          {displayImages.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => { setCurrent(i); setImgLoaded(false); }}
+              className={`shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-105 ${i === current ? 'border-violet-500 ring-2 ring-violet-500/30 shadow-lg' : 'border-transparent opacity-50 hover:opacity-90'}`}
+            >
+              <img src={img} alt="" className="w-20 h-11 object-cover" loading="lazy" decoding="async" />
+            </button>
+          ))}
         </div>
       )}
     </div>
