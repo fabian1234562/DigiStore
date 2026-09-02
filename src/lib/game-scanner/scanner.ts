@@ -1,8 +1,8 @@
 /**
- * ORQUESTRADOR DEL ESCÁNER DE JUEGOS GRATIS
+ * DIGITAL PRODUCT SCANNER ORCHESTRATOR
  * 
- * Coordina todos los scrapers, gestiona almacenamiento
- * y proporciona la API para consultar resultados.
+ * Coordinates all scrapers, manages storage
+ * and provides the API for querying results.
  */
 
 import { ScannedGame, ScanResult, ScanSummary, GameSource, GAME_SOURCES } from './types';
@@ -269,7 +269,7 @@ export async function runFullScan(): Promise<{
 /** Obtener juegos como productos para la tienda */
 export function getScannedGamesAsProducts() {
   return gameScanner.getActiveGames().map(game => ({
-    id: `free-${game.id}`,
+    id: `ds-${game.id}`,
     name: game.title,
     description: game.description,
     price: game.sellPrice,
@@ -280,18 +280,18 @@ export function getScannedGamesAsProducts() {
                game.source === 'humble' ? 'Humble Bundle' :
                game.source === 'indiegala' ? 'IndieGala' :
                game.source === 'fanatical' ? 'Fanatical' :
-               game.source === 'steam' ? 'Steam F2P' :
-               game.source === 'software' ? 'Software Gratis' :
+               game.source === 'steam' ? 'Steam' :
+               game.source === 'software' ? 'Software' :
                'Otras Fuentes',
-    category: game.tags.includes('software') ? 'Software y Licencias' : 'Juegos Gratis',
-    image: game.imageUrl || '/products/gen/gaming-cat.png',
+    category: game.tags.includes('software') ? 'Software y Licencias' : 'Juegos Digitales',
+    image: game.imageUrl || 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg',
     rating: game.rating || 4,
     reviews: 0,
     sold: Math.floor(Math.random() * 50) + 10,
     deliveryTime: 'Inmediato',
     platform: game.platform.join(', '),
     region: 'Global',
-    tags: [...game.tags, 'free-game', '100-profit'],
+    tags: [...game.tags, 'digital-product'],
     stock: game.unlimitedStock ? 999 : game.stock,
     featured: game.status === 'expiring',
   }));

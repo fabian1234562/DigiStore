@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { Language } from './i18n';
 
 export interface Product {
   id: string;
@@ -36,6 +37,7 @@ interface StoreState {
   selectedCategory: string;
   selectedSubcategory: string;
   sortBy: string;
+  language: Language;
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -49,6 +51,7 @@ interface StoreState {
   setSelectedCategory: (category: string) => void;
   setSelectedSubcategory: (subcategory: string) => void;
   setSortBy: (sort: string) => void;
+  setLanguage: (lang: Language) => void;
   cartTotal: () => number;
   cartCount: () => number;
 }
@@ -64,6 +67,7 @@ export const useStore = create<StoreState>((set, get) => ({
   selectedCategory: 'all',
   selectedSubcategory: 'all',
   sortBy: 'popular',
+  language: 'es' as Language,
 
   addToCart: (product) =>
     set((state) => {
@@ -105,6 +109,7 @@ export const useStore = create<StoreState>((set, get) => ({
   setSelectedCategory: (category) => set({ selectedCategory: category, selectedSubcategory: 'all' }),
   setSelectedSubcategory: (subcategory) => set({ selectedSubcategory: subcategory }),
   setSortBy: (sort) => set({ sortBy: sort }),
+  setLanguage: (lang) => set({ language: lang }),
 
   cartTotal: () =>
     get().cart.reduce((total, item) => total + item.product.price * item.quantity, 0),

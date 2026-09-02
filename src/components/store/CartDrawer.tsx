@@ -469,7 +469,7 @@ export function CartDrawer() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Envio</span>
-                      <span className="text-emerald-600 font-medium">Gratis</span>
+                      <span className="text-emerald-600 font-medium">Incluido</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between font-bold">

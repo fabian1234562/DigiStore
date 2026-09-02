@@ -1,9 +1,9 @@
 /**
- * API: RESULTADOS DEL ESCÁNER
+ * API: PRODUCT CATALOG
  * 
- * GET /api/scanner/results          - Todos los juegos activos
- * GET /api/scanner/results?source=X  - Filtrar por fuente
- * GET /api/scanner/results?q=X      - Buscar
+ * GET /api/scanner/results          - All active products
+ * GET /api/scanner/results?source=X  - Filter by source
+ * GET /api/scanner/results?q=X      - Search
  */
 
 import { NextResponse } from 'next/server';
@@ -28,22 +28,22 @@ export async function GET(request: Request) {
     }
 
     if (asProducts) {
-      // Formato compatible con la tienda
+      // Store-compatible format
       const products = games.map(g => ({
-        id: `free-${g.id}`,
+        id: `digistore-${g.id}`,
         name: g.title,
         description: g.description,
         price: g.sellPrice,
         originalPrice: g.originalPrice > 0 ? g.originalPrice : undefined,
-        category: g.tags.includes('software') ? 'Software y Licencias' : 'Juegos Gratis',
+        category: g.tags.includes('software') ? 'Software y Licencias' : 'Juegos Digitales',
         subcategory: g.source === 'epic-games' ? 'Epic Games' :
                    g.source === 'prime-gaming' ? 'Prime Gaming' :
                    g.source === 'gog' ? 'GOG.com' :
                    g.source === 'humble' ? 'Humble Bundle' :
                    g.source === 'indiegala' ? 'IndieGala' :
                    g.source === 'fanatical' ? 'Fanatical' :
-                   g.source === 'steam' ? 'Steam F2P' :
-                   g.source === 'software' ? 'Software Gratis' :
+                   g.source === 'steam' ? 'Steam' :
+                   g.source === 'software' ? 'Software' :
                    g.source,
         image: g.imageUrl || '/products/gen/gaming-cat.png',
         rating: g.rating || 4,
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
         deliveryTime: 'Inmediato',
         platform: g.platform.join(', '),
         region: 'Global',
-        tags: [...g.tags, 'free-game'],
+        tags: [...g.tags, 'digital-product'],
         stock: 999,
         featured: g.status === 'expiring',
       }));

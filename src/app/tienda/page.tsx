@@ -31,7 +31,7 @@ interface GameProduct {
   featured: boolean;
 }
 
-const SOURCES = ['all', 'Epic Games', 'Prime Gaming', 'GOG.com', 'Humble Bundle', 'IndieGala', 'Fanatical', 'Steam F2P', 'Software Gratis'];
+const SOURCES = ['all', 'Epic Games', 'Prime Gaming', 'GOG.com', 'Humble Bundle', 'IndieGala', 'Fanatical', 'Steam', 'Software y Licencias'];
 
 function StoreHeader() {
   const { cartOpen, setCartOpen, authOpen, setAuthOpen, cartCount } = useStore();
@@ -48,8 +48,7 @@ function StoreHeader() {
         </div>
         <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
           <Link href="/" className="hover:text-violet-600">Inicio</Link>
-          <Link href="/juegos-gratis" className="hover:text-violet-600 flex items-center gap-1">Juegos Gratis <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span></Link>
-          <Link href="/tienda" className="text-violet-600 font-semibold">Tienda</Link>
+          <Link href="/tienda" className="hover:text-violet-600 flex items-center gap-1">Tienda <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
         </div>
         <div className="flex items-center gap-2">
           <button className="relative p-2 rounded-full hover:bg-gray-100" onClick={() => setCartOpen(true)}>
@@ -62,7 +61,6 @@ function StoreHeader() {
       {mobileMenu && (
         <div className="lg:hidden border-t bg-white px-4 py-3 space-y-3">
           <Link href="/" className="block text-sm font-medium text-gray-700" onClick={() => setMobileMenu(false)}>Inicio</Link>
-          <Link href="/juegos-gratis" className="block text-sm font-medium text-gray-700" onClick={() => setMobileMenu(false)}>Juegos Gratis</Link>
           <Link href="/tienda" className="block text-sm font-medium text-violet-600" onClick={() => setMobileMenu(false)}>Tienda</Link>
         </div>
       )}
@@ -74,7 +72,7 @@ function StoreFooter() {
   return (
     <footer className="bg-[#212529] text-white mt-12">
       <div className="mx-auto max-w-7xl px-3 sm:px-6 py-8 text-center text-xs text-gray-500">
-        <p>&copy; {new Date().getFullYear()} DigiStore — Juegos digitales con 100% ganancia</p>
+        <p>&copy; {new Date().getFullYear()} DigiStore — Productos digitales al mejor precio</p>
       </div>
     </footer>
   );
@@ -118,8 +116,8 @@ export default function TiendaPage() {
       {/* Hero Banner */}
       <div className="bg-gradient-to-r from-violet-600 to-indigo-700 text-white">
         <div className="mx-auto max-w-7xl px-3 sm:px-6 py-8">
-          <h1 className="text-2xl md:text-3xl font-extrabold">Tienda de Juegos</h1>
-          <p className="text-sm text-white/70 mt-1">{games.length} juegos escaneados &middot; 100% ganancia &middot; Entrega inmediata</p>
+          <h1 className="text-2xl md:text-3xl font-extrabold">Tienda Digital</h1>
+          <p className="text-sm text-white/70 mt-1">{games.length} productos disponibles &middot; Precios desde $1.99 &middot; Entrega inmediata</p>
         </div>
       </div>
 
@@ -158,7 +156,7 @@ export default function TiendaPage() {
             <div className="flex items-center gap-3 mb-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input type="text" placeholder="Buscar juegos..." value={search} onChange={e => setSearch(e.target.value)}
+                <input type="text" placeholder="Buscar productos..." value={search} onChange={e => setSearch(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
               </div>
               <button onClick={() => setShowFilters(true)} className="lg:hidden p-2.5 border rounded-xl hover:bg-gray-100"><Filter className="w-5 h-5" /></button>
@@ -174,10 +172,9 @@ export default function TiendaPage() {
                   const discount = game.originalPrice ? Math.round((1 - game.price / game.originalPrice) * 100) : 0;
                   return (
                     <div key={game.id} className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                      <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+                      <div className="relative aspect-[16/10] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
                         <img src={game.image} alt={game.name} width={616} height={353} decoding="async" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                         {discount > 0 && <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">-{discount}%</span>}
-                        <span className="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">GRATIS</span>
                       </div>
                       <div className="p-3">
                         <p className="text-[10px] font-semibold text-violet-600 uppercase tracking-wider mb-1">{game.subcategory}</p>

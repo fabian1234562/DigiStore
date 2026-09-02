@@ -130,7 +130,7 @@ function getDeliveryInfo(product: Product) {
       ],
       howItWorks: [
         'Recibes la Product Key al instante tras el pago',
-        'Descargas el software desde la pagina oficial del fabricante (gratis)',
+        'Descargas el software desde la pagina oficial del fabricante (sin costo adicional)',
         'Durante la instalacion, ingresas la clave cuando te lo pida',
         'Activas en linea y listo: software original completo y activado',
       ],

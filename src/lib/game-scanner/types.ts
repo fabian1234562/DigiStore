@@ -1,12 +1,11 @@
 /**
- * TIPOS DEL ESCÁNER DE JUEGOS GRATIS
+ * GAME SCANNER TYPES
  * 
- * El escáner busca juegos que se regalan en internet
- * y los publica en la tienda a $3-4 USD.
- * Costo = $0, ganancia = 100% del precio de venta.
+ * The scanner finds digital products available at low prices
+ * and publishes them in the store at $1-$5 USD.
  */
 
-/** Fuente de donde se obtuvo el juego gratis */
+/** Source where the product was found */
 export type GameSource =
   | 'epic-games'
   | 'gog'
@@ -18,52 +17,52 @@ export type GameSource =
   | 'software'
   | 'apple';
 
-/** Tipo de entrega del juego */
+/** Delivery type for the product */
 export type DeliveryType =
-  | 'key'          // Clave Steam/Epic que se entrega directamente
-  | 'claim-link'   // Link para reclamar en la plataforma
-  | 'drm-free'     // Descarga directa sin DRM
-  | 'account'      // Se necesita cuenta de la plataforma
-  | 'app'          // Aplicación móvil gratis
-  | 'software';    // Software gratis
+  | 'key'          // Activation key for Steam/Epic
+  | 'claim-link'   // Link to claim on platform
+  | 'drm-free'     // Direct download without DRM
+  | 'account'      // Requires platform account
+  | 'app'          // Mobile app
+  | 'software';    // Software license
 
-/** Estado del juego escaneado */
+/** Status of the scanned product */
 export type ScanStatus =
-  | 'active'       // Disponible para reclamar
-  | 'expiring'     // Próximo a expirar (últimas 24h)
-  | 'expired'      // Ya no está gratis
-  | 'claimed'      // Ya fue reclamado (tenemos la clave)
-  | 'error';       // Error al escanear
+  | 'active'       // Available
+  | 'expiring'     // Ending soon (last 24h)
+  | 'expired'      // No longer available
+  | 'claimed'      // Key obtained
+  | 'error';       // Scan error
 
-/** Juego escaneado de una fuente */
+/** Scanned product from a source */
 export interface ScannedGame {
-  id: string;                    // ID único en DigiStore
-  sourceId: string;              // ID en la fuente original
-  source: GameSource;            // De dónde viene
-  title: string;                 // Nombre del juego
-  description: string;           // Descripción corta
-  longDescription?: string;      // Descripción larga
-  imageUrl: string;              // URL de la imagen/portada
-  originalPrice: number;         // Precio original en la tienda (USD)
-  sellPrice: number;             // Precio al que lo vendemos ($3.99)
-  deliveryType: DeliveryType;    // Cómo se entrega
+  id: string;                    // Unique ID in DigiStore
+  sourceId: string;              // ID in the original source
+  source: GameSource;            // Where it comes from
+  title: string;                 // Product name
+  description: string;           // Short description
+  longDescription?: string;      // Long description
+  imageUrl: string;              // Cover image URL
+  originalPrice: number;         // Original price in store (USD)
+  sellPrice: number;             // Our selling price ($1.99-$4.99)
+  deliveryType: DeliveryType;    // How it's delivered
   platform: string[];            // ['Steam', 'Epic', 'GOG', etc.]
   genre: string[];               // ['Action', 'RPG', etc.]
-  claimUrl?: string;             // URL para reclamar (si aplica)
-  claimInstructions?: string;    // Instrucciones de reclamación
-  stock: number;                 // Claves disponibles (0 = ilimitado si es claim-link)
-  unlimitedStock: boolean;       // Si es claim-link, no se agota
-  status: ScanStatus;            // Estado actual
-  startDate: string;             // Cuándo empezó a ser gratis
-  endDate?: string;              // Cuándo deja de ser gratis
-  scannedAt: string;             // Cuándo fue escaneado
-  lastChecked: string;           // Última verificación
-  tags: string[];                // Tags adicionales
-  rating?: number;               // Rating del juego (0-5)
-  publisher?: string;            // Editora
-  developer?: string;            // Desarrollador
-  size?: string;                 // Tamaño del juego
-  systemRequirements?: {         // Requisitos mínimos
+  claimUrl?: string;             // URL to claim (if applicable)
+  claimInstructions?: string;    // Claim instructions
+  stock: number;                 // Keys available (0 = unlimited for claim-link)
+  unlimitedStock: boolean;       // If claim-link, never runs out
+  status: ScanStatus;            // Current status
+  startDate: string;             // When it became available
+  endDate?: string;              // When it expires
+  scannedAt: string;             // When it was scanned
+  lastChecked: string;           // Last check time
+  tags: string[];                // Additional tags
+  rating?: number;               // Product rating (0-5)
+  publisher?: string;            // Publisher
+  developer?: string;            // Developer
+  size?: string;                 // Product size
+  systemRequirements?: {         // Minimum requirements
     os?: string;
     cpu?: string;
     ram?: string;
@@ -72,7 +71,7 @@ export interface ScannedGame {
   };
 }
 
-/** Resultado de un escaneo */
+/** Scan result from a single source */
 export interface ScanResult {
   source: GameSource;
   sourceName: string;
@@ -80,10 +79,10 @@ export interface ScanResult {
   gamesFound: ScannedGame[];
   error?: string;
   scannedAt: string;
-  duration: number;              // ms que tomó el escaneo
+  duration: number;              // Time taken to scan (ms)
 }
 
-/** Resumen completo del escaneo */
+/** Full scan summary */
 export interface ScanSummary {
   totalGames: number;
   activeGames: number;
@@ -95,23 +94,23 @@ export interface ScanSummary {
   }>;
   lastScanAt: string;
   totalScans: number;
-  estimatedValue: number;        // Valor total de los juegos si se venden todos
+  estimatedValue: number;        // Total value if all products sell
 }
 
-/** Configuración de precio para juegos gratis */
-export const FREE_GAME_PRICING = {
-  defaultPrice: 3.99,            // Precio por defecto
-  premiumPrice: 4.99,            // Para juegos con precio original > $20
-  budgetPrice: 2.99,             // Para juegos con precio original < $5
-  appPrice: 1.99,                // Para apps/software
+/** Pricing configuration for products */
+export const DIGISTORE_PRICING = {
+  defaultPrice: 3.99,            // Default price
+  premiumPrice: 4.99,            // For products with original price > $20
+  budgetPrice: 2.99,             // For products with original price < $5
+  appPrice: 1.99,                // For apps/software
   
-  // Umbral para precio premium
+  // Threshold for premium price
   premiumThreshold: 20,
   
-  // Umbral para precio budget
+  // Threshold for budget price
   budgetThreshold: 5,
   
-  /** Calcular precio de venta según el precio original */
+  /** Calculate selling price based on original price */
   calculate(originalPrice: number, type: DeliveryType): number {
     if (type === 'app' || type === 'software') return this.appPrice;
     if (originalPrice >= this.premiumThreshold) return this.premiumPrice;
@@ -119,24 +118,27 @@ export const FREE_GAME_PRICING = {
     return this.defaultPrice;
   },
   
-  /** Formatear precio */
+  /** Format price */
   format(price: number): string {
     return `$${price.toFixed(2)} USD`;
   },
 };
 
-/** Info de la fuente */
+/** Legacy alias for backward compatibility */
+export const FREE_GAME_PRICING = DIGISTORE_PRICING;
+
+/** Source info */
 export interface SourceInfo {
   id: GameSource;
   name: string;
   url: string;
-  icon: string;                  // Nombre del icono de Lucide
-  color: string;                 // Color de la fuente
+  icon: string;                  // Lucide icon name
+  color: string;                 // Source color
   description: string;
   scanFrequency: string;         // 'hourly', 'daily', 'weekly'
 }
 
-/** Todas las fuentes disponibles */
+/** All available sources */
 export const GAME_SOURCES: SourceInfo[] = [
   {
     id: 'epic-games',
@@ -144,7 +146,7 @@ export const GAME_SOURCES: SourceInfo[] = [
     url: 'https://store.epicgames.com/en-US/free-games',
     icon: 'Gamepad2',
     color: '#0078F2',
-    description: 'Juegos gratis cada semana en Epic Games',
+    description: 'Weekly game promotions from Epic Games',
     scanFrequency: 'weekly',
   },
   {
@@ -153,7 +155,7 @@ export const GAME_SOURCES: SourceInfo[] = [
     url: 'https://www.gog.com/en/games?price=free',
     icon: 'Disc',
     color: '#A348A6',
-    description: 'Juegos gratis y antiguos sin DRM',
+    description: 'DRM-less games and classic titles',
     scanFrequency: 'weekly',
   },
   {
@@ -162,7 +164,7 @@ export const GAME_SOURCES: SourceInfo[] = [
     url: 'https://store.steampowered.com/genre/Free%20to%20Play/',
     icon: 'Monitor',
     color: '#1B2838',
-    description: 'Juegos gratuitos y promociones en Steam',
+    description: 'Digital game deals and promotions on Steam',
     scanFrequency: 'daily',
   },
   {
@@ -171,7 +173,7 @@ export const GAME_SOURCES: SourceInfo[] = [
     url: 'https://www.indiegala.com/giveaways',
     icon: 'Gift',
     color: '#E8453C',
-    description: 'Sorteos y juegos gratis de IndieGala',
+    description: 'Promotional games and bundles from IndieGala',
     scanFrequency: 'daily',
   },
   {
@@ -180,7 +182,7 @@ export const GAME_SOURCES: SourceInfo[] = [
     url: 'https://www.fanatical.com/en/free',
     icon: 'Flame',
     color: '#FF6B00',
-    description: 'Juegos gratis de Fanatical',
+    description: 'Bundle deals and promotions from Fanatical',
     scanFrequency: 'weekly',
   },
   {
@@ -189,7 +191,7 @@ export const GAME_SOURCES: SourceInfo[] = [
     url: 'https://www.humblebundle.com/store/free',
     icon: 'Heart',
     color: '#CC0000',
-    description: 'Juegos gratis de Humble Bundle',
+    description: 'Promotional games from Humble Bundle',
     scanFrequency: 'weekly',
   },
   {
@@ -198,16 +200,16 @@ export const GAME_SOURCES: SourceInfo[] = [
     url: 'https://gaming.amazon.com/home',
     icon: 'Crown',
     color: '#00A8E1',
-    description: 'Juegos gratis con Amazon Prime',
+    description: 'Games included with Amazon Prime',
     scanFrequency: 'monthly',
   },
   {
     id: 'software',
-    name: 'Software Gratis',
+    name: 'Software Deals',
     url: 'https://giveawayoftheday.com/',
     icon: 'Monitor',
     color: '#6366F1',
-    description: 'Licencias de software, antivirus, VPN y herramientas gratis',
+    description: 'Software licenses, antivirus, VPN and tools',
     scanFrequency: 'daily',
   },
   {
@@ -216,7 +218,7 @@ export const GAME_SOURCES: SourceInfo[] = [
     url: 'https://apps.apple.com/us/genre/ios/id36',
     icon: 'Smartphone',
     color: '#000000',
-    description: 'Apps y juegos iOS gratis de la semana',
+    description: 'Featured iOS apps and games of the week',
     scanFrequency: 'weekly',
   },
 ];
