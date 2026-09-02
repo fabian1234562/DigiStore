@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type { Language } from './i18n';
 
+export type Lang = 'es' | 'en';
+
 export interface Product {
   id: string;
   name: string;
@@ -33,6 +35,7 @@ interface StoreState {
   selectedProduct: Product | null;
   productDetailOpen: boolean;
   user: { id: string; name: string; email: string } | null;
+  lang: Lang;
   searchQuery: string;
   selectedCategory: string;
   selectedSubcategory: string;
@@ -47,6 +50,7 @@ interface StoreState {
   setSelectedProduct: (product: Product | null) => void;
   setProductDetailOpen: (open: boolean) => void;
   setUser: (user: { id: string; name: string; email: string } | null) => void;
+  setLang: (lang: Lang) => void;
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
   setSelectedSubcategory: (subcategory: string) => void;
@@ -63,6 +67,7 @@ export const useStore = create<StoreState>((set, get) => ({
   selectedProduct: null,
   productDetailOpen: false,
   user: null,
+  lang: 'es' as Lang,
   searchQuery: '',
   selectedCategory: 'all',
   selectedSubcategory: 'all',
@@ -105,6 +110,7 @@ export const useStore = create<StoreState>((set, get) => ({
   setSelectedProduct: (product) => set({ selectedProduct: product }),
   setProductDetailOpen: (open) => set({ productDetailOpen: open }),
   setUser: (user) => set({ user }),
+  setLang: (lang) => set({ lang }),
   setSearchQuery: (query) => set({ searchQuery: query }),
   setSelectedCategory: (category) => set({ selectedCategory: category, selectedSubcategory: 'all' }),
   setSelectedSubcategory: (subcategory) => set({ selectedSubcategory: subcategory }),

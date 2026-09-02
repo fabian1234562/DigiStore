@@ -48,7 +48,11 @@ function StoreHeader() {
         </div>
         <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
           <Link href="/" className="hover:text-violet-600">Inicio</Link>
+<<<<<<< HEAD
           <Link href="/tienda" className="hover:text-violet-600 flex items-center gap-1">Tienda <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
+=======
+          <Link href="/tienda" className="hover:text-violet-600 flex items-center gap-1">Tienda <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
+>>>>>>> b01ae510630b2d58af317d41db7400825f46fd0a
         </div>
         <div className="flex items-center gap-2">
           <button className="relative p-2 rounded-full hover:bg-gray-100" onClick={() => setCartOpen(true)}>
@@ -72,7 +76,11 @@ function StoreFooter() {
   return (
     <footer className="bg-[#212529] text-white mt-12">
       <div className="mx-auto max-w-7xl px-3 sm:px-6 py-8 text-center text-xs text-gray-500">
+<<<<<<< HEAD
         <p>&copy; {new Date().getFullYear()} DigiStore — Productos digitales al mejor precio</p>
+=======
+        <p>&copy; {new Date().getFullYear()} DigiStore — Juegos y software digital al mejor precio</p>
+>>>>>>> b01ae510630b2d58af317d41db7400825f46fd0a
       </div>
     </footer>
   );
@@ -116,8 +124,13 @@ export default function TiendaPage() {
       {/* Hero Banner */}
       <div className="bg-gradient-to-r from-violet-600 to-indigo-700 text-white">
         <div className="mx-auto max-w-7xl px-3 sm:px-6 py-8">
+<<<<<<< HEAD
           <h1 className="text-2xl md:text-3xl font-extrabold">Tienda Digital</h1>
           <p className="text-sm text-white/70 mt-1">{games.length} productos disponibles &middot; Precios desde $1.99 &middot; Entrega inmediata</p>
+=======
+          <h1 className="text-2xl md:text-3xl font-extrabold">Tienda Digital</h1>
+          <p className="text-sm text-white/70 mt-1">{games.length} productos disponibles &middot; Precios desde $1.99 &middot; Entrega inmediata</p>
+>>>>>>> b01ae510630b2d58af317d41db7400825f46fd0a
         </div>
       </div>
 
@@ -175,6 +188,10 @@ export default function TiendaPage() {
                       <div className="relative aspect-[16/10] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
                         <img src={game.image} alt={game.name} width={616} height={353} decoding="async" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                         {discount > 0 && <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">-{discount}%</span>}
+<<<<<<< HEAD
+=======
+
+>>>>>>> b01ae510630b2d58af317d41db7400825f46fd0a
                       </div>
                       <div className="p-3">
                         <p className="text-[10px] font-semibold text-violet-600 uppercase tracking-wider mb-1">{game.subcategory}</p>

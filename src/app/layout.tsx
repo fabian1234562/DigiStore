@@ -30,6 +30,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://cdn.akamai.steamstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://cdn.akamai.steamstatic.com" />
+        <link rel="preconnect" href="https://z-cdn.chatglm.cn" crossOrigin="anonymous" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >

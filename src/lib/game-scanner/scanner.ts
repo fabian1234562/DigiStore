@@ -1,8 +1,8 @@
 /**
- * DIGITAL PRODUCT SCANNER ORCHESTRATOR
+ * ORQUESTRADOR DEL ESCÁNER DE JUEGOS GRATIS
  * 
- * Coordinates all scrapers, manages storage
- * and provides the API for querying results.
+ * Coordina todos los scrapers, gestiona almacenamiento
+ * y proporciona la API para consultar resultados.
  */
 
 import { ScannedGame, ScanResult, ScanSummary, GameSource, GAME_SOURCES } from './types';
@@ -269,7 +269,7 @@ export async function runFullScan(): Promise<{
 /** Obtener juegos como productos para la tienda */
 export function getScannedGamesAsProducts() {
   return gameScanner.getActiveGames().map(game => ({
-    id: `ds-${game.id}`,
+    id: `prod-${game.id}`,
     name: game.title,
     description: game.description,
     price: game.sellPrice,
@@ -284,14 +284,14 @@ export function getScannedGamesAsProducts() {
                game.source === 'software' ? 'Software' :
                'Otras Fuentes',
     category: game.tags.includes('software') ? 'Software y Licencias' : 'Juegos Digitales',
-    image: game.imageUrl || 'https://cdn.akamai.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg',
+    image: game.imageUrl || '/products/gen/gaming-cat.png',
     rating: game.rating || 4,
     reviews: 0,
     sold: Math.floor(Math.random() * 50) + 10,
     deliveryTime: 'Inmediato',
     platform: game.platform.join(', '),
     region: 'Global',
-    tags: [...game.tags, 'digital-product'],
+    tags: [...game.tags, 'digital', '100-profit'],
     stock: game.unlimitedStock ? 999 : game.stock,
     featured: game.status === 'expiring',
   }));
