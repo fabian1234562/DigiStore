@@ -395,7 +395,7 @@ export default function JuegosGratisPage() {
         </div>
       </div>
 
-      {/* ═══ TABS PRINCIPALES: Todo | Juegos | Libros | Apps ═══ */}
+      {/* ═══ TABS PRINCIPALES: Todo | Juegos | Apps ═══ */}
       <div className="bg-white border-b sticky top-0 z-30">
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           <div className="flex gap-1 overflow-x-auto no-scrollbar">
@@ -422,18 +422,6 @@ export default function JuegosGratisPage() {
               <Gamepad2 className="w-4 h-4" />
               Juegos
               <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{juegosFree.length}</span>
-            </button>
-            <button
-              onClick={() => { setMainTab('libros'); setSelectedSource('all'); }}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
-                mainTab === 'libros'
-                  ? 'border-amber-600 text-amber-700'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" />
-              Libros
-              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{librosFree.length}</span>
             </button>
             <button
               onClick={() => { setMainTab('apps'); setSelectedSource('all'); }}

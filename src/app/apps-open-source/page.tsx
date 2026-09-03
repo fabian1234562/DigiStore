@@ -396,8 +396,6 @@ export default function AppsOpenSourcePage() {
               <span>·</span>
               <Link href="/juegos-gratis" className="hover:text-emerald-300 transition-colors">Juegos</Link>
               <span>·</span>
-              <Link href="/libros" className="hover:text-amber-300 transition-colors">Libros</Link>
-              <span>·</span>
               <Link href="/tienda" className="hover:text-rose-300 transition-colors">Tienda</Link>
             </div>
           </div>

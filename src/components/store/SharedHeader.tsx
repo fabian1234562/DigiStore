@@ -5,32 +5,22 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import {
-  ShoppingCart, LogIn, Menu, X, Gamepad2, Zap, Gift, Tag, BookOpen, Download,
+  ShoppingCart, LogIn, Menu, X, Gamepad2, Zap, Gift, Tag, Download,
 } from 'lucide-react';
 
 /**
  * Premium responsive header compartido entre /tienda y /juegos-gratis
  *
- * Características:
- * - Glass effect al hacer scroll
- * - Mobile drawer premium con animaciones
- * - Logo con gradiente y glow
- * - Nav desktop con badges
- * - Tap targets mobile mínimos 44px
- * - Bloqueo de scroll cuando drawer abierto
- * - Cierre con Escape o tap fuera
- *
  * Items del menu (orden fijo):
  * 1. Inicio (violet)
  * 2. Juegos Gratis (emerald) - F2P
- * 3. Libros (amber) - clasicos de dominio publico
- * 4. Apps Open Source (blue) - software libre
- * 5. Tienda (rose/amber) - productos pagos $1-$5
+ * 3. Apps Open Source (blue) - software libre
+ * 4. Tienda (rose/amber) - productos pagos $1-$5
  */
 
 interface SharedHeaderProps {
-  /** 'home' resalta Inicio, 'free' resalta Juegos Gratis, 'books' resalta Libros, 'apps' resalta Apps Open Source, 'store' resalta Tienda */
-  activePage?: 'home' | 'free' | 'books' | 'apps' | 'store';
+  /** 'home' resalta Inicio, 'free' resalta Juegos Gratis, 'apps' resalta Apps Open Source, 'store' resalta Tienda */
+  activePage?: 'home' | 'free' | 'apps' | 'store';
 }
 
 export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
@@ -100,7 +90,7 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
             </Link>
           </div>
 
-          {/* Centro: Nav desktop con 5 items */}
+          {/* Centro: Nav desktop con 4 items */}
           <nav className="hidden lg:flex items-center gap-0.5 text-sm font-medium">
             <Link
               href="/"
@@ -122,18 +112,6 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
             >
               Juegos
               <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">F2P</span>
-            </Link>
-            <Link
-              href="/libros"
-              className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 ${
-                activePage === 'books'
-                  ? 'text-amber-700 bg-amber-50 font-semibold'
-                  : 'text-gray-700 hover:text-amber-700 hover:bg-amber-50'
-              }`}
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              Libros
-              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">37</span>
             </Link>
             <Link
               href="/apps-open-source"
@@ -245,23 +223,6 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
                 Juegos Gratis
                 <span className="ml-auto bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                   F2P
-                </span>
-              </Link>
-              <Link
-                href="/libros"
-                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors ${
-                  activePage === 'books'
-                    ? 'bg-amber-50 text-amber-700'
-                    : 'text-gray-700 hover:bg-amber-50 hover:text-amber-700'
-                }`}
-                onClick={() => setMobileMenu(false)}
-              >
-                <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <BookOpen className="w-4 h-4 text-amber-600" />
-                </div>
-                Libros Clásicos
-                <span className="ml-auto bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                  37
                 </span>
               </Link>
               <Link

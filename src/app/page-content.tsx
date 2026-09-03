@@ -134,17 +134,12 @@ function Header() {
             </Link>
           </div>
 
-          {/* Centro: Nav desktop con 5 items */}
+          {/* Centro: Nav desktop con 4 items */}
           <nav className="hidden lg:flex items-center gap-0.5 text-sm font-medium">
             <Link href="/" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-violet-700 hover:bg-violet-50 transition-colors">Inicio</Link>
             <Link href="/juegos-gratis?tab=juegos" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center gap-1.5">
               Juegos
               <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">F2P</span>
-            </Link>
-            <Link href="/libros" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-amber-700 hover:bg-amber-50 transition-colors flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5" />
-              Libros
-              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">37</span>
             </Link>
             <Link href="/apps-open-source" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors flex items-center gap-1.5">
               <Download className="w-3.5 h-3.5" />
@@ -237,17 +232,6 @@ function Header() {
                 </div>
                 Juegos Gratis
                 <span className="ml-auto bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">F2P</span>
-              </Link>
-              <Link
-                href="/libros"
-                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
-                onClick={() => setMobileMenu(false)}
-              >
-                <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <BookOpen className="w-4 h-4 text-amber-600" />
-                </div>
-                Libros Clásicos
-                <span className="ml-auto bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">37</span>
               </Link>
               <Link
                 href="/apps-open-source"
