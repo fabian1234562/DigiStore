@@ -7,7 +7,7 @@ const AuthDialog = dynamic(() => import('@/components/auth/AuthDialog').then(m =
 const ProductDetail = dynamic(() => import('@/components/store/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })), { ssr: false });
 import {
   ShoppingCart, Search, Zap, Shield, Headphones, LogIn,
-  ArrowRight, Sparkles, CreditCard, Flame, Heart, Star,
+  ArrowRight, Sparkles, CreditCard, Flame, Heart, Star, X,
   ChevronLeft, ChevronRight, Truck, RotateCcw, Globe, Tag,
   Menu, Eye, Gamepad2, Crown, Clock, Package, Check, Send,
   Monitor, Download, Sword, Puzzle, Car, Target, Users, TrendingUp,
@@ -67,7 +67,7 @@ function AnnouncementBar() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   HEADER
+   HEADER — Premium responsive
    ══════════════════════════════════════════════════════════════ */
 function Header() {
   const { cartOpen, setCartOpen, authOpen, setAuthOpen, cartCount } = useStore();
@@ -76,45 +76,181 @@ function Header() {
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', h);
+    window.addEventListener('scroll', h, { passive: true });
     return () => window.removeEventListener('scroll', h);
   }, []);
 
+  // Cerrar menu mobile con Escape
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenu(false);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
+
+  // Bloquear scroll del body cuando menu mobile esta abierto
+  useEffect(() => {
+    if (mobileMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenu]);
+
   return (
-    <header className={`sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b transition-shadow ${scrolled ? 'shadow-lg' : ''}`}>
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-3 sm:px-6 py-3">
-        <div className="flex items-center gap-3">
-          <button className="lg:hidden" onClick={() => setMobileMenu(!mobileMenu)}><Menu className="w-6 h-6" /></button>
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-              <Gamepad2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-extrabold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent hidden sm:inline">DigiStore</span>
-          </Link>
+    <>
+      <header className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'glass shadow-premium border-b border-violet-100/50'
+          : 'bg-white border-b border-transparent'
+      }`}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5">
+          {/* Lado izquierdo: Logo + Botón menu mobile */}
+          <div className="flex items-center gap-3">
+            <button
+              className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-violet-50 transition-colors"
+              onClick={() => setMobileMenu(true)}
+              aria-label="Abrir menu"
+            >
+              <Menu className="w-6 h-6 text-gray-700" />
+            </button>
+            <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 flex items-center justify-center shadow-lg shadow-violet-500/30 group-hover:scale-105 group-hover:rotate-3 transition-transform">
+                <Gamepad2 className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white" style={{ width: '20px', height: '20px' }} />
+                {/* Glow interior */}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-lg sm:text-xl font-extrabold leading-none text-gradient-violet">DigiStore</span>
+                <span className="text-[9px] sm:text-[10px] text-gray-500 font-medium leading-none mt-0.5 hidden sm:block">Productos Digitales</span>
+              </div>
+            </Link>
+          </div>
+
+          {/* Centro: Nav desktop */}
+          <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
+            <Link href="/" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-violet-700 hover:bg-violet-50 transition-colors">Inicio</Link>
+            <Link href="/juegos-gratis" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-violet-700 hover:bg-violet-50 transition-colors flex items-center gap-1.5">
+              Juegos Gratis
+              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span>
+            </Link>
+            <Link href="/tienda" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-violet-700 hover:bg-violet-50 transition-colors flex items-center gap-1.5">
+              Tienda
+              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">$1+</span>
+            </Link>
+          </nav>
+
+          {/* Lado derecho: Cart + Auth */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              className="relative p-2.5 rounded-xl hover:bg-violet-50 transition-colors group"
+              onClick={() => setCartOpen(true)}
+              aria-label="Abrir carrito"
+            >
+              <ShoppingCart className="w-5 h-5 text-gray-700 group-hover:text-violet-700 transition-colors" />
+              {cartCount() > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-violet-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white animate-fade-in">
+                  {cartCount()}
+                </span>
+              )}
+            </button>
+            <button
+              className="hidden sm:inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-md hover:shadow-lg hover:scale-105"
+              onClick={() => setAuthOpen(true)}
+            >
+              <LogIn className="w-4 h-4" />
+              <span className="hidden sm:inline">Entrar</span>
+            </button>
+            <button
+              className="sm:hidden p-2.5 rounded-xl hover:bg-violet-50 transition-colors"
+              onClick={() => setAuthOpen(true)}
+              aria-label="Iniciar sesion"
+            >
+              <LogIn className="w-5 h-5 text-gray-700" />
+            </button>
+          </div>
         </div>
-        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">Inicio</Link>
-          <Link href="/juegos-gratis" className="hover:text-violet-600 transition-colors flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-violet-50">Juegos Gratis <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span></Link>
-          <Link href="/tienda" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">Tienda</Link>
-        </nav>
-        <div className="flex items-center gap-1.5">
-          <button className="relative p-2.5 rounded-full hover:bg-gray-100 transition-colors" onClick={() => setCartOpen(true)}>
-            <ShoppingCart className="w-5 h-5" />
-            {cartCount() > 0 && <span className="absolute -top-0.5 -right-0.5 bg-violet-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white">{cartCount()}</span>}
-          </button>
-          <button className="p-2.5 rounded-full hover:bg-gray-100 transition-colors" onClick={() => setAuthOpen(true)}><LogIn className="w-5 h-5" /></button>
-        </div>
-      </div>
+      </header>
+
+      {/* ═══ Mobile menu overlay (drawer premium) ═══ */}
       {mobileMenu && (
-        <div className="lg:hidden border-t bg-white px-4 py-3 space-y-1">
-          <Link href="/" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>Inicio</Link>
-          <Link href="/juegos-gratis" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg flex items-center gap-1" onClick={() => setMobileMenu(false)}>Juegos Gratis <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span></Link>
-          <Link href="/tienda" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>Tienda</Link>
+        <div className="lg:hidden fixed inset-0 z-[60]">
+          {/* Backdrop con blur */}
+          <div
+            className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm animate-fade-in"
+            onClick={() => setMobileMenu(false)}
+          />
+          {/* Drawer */}
+          <div className="absolute left-0 top-0 bottom-0 w-[280px] max-w-[85vw] bg-white shadow-premium-lg flex flex-col animate-slide-up">
+            {/* Header del drawer */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
+                  <Gamepad2 className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-lg font-extrabold text-gradient-violet">DigiStore</span>
+              </div>
+              <button
+                onClick={() => setMobileMenu(false)}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Cerrar menu"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+            {/* Items del menu */}
+            <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+              <Link
+                href="/"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-violet-50 hover:text-violet-700 transition-colors"
+                onClick={() => setMobileMenu(false)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-violet-600" />
+                </div>
+                Inicio
+              </Link>
+              <Link
+                href="/juegos-gratis"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                onClick={() => setMobileMenu(false)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                  <Gift className="w-4 h-4 text-emerald-600" />
+                </div>
+                Juegos Gratis
+                <span className="ml-auto bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span>
+              </Link>
+              <Link
+                href="/tienda"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
+                onClick={() => setMobileMenu(false)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                  <Tag className="w-4 h-4 text-amber-600" />
+                </div>
+                Tienda
+                <span className="ml-auto bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">$1+</span>
+              </Link>
+            </nav>
+            {/* Footer del drawer */}
+            <div className="p-4 border-t border-gray-100">
+              <button
+                onClick={() => { setMobileMenu(false); setAuthOpen(true); }}
+                className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold py-3 rounded-xl shadow-md"
+              >
+                <LogIn className="w-4 h-4" /> Entrar / Registrarse
+              </button>
+            </div>
+          </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
+
 
 /* ══════════════════════════════════════════════════════════════
    HERO PRINCIPAL — Grande, impactante, con imagen de fondo +

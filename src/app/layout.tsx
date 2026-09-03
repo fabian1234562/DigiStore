@@ -1,18 +1,37 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter, Space_Grotesk, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/components/QueryProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["500", "700", "800"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#6d28d9" },
+    { media: "(prefers-color-scheme: dark)", color: "#8b5cf6" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "DigiStore — Productos Digitales al Instante",
@@ -20,6 +39,11 @@ export const metadata: Metadata = {
   keywords: ["productos digitales", "gaming", "streaming", "gift cards", "software", "skins", "v-bucks", "robux", "fortnite", "roblox"],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+  },
+  openGraph: {
+    title: "DigiStore — Productos Digitales al Instante",
+    description: "Gaming, streaming, software y gift cards con entrega instantanea. Precios desde $1.",
+    type: "website",
   },
 };
 
@@ -36,7 +60,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://z-cdn.chatglm.cn" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
         <QueryProvider>
           {children}
