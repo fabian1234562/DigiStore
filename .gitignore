@@ -56,3 +56,35 @@ zshop-*.json
 zshop-*.png
 digistore-*.png
 comparison-*.json
+
+# ===== AGENT / CLOUDESK-PAIS TOOLING (NO es parte de la app) =====
+# La IA NO debe subir su carpeta de trabajo al repo. Bloqueo total:
+.zscripts/
+skills/
+db/
+mini-services/
+examples/
+download/
+tool-results/
+*.pyc
+__pycache__/
+.agent-*/
+*.prod.db
+*.dev.db
+dev.db*
+data/*.db
+
+# ===== Screenshots / analysis dumps (IA) =====
+screenshot-*.png
+*.analysis.json
+*design-*.json
+*-analysis.json
+
+# ===== scripts sueltos de la IA (no son build de la app) =====
+REBUILD_TRIGGER*.md
+fix-conflicts.py
+vercel-check.json
+
+# ===== archivos sueltos accidentales =====
+cd
+--timeout
