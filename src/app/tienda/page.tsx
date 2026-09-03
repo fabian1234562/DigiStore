@@ -6,6 +6,7 @@ const CartDrawer = dynamic(() => import('@/components/store/CartDrawer').then(m 
 const AuthDialog = dynamic(() => import('@/components/auth/AuthDialog').then(m => ({ default: m.AuthDialog })), { ssr: false });
 const ProductDetail = dynamic(() => import('@/components/store/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })), { ssr: false });
 const ScannerStatus = dynamic(() => import('@/components/store/ScannerStatus').then(m => ({ default: m.ScannerStatus })), { ssr: false });
+const SharedHeader = dynamic(() => import('@/components/store/SharedHeader').then(m => ({ default: m.SharedHeader })), { ssr: false });
 import {
   ShoppingCart, Search, Zap, Shield, LogIn, Menu, ArrowRight,
   Gamepad2, Crown, Filter, X, Star, Send, SlidersHorizontal, Heart,
@@ -69,54 +70,41 @@ const SOFTWARE_CATEGORIES = [
 ];
 
 function StoreHeader() {
-  const { cartOpen, setCartOpen, authOpen, setAuthOpen, cartCount } = useStore();
-  const [mobileMenu, setMobileMenu] = useState(false);
-  return (
-    <header className="sticky top-0 z-50 bg-white border-b">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-3 sm:px-6 py-3">
-        <div className="flex items-center gap-3">
-          <button className="lg:hidden" onClick={() => setMobileMenu(!mobileMenu)}><Menu className="w-6 h-6" /></button>
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center"><Gamepad2 className="w-5 h-5 text-white" /></div>
-            <span className="text-lg font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent hidden sm:inline">DigiStore</span>
-          </Link>
-        </div>
-        <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-violet-600">Inicio</Link>
-          <Link href="/juegos-gratis" className="hover:text-violet-600 flex items-center gap-1">Juegos Gratis <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span></Link>
-          <Link href="/tienda" className="hover:text-violet-600 flex items-center gap-1">Tienda <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">OFERTAS</span></Link>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="relative p-2 rounded-full hover:bg-gray-100" onClick={() => setCartOpen(true)}>
-            <ShoppingCart className="w-5 h-5" />
-            {cartCount() > 0 && <span className="absolute -top-1 -right-1 bg-violet-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{cartCount()}</span>}
-          </button>
-          <button className="p-2 rounded-full hover:bg-gray-100" onClick={() => setAuthOpen(true)}><LogIn className="w-5 h-5" /></button>
-        </div>
-      </div>
-      {mobileMenu && (
-        <div className="lg:hidden border-t bg-white px-4 py-3 space-y-3">
-          <Link href="/" className="block text-sm font-medium text-gray-700" onClick={() => setMobileMenu(false)}>Inicio</Link>
-          <Link href="/juegos-gratis" className="block text-sm font-medium text-gray-700" onClick={() => setMobileMenu(false)}>Juegos Gratis</Link>
-          <Link href="/tienda" className="block text-sm font-medium text-violet-600" onClick={() => setMobileMenu(false)}>Tienda</Link>
-        </div>
-      )}
-    </header>
-  );
+  // Use shared premium header - ahora con activePage='store'
+  return <SharedHeader activePage="store" />;
 }
 
 function StoreFooter() {
   return (
-    <footer className="bg-[#212529] text-white mt-12">
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 py-8 text-center text-xs text-gray-500">
-        <p>&copy; {new Date().getFullYear()} DigiStore — Productos digitales al mejor precio</p>
+    <footer className="relative bg-gradient-to-b from-[#0f0a1e] via-[#1a1333] to-[#0a0a0f] text-white mt-12 overflow-hidden">
+      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_20%_30%,white,transparent_40%)]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center shadow-glow-violet">
+              <Gamepad2 className="w-4.5 h-4.5 text-white" style={{ width: '18px', height: '18px' }} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gradient-violet">DigiStore</p>
+              <p className="text-[10px] text-gray-500">Productos digitales al mejor precio</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-xs text-gray-500">
+            <Link href="/" className="hover:text-violet-300 transition-colors">Inicio</Link>
+            <span>·</span>
+            <Link href="/juegos-gratis" className="hover:text-emerald-300 transition-colors">Juegos Gratis</Link>
+            <span>·</span>
+            <Link href="/tienda" className="hover:text-amber-300 transition-colors">Tienda</Link>
+          </div>
+          <p className="text-xs text-gray-500">&copy; {new Date().getFullYear()} DigiStore</p>
+        </div>
       </div>
     </footer>
   );
 }
 
 /* ══════════════════════════════════════════════════════════════
-   PRODUCT CARD — Con descripción visible, al click abre detalle
+   PRODUCT CARD — Premium responsive, click abre detalle
    ══════════════════════════════════════════════════════════════ */
 function StoreCard({ game }: { game: GameProduct }) {
   const { addToCart, setSelectedProduct, setProductDetailOpen } = useStore();
@@ -129,41 +117,62 @@ function StoreCard({ game }: { game: GameProduct }) {
   };
 
   return (
-    <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer flex flex-col"
-      onClick={openDetail}>
+    <div
+      className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-violet-200 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col"
+      onClick={openDetail}
+    >
       <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
-        <img src={game.image} alt={game.name} width={616} height={353} decoding="async"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy"
-          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+        <img
+          src={game.image}
+          alt={game.name}
+          width={616}
+          height={353}
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          loading="lazy"
+          onError={e => { (e.target as HTMLImageElement).src = '/products/gen/gaming-cat.png'; }}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         {discount > 0 && (
-          <span className="absolute top-2.5 left-2.5 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg">-{discount}%</span>
+          <span className="absolute top-2.5 left-2.5 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg">
+            -{discount}%
+          </span>
         )}
-        {/* Hover overlay with eye icon */}
+        {/* Badge DIGISTORE */}
+        <span className="absolute top-2.5 right-2.5 bg-violet-600/95 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-lg uppercase tracking-wider">
+          DigiStore
+        </span>
+        {/* Hover overlay con eye icon */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
             <Eye className="w-5 h-5 text-white" />
           </div>
         </div>
       </div>
-      <div className="p-3.5 flex flex-col flex-1">
+      <div className="p-3 sm:p-3.5 flex flex-col flex-1">
         <div className="flex items-center gap-1.5 mb-1.5">
-          <p className="text-[10px] font-bold text-violet-600 uppercase tracking-wider">{game.subcategory}</p>
-          {game.rating >= 4 && <Star className="w-3 h-3 text-amber-400 fill-amber-400" />}
+          <p className="text-[10px] font-bold text-violet-600 uppercase tracking-wider truncate">{game.subcategory}</p>
+          {game.rating >= 4 && <Star className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0" />}
         </div>
-        <h3 className="font-bold text-sm leading-tight mb-1.5 line-clamp-2 group-hover:text-violet-600 transition-colors">{game.name}</h3>
+        <h3 className="font-bold text-sm leading-tight mb-1.5 line-clamp-2 group-hover:text-violet-700 transition-colors">
+          {game.name}
+        </h3>
         {/* DESCRIPCIÓN visible (2 líneas) */}
-        <p className="text-xs text-gray-500 line-clamp-2 mb-3 leading-relaxed flex-1">{game.description}</p>
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-lg font-black text-violet-600">${game.price.toFixed(2)}</span>
+        <p className="text-xs text-gray-500 line-clamp-2 mb-3 leading-relaxed flex-1 hidden sm:block">
+          {game.description}
+        </p>
+        <div className="flex items-center justify-between mt-auto gap-2">
+          <div className="flex items-baseline gap-1.5 min-w-0">
+            <span className="text-base sm:text-lg font-black text-violet-600">${game.price.toFixed(2)}</span>
             {game.originalPrice && game.originalPrice > game.price && (
-              <span className="text-xs text-gray-400 line-through">${game.originalPrice.toFixed(2)}</span>
+              <span className="text-[10px] sm:text-xs text-gray-400 line-through">${game.originalPrice.toFixed(2)}</span>
             )}
           </div>
-          <button onClick={(e) => { e.stopPropagation(); addToCart(game as any); }}
-            className="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all hover:scale-105 shadow-md shadow-violet-500/20">
-            Comprar
+          <button
+            onClick={(e) => { e.stopPropagation(); addToCart(game as any); }}
+            className="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg transition-all hover:scale-105 shadow-md shadow-violet-500/20 whitespace-nowrap shrink-0"
+          >
+            + Carrito
           </button>
         </div>
       </div>
@@ -280,23 +289,29 @@ export default function TiendaPage() {
     <div className="min-h-screen bg-gray-50/50">
       <StoreHeader />
 
-      {/* Hero Banner */}
+      {/* Hero Banner premium */}
       <div className="relative overflow-hidden bg-gradient-to-br from-violet-700 via-indigo-700 to-purple-800 text-white">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,white,transparent_50%)]" />
-        <div className="relative mx-auto max-w-7xl px-3 sm:px-6 py-8">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,white_20px,white_21px)]" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 animate-fade-in">
             <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold">Tienda Digital</h1>
-              <p className="text-sm text-white/80 mt-1">
+              <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md border border-white/20 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full mb-3 shadow-lg">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                Productos Premium · Precios $1 a $5
+              </div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-2">Tienda Digital</h1>
+              <p className="text-sm sm:text-base text-white/85">
                 {games.length} productos · Precios $1.00 - $4.99 · Entrega inmediata
               </p>
             </div>
-            <div className="flex gap-2">
-              <span className="bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                {juegosProducts.length} Juegos
+            <div className="flex flex-wrap gap-2">
+              <span className="bg-white/15 backdrop-blur-md border border-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                🎮 {juegosProducts.length} Juegos
               </span>
-              <span className="bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                {softwareProducts.length} Software
+              <span className="bg-white/15 backdrop-blur-md border border-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                💾 {softwareProducts.length} Software
               </span>
             </div>
           </div>
