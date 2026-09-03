@@ -1,8 +1,9 @@
 /**
- * ORQUESTRADOR DEL ESCÁNER DE JUEGOS GRATIS
+ * ORQUESTRADOR DEL ESCÁNER DE PRODUCTOS DIGITALES
  * 
  * Coordina todos los scrapers, gestiona almacenamiento
  * y proporciona la API para consultar resultados.
+ * Incluye escaneo automático vía Vercel Cron cada 6 horas.
  */
 
 import { ScannedGame, ScanResult, ScanSummary, GameSource, GAME_SOURCES } from './types';
@@ -11,6 +12,7 @@ import { scanEpicGames } from './sources/epic-games';
 import { scanCheapShark } from './sources/cheapshark';
 import { scanItchio } from './sources/itchio';
 import { scanSoftwareGiveaways } from './sources/software-giveaways';
+import { scanTrending } from './sources/trending';
 
 /** Función de escaneo por fuente */
 type ScanFunction = () => Promise<ScanResult>;
@@ -23,6 +25,8 @@ const SCANNERS: Record<GameSource, { fn: ScanFunction; name: string }> = {
   'gog': { fn: scanItchio, name: 'itch.io (Indie Games)' },
   // SOFTWARE Y LICENCIAS
   'indiegala': { fn: scanSoftwareGiveaways, name: 'Software & Licencias' },
+  // TRENDING - Productos con alta demanda actual
+  'fanatical': { fn: scanTrending, name: 'Trending Scanner (Auto)' },
   // Fuentes deshabilitadas (SPAs que necesitan navegador headless)
   // 'humble': { fn: scanHumble, name: 'Humble Bundle' },
 };

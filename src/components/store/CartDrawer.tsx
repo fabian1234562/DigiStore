@@ -33,6 +33,9 @@ import {
   AlertCircle,
   ExternalLink,
   Loader2,
+  Wallet,
+  Bitcoin,
+  Banknote,
 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -257,6 +260,9 @@ export function CartDrawer() {
   const [checkingOut, setCheckingOut] = useState(false);
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<'mercadopago' | 'paypal' | 'crypto'>('mercadopago');
+  const [cryptoOptions, setCryptoOptions] = useState<any[]>([]);
+  const [selectedCrypto, setSelectedCrypto] = useState('USDT');
 
   // Al abrir el drawer, verificar si hay resultado de pago en la URL
   useEffect(() => {
@@ -264,11 +270,27 @@ export function CartDrawer() {
     const params = new URLSearchParams(window.location.search);
     const paymentStatus = params.get('payment');
     const orderId = params.get('order');
+    const paypalOrderId = params.get('paypalOrderId');
+    const paymentMethod = params.get('paymentMethod');
 
     if (paymentStatus === 'success' && orderId) {
-      // Consultar resultado de la orden
-      fetchOrderResult(orderId);
-      // Limpiar URL
+      if (paymentMethod === 'paypal' && paypalOrderId) {
+        // Capturar pago de PayPal primero
+        fetch(`/api/payments/paypal/capture`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paypalOrderId, orderId }),
+        })
+          .then(r => r.json())
+          .then(capData => {
+            if (capData.success) {
+              fetchOrderResult(orderId);
+            }
+          })
+          .catch(() => fetchOrderResult(orderId));
+      } else {
+        fetchOrderResult(orderId);
+      }
       window.history.replaceState({}, '', '/tienda');
     }
   }, [cartOpen]);
@@ -290,54 +312,77 @@ export function CartDrawer() {
     setCheckingOut(false);
   };
 
+
   const handleCheckout = async () => {
     if (!email) return;
     setCheckingOut(true);
     setConfigError(null);
 
+    const cartItems = cart.map((item) => ({
+      id: item.product.id,
+      name: item.product.name,
+      price: item.product.price,
+      quantity: item.quantity,
+      category: item.product.category,
+      platform: item.product.platform,
+    }));
+
     try {
-      // Crear pago en MercadoPago
-      const res = await fetch('/api/payments/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          items: cart.map((item) => ({
-            id: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
-            quantity: item.quantity,
-            category: item.product.category,
-            platform: item.product.platform,
-          })),
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.success && data.paymentUrl) {
-        // Redirigir a MercadoPago para que el cliente pague
-        window.location.href = data.paymentUrl;
-        return; // No cerrar el drawer ni limpiar el carrito aún
-      }
-
-      if (data.error === 'payment_not_configured') {
-        setConfigError(data.setupUrl || 'https://www.mercadopago.com.co');
-        setOrderResult({
-          success: false,
-          message: data.message,
-          setupUrl: data.setupUrl,
+      if (selectedPayment === 'mercadopago') {
+        const res = await fetch('/api/payments/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, items: cartItems }),
         });
-      } else {
-        setOrderResult({
-          success: false,
-          message: data.message || 'Error al procesar el pago',
+        const data = await res.json();
+        if (data.success && data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+          return;
+        }
+        if (data.error === 'payment_not_configured') {
+          setConfigError(data.setupUrl || 'https://www.mercadopago.com.co');
+          setOrderResult({ success: false, message: data.message, setupUrl: data.setupUrl });
+        } else {
+          setOrderResult({ success: false, message: data.message || 'Error al procesar el pago' });
+        }
+      } else if (selectedPayment === 'paypal') {
+        const res = await fetch('/api/payments/paypal/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, items: cartItems }),
         });
+        const data = await res.json();
+        if (data.success && data.approvalUrl) {
+          window.location.href = data.approvalUrl;
+          return;
+        }
+        if (data.error === 'payment_not_configured') {
+          setConfigError(data.setupUrl || 'https://developer.paypal.com');
+          setOrderResult({ success: false, message: data.message, setupUrl: data.setupUrl });
+        } else {
+          setOrderResult({ success: false, message: data.message || 'Error al procesar el pago PayPal' });
+        }
+      } else if (selectedPayment === 'crypto') {
+        const res = await fetch('/api/payments/crypto/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, items: cartItems, crypto: selectedCrypto }),
+        });
+        const data = await res.json();
+        if (data.success && data.payment) {
+          // Mostrar info de pago crypto
+          setOrderResult({
+            success: false,
+            message: `Envia exactamente ${data.payment.amount} ${selectedCrypto} a:\n${data.payment.address}\n\nTienes 1 hora para completar el pago.`,
+            cryptoPayment: data.payment,
+          });
+        } else {
+          setOrderResult({ success: false, message: data.message || 'Error al crear pago crypto' });
+        }
       }
     } catch {
       setOrderResult({ success: false, message: 'Error de conexion. Intenta de nuevo.' });
     }
-
     setCheckingOut(false);
   };
 
@@ -485,8 +530,37 @@ export function CartDrawer() {
                       onChange={(e) => setEmail(e.target.value)}
                       className="text-sm"
                     />
+                    {/* Selector de metodo de pago */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <button onClick={() => setSelectedPayment('mercadopago')} className={"flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all cursor-pointer " + (selectedPayment === 'mercadopago' ? 'border-[#009ee3] bg-[#009ee3]/5' : 'border-border hover:border-muted-foreground/30')}>
+                        <Wallet className="w-5 h-5" style={{ color: selectedPayment === 'mercadopago' ? '#009ee3' : undefined }} />
+                        <span className="text-[10px] font-medium">MercadoPago</span>
+                      </button>
+                      <button onClick={() => setSelectedPayment('paypal')} className={"flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all cursor-pointer " + (selectedPayment === 'paypal' ? 'border-[#0070ba] bg-[#0070ba]/5' : 'border-border hover:border-muted-foreground/30')}>
+                        <Banknote className="w-5 h-5" style={{ color: selectedPayment === 'paypal' ? '#0070ba' : undefined }} />
+                        <span className="text-[10px] font-medium">PayPal</span>
+                      </button>
+                      <button onClick={() => setSelectedPayment('crypto')} className={"flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all cursor-pointer " + (selectedPayment === 'crypto' ? 'border-[#f7931a] bg-[#f7931a]/5' : 'border-border hover:border-muted-foreground/30')}>
+                        <Bitcoin className="w-5 h-5" style={{ color: selectedPayment === 'crypto' ? '#f7931a' : undefined }} />
+                        <span className="text-[10px] font-medium">Crypto</span>
+                      </button>
+                    </div>
+                    {/* Selector de crypto (solo si selecciono crypto) */}
+                    {selectedPayment === 'crypto' && (
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {['BTC', 'ETH', 'USDT', 'USDC'].map((c) => (
+                          <button key={c} onClick={() => setSelectedCrypto(c)} className={"py-1.5 px-2 rounded-md text-xs font-medium border transition-all cursor-pointer " + (selectedCrypto === c ? 'border-[#f7931a] bg-[#f7931a]/10 text-[#f7931a]' : 'border-border hover:border-muted-foreground/30')}>
+                            {c}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     <Button
-                      className="w-full gap-2 cursor-pointer bg-[#009ee3] hover:bg-[#0086c1]"
+                      className={"w-full gap-2 cursor-pointer " + (
+                        selectedPayment === 'mercadopago' ? 'bg-[#009ee3] hover:bg-[#0086c1]' :
+                        selectedPayment === 'paypal' ? 'bg-[#0070ba] hover:bg-[#005ea6]' :
+                        'bg-[#f7931a] hover:bg-[#e8850f]'
+                      )}
                       size="lg"
                       disabled={!email || checkingOut}
                       onClick={handleCheckout}
@@ -496,7 +570,9 @@ export function CartDrawer() {
                       ) : (
                         <>
                           <CreditCard className="w-4 h-4" />
-                          Pagar con MercadoPago
+                          {selectedPayment === 'mercadopago' && 'Pagar con MercadoPago'}
+                          {selectedPayment === 'paypal' && 'Pagar con PayPal'}
+                          {selectedPayment === 'crypto' && `Pagar con ${selectedCrypto}`}
                           <ArrowRight className="w-4 h-4" />
                         </>
                       )}

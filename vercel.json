@@ -1,0 +1,28 @@
+{
+  "crons": [
+    {
+      "path": "/api/scanner/auto-scan",
+      "schedule": "0 */6 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/scanner/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=300, stale-while-revalidate=600"
+        }
+      ]
+    },
+    {
+      "source": "/api/payments/webhook",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ]
+}
