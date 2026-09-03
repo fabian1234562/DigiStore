@@ -992,290 +992,290 @@ export const SEED_GAMES: ScannedGame[] = [
     steamUrl: 'https://www.gimp.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'edición-de-imagen', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.gimp.org/downloads/
+    claimInstructions: `1. Ve a https://www.gimp.org/downloads/
 2. Descarga la versión para tu sistema operativo
 3. Ejecuta el instalador
-4. ¡Listo! GIMP es 100% gratis y open source' }),
+4. ¡Listo! GIMP es 100% gratis y open source` }),
   makeGame({ id: 'app-inkscape', title: 'Inkscape', source: 'software', originalPrice: 0, genre: 'Diseño vectorial',
     description: 'Editor de gráficos vectoriales open source. Alternativa libre a Adobe Illustrator. Soporta SVG, ilustración, diseño de logotipos, iconos. Multiplataforma. Software oficial: Vector Graphics Editor. Descarga desde https://inkscape.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://inkscape.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'diseño-vectorial', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://inkscape.org/release/
+    claimInstructions: `1. Ve a https://inkscape.org/release/
 2. Descarga para Windows, Mac o Linux
 3. Ejecuta el instalador
-4. Crea gráficos vectoriales profesionalmente' }),
+4. Crea gráficos vectoriales profesionalmente` }),
   makeGame({ id: 'app-krita-desktop', title: 'Krita (Desktop)', source: 'software', originalPrice: 0, genre: 'Pintura digital',
     description: 'Software de pintura digital open source para ilustradores, concept artists y cómic. Pinceles avanzados, soporte para tabletas gráficas, animación 2D. Alternativa libre a Corel Painter. Software oficial: Digital Painting. Descarga desde https://krita.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://krita.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'pintura-digital', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://krita.org/download/
+    claimInstructions: `1. Ve a https://krita.org/download/
 2. Descarga para tu sistema operativo
 3. Instala y configura tu tableta gráfica
-4. ¡Empieza a pintar!' }),
+4. ¡Empieza a pintar!` }),
   makeGame({ id: 'app-libreoffice', title: 'LibreOffice', source: 'software', originalPrice: 0, genre: 'Ofimática',
     description: 'Suite ofimática gratuita y open source. Incluye Writer (texto), Calc (hojas), Impress (presentaciones), Draw, Base, Math. Alternativa libre a Microsoft Office. Compatible con DOCX, XLSX, PPTX. Software oficial: Office Suite. Descarga desde https://www.libreoffice.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.libreoffice.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'ofimática', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.libreoffice.org/download/
+    claimInstructions: `1. Ve a https://www.libreoffice.org/download/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. ¡Suite completa gratis y sin límites!' }),
+4. ¡Suite completa gratis y sin límites!` }),
   makeGame({ id: 'app-openoffice', title: 'Apache OpenOffice', source: 'software', originalPrice: 0, genre: 'Ofimática',
     description: 'Suite ofimática open source alternativa a Microsoft Office. Incluye Writer, Calc, Impress, Draw, Base, Math. Compatible con formatos estándar. Software oficial: Office Suite. Descarga desde https://www.openoffice.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.openoffice.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'ofimática', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.openoffice.org/download/
+    claimInstructions: `1. Ve a https://www.openoffice.org/download/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Suite de oficina completa gratis' }),
+4. Suite de oficina completa gratis` }),
   makeGame({ id: 'app-audacity-real', title: 'Audacity (Real)', source: 'software', originalPrice: 0, genre: 'Edición de audio',
     description: 'Editor de audio multitrack open source. Grabación, edición, mezcla, efectos. Para podcasts, música, narración. Alternativa libre a Adobe Audition. Multiplataforma. Software oficial: Audio Editor. Descarga desde https://www.audacityteam.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.audacityteam.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'edición-de-audio', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.audacityteam.org/download/
+    claimInstructions: `1. Ve a https://www.audacityteam.org/download/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Graba y edita audio profesional' }),
+4. Graba y edita audio profesional` }),
   makeGame({ id: 'app-lmms', title: 'LMMS', source: 'software', originalPrice: 0, genre: 'Producción musical',
     description: 'Estación de trabajo de audio digital (DAW) open source. Crea música con sintetizadores, samplers, secuenciador. Alternativa libre a FL Studio. Software oficial: Music Production. Descarga desde https://lmms.io.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://lmms.io',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'producción-musical', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://lmms.io/download
+    claimInstructions: `1. Ve a https://lmms.io/download
 2. Descarga para Windows, Mac o Linux
 3. Ejecuta el instalador
-4. ¡Crea música electrónica!' }),
+4. ¡Crea música electrónica!` }),
   makeGame({ id: 'app-ardour', title: 'Ardour', source: 'software', originalPrice: 0, genre: 'Producción musical',
     description: 'DAW profesional open source para grabación, edición y mezcla de audio. Soporta hardware profesional, multi-track, MIDI. Para estudios profesionales. Software oficial: DAW Professional. Descarga desde https://ardour.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://ardour.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'producción-musical', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://ardour.org/download
+    claimInstructions: `1. Ve a https://ardour.org/download
 2. Descarga la versión gratuita
 3. Ejecuta el instalador
-4. DAW profesional completo gratis' }),
+4. DAW profesional completo gratis` }),
   makeGame({ id: 'app-musescore', title: 'MuseScore', source: 'software', originalPrice: 0, genre: 'Partituras',
     description: 'Editor de partituras musicales open source. Escribe, edita y reproduce partituras. Importa/exporta MusicXML, MIDI. Alternativa libre a Sibelius y Finale. Software oficial: Sheet Music Editor. Descarga desde https://musescore.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://musescore.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'partituras', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://musescore.org/download
+    claimInstructions: `1. Ve a https://musescore.org/download
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Crea partituras profesionales' }),
+4. Crea partituras profesionales` }),
   makeGame({ id: 'app-openshot', title: 'OpenShot', source: 'software', originalPrice: 0, genre: 'Edición de video',
     description: 'Editor de video open source fácil de usar. Multi-track, transiciones, efectos, títulos animados, soporte 4K. Para principiantes y YouTubers. Alternativa libre a Premiere. Software oficial: Video Editor. Descarga desde https://www.openshot.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.openshot.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'edición-de-video', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.openshot.org/download/
+    claimInstructions: `1. Ve a https://www.openshot.org/download/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. ¡Edita videos fácil!' }),
+4. ¡Edita videos fácil!` }),
   makeGame({ id: 'app-shotcut', title: 'Shotcut', source: 'software', originalPrice: 0, genre: 'Edición de video',
     description: 'Editor de video open source profesional. Soporta 4K, multicámara, filtros, transiciones, timeline flexible. Para creadores exigentes. Software oficial: Video Editor. Descarga desde https://shotcut.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://shotcut.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'edición-de-video', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://shotcut.org/download/
+    claimInstructions: `1. Ve a https://shotcut.org/download/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Edición de video profesional' }),
+4. Edición de video profesional` }),
   makeGame({ id: 'app-kdenlive', title: 'Kdenlive', source: 'software', originalPrice: 0, genre: 'Edición de video',
     description: 'Editor de video open source multi-track. Soporta formatos profesionales, efectos, transiciones, color grading. Ideal para Linux pero disponible en todas las plataformas. Software oficial: Video Editor Pro. Descarga desde https://kdenlive.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://kdenlive.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'edición-de-video', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://kdenlive.org/en/download/
+    claimInstructions: `1. Ve a https://kdenlive.org/en/download/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Editor de video libre y potente' }),
+4. Editor de video libre y potente` }),
   makeGame({ id: 'app-handbrake', title: 'HandBrake', source: 'software', originalPrice: 0, genre: 'Conversión de video',
     description: 'Convertidor de video open source. Convierte DVDs y videos a MP4, MKV con códecs modernos (H.265, AV1). Configuración avanzada de calidad y bitrate. Software oficial: Video Transcoder. Descarga desde https://handbrake.fr.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://handbrake.fr',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'conversión-de-video', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://handbrake.fr/downloads.php
+    claimInstructions: `1. Ve a https://handbrake.fr/downloads.php
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Convierte videos a cualquier formato' }),
+4. Convierte videos a cualquier formato` }),
   makeGame({ id: 'app-vlc', title: 'VLC media player', source: 'software', originalPrice: 0, genre: 'Reproductor multimedia',
     description: 'El reproductor multimedia más famoso del mundo. Reproduce prácticamente cualquier formato de audio y video. Open source y gratis. Multiplataforma. Software oficial: Media Player. Descarga desde https://www.videolan.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.videolan.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'reproductor-multimedia', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.videolan.org/vlc/
+    claimInstructions: `1. Ve a https://www.videolan.org/vlc/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Reproduce cualquier video o audio' }),
+4. Reproduce cualquier video o audio` }),
   makeGame({ id: 'app-mpv', title: 'mpv', source: 'software', originalPrice: 0, genre: 'Reproductor multimedia',
     description: 'Reproductor multimedia minimalista, rápido y potente. Basado en MPlayer y mplayer2. Soporta todo tipo de formatos. Ideal para usuarios avanzados. Software oficial: Media Player Pro. Descarga desde https://mpv.io.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://mpv.io',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'reproductor-multimedia', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://mpv.io/installation/
+    claimInstructions: `1. Ve a https://mpv.io/installation/
 2. Descarga para tu SO
 3. Ejecuta el binario
-4. Reproductor ligero y potente' }),
+4. Reproductor ligero y potente` }),
   makeGame({ id: 'app-notepadpp', title: 'Notepad++', source: 'software', originalPrice: 0, genre: 'Editor de texto',
     description: 'Editor de texto y código fuente open source para Windows. Soporta múltiples lenguajes, resaltado de sintaxis, pestañas, macros. Más potente que el Bloc de Notas. Software oficial: Text Editor. Descarga desde https://notepad-plus-plus.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://notepad-plus-plus.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'editor-de-texto', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://notepad-plus-plus.org/downloads/
+    claimInstructions: `1. Ve a https://notepad-plus-plus.org/downloads/
 2. Descarga para Windows
 3. Ejecuta el instalador
-4. Editor potente y gratis' }),
+4. Editor potente y gratis` }),
   makeGame({ id: 'app-vscode', title: 'Visual Studio Code', source: 'software', originalPrice: 0, genre: 'Editor de código',
     description: 'Editor de código fuente de Microsoft. Gratis y muy popular. Soporta miles de extensiones, debugging, Git integrado, terminal. Para cualquier lenguaje de programación. Software oficial: Code Editor. Descarga desde https://code.visualstudio.com.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://code.visualstudio.com',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'editor-de-código', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://code.visualstudio.com/Download
+    claimInstructions: `1. Ve a https://code.visualstudio.com/Download
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Editor de código líder' }),
+4. Editor de código líder` }),
   makeGame({ id: 'app-vscodium', title: 'VSCodium', source: 'software', originalPrice: 0, genre: 'Editor de código',
     description: 'Versión de VS Code sin telemetría de Microsoft, 100% open source. Mismo motor que VS Code pero con licencia MIT pura y sin tracking. Software oficial: VS Code sin telemetría. Descarga desde https://vscodium.com.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://vscodium.com',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'editor-de-código', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://vscodium.com/
+    claimInstructions: `1. Ve a https://vscodium.com/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Editor de código libre sin tracking' }),
+4. Editor de código libre sin tracking` }),
   makeGame({ id: 'app-firefox', title: 'Mozilla Firefox', source: 'software', originalPrice: 0, genre: 'Navegador web',
     description: 'Navegador web open source de Mozilla. Privacidad avanzada, bloqueo de rastreadores, miles de extensiones. Una de las alternativas más populares a Chrome. Software oficial: Web Browser. Descarga desde https://www.mozilla.org/firefox.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.mozilla.org/firefox',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'navegador-web', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.mozilla.org/firefox/new/
+    claimInstructions: `1. Ve a https://www.mozilla.org/firefox/new/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Navegador libre y privado' }),
+4. Navegador libre y privado` }),
   makeGame({ id: 'app-thunderbird', title: 'Mozilla Thunderbird', source: 'software', originalPrice: 0, genre: 'Cliente de email',
     description: 'Cliente de correo open source de Mozilla. Soporta IMAP/POP, calendario, contactos, miles de extensiones. Alternativa libre a Outlook. Software oficial: Email Client. Descarga desde https://www.thunderbird.net.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.thunderbird.net',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'cliente-de-email', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.thunderbird.net/
+    claimInstructions: `1. Ve a https://www.thunderbird.net/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Cliente de email completo y gratis' }),
+4. Cliente de email completo y gratis` }),
   makeGame({ id: 'app-7zip', title: '7-Zip', source: 'software', originalPrice: 0, genre: 'Compresión de archivos',
     description: 'Compresor/descompresor de archivos open source. Soporta 7z, ZIP, RAR, TAR, GZIP. Mejor ratio de compresión que WinRAR. Gratis y sin límites. Software oficial: File Archiver. Descarga desde https://www.7-zip.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.7-zip.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'compresión-de-archivos', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.7-zip.org/download.html
+    claimInstructions: `1. Ve a https://www.7-zip.org/download.html
 2. Descarga para Windows
 3. Ejecuta el instalador
-4. Comprime y descomprime sin límites' }),
+4. Comprime y descomprime sin límites` }),
   makeGame({ id: 'app-filezilla', title: 'FileZilla', source: 'software', originalPrice: 0, genre: 'Cliente FTP/SFTP',
     description: 'Cliente FTP/SFTP open source. Soporta FTP, SFTP, FTPS. Interfaz drag & drop, gestión de sitios, reanudación de transferencias. Estándar para subir archivos a servidores. Software oficial: FTP Client. Descarga desde https://filezilla-project.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://filezilla-project.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'cliente-ftp/sftp', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://filezilla-project.org/download.php
+    claimInstructions: `1. Ve a https://filezilla-project.org/download.php
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Sube archivos a cualquier servidor' }),
+4. Sube archivos a cualquier servidor` }),
   makeGame({ id: 'app-rufus', title: 'Rufus', source: 'software', originalPrice: 0, genre: 'Creación de USB booteable',
     description: 'Herramienta open source para crear USB booteables. Ideal para instalar Windows, Linux o ejecutar herramientas de diagnóstico desde USB. Rápido y ligero. Software oficial: USB Boot Creator. Descarga desde https://rufus.ie.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://rufus.ie',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'creación-de-usb-booteable', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://rufus.ie/es/
+    claimInstructions: `1. Ve a https://rufus.ie/es/
 2. Descarga el ejecutable (no requiere instalación)
 3. Ejecuta Rufus
-4. Crea USB booteable fácil' }),
+4. Crea USB booteable fácil` }),
   makeGame({ id: 'app-etcher', title: 'balenaEtcher', source: 'software', originalPrice: 0, genre: 'Creación de USB booteable',
     description: 'Herramienta open source para flashear imágenes OS a USB o SD. Ideal para instalar Raspberry Pi, Linux, etc. Interfaz simple de 3 pasos. Software oficial: USB/SD Flasher. Descarga desde https://etcher.balena.io.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://etcher.balena.io',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'creación-de-usb-booteable', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://etcher.balena.io/
+    claimInstructions: `1. Ve a https://etcher.balena.io/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Flashea imágenes a USB/SD' }),
+4. Flashea imágenes a USB/SD` }),
   makeGame({ id: 'app-darktable', title: 'Darktable', source: 'software', originalPrice: 0, genre: 'Edición fotográfica',
     description: 'Editor de fotos RAW open source. Alternativa libre a Adobe Lightroom. Edición no destructiva, gestión de colecciones, procesos químicos digitales. Software oficial: RAW Photo Editor. Descarga desde https://www.darktable.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.darktable.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'edición-fotográfica', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.darktable.org/install/
+    claimInstructions: `1. Ve a https://www.darktable.org/install/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Edita fotos RAW profesionalmente' }),
+4. Edita fotos RAW profesionalmente` }),
   makeGame({ id: 'app-rawtherapee', title: 'RawTherapee', source: 'software', originalPrice: 0, genre: 'Edición fotográfica',
     description: 'Procesador de fotos RAW open source. Soporta cientos de cámaras. Edición no destructiva, algoritmos avanzados de demosaicing, gestión de color. Software oficial: RAW Developer. Descarga desde https://rawtherapee.com.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://rawtherapee.com',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'edición-fotográfica', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://rawtherapee.com/downloads/
+    claimInstructions: `1. Ve a https://rawtherapee.com/downloads/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Procesa fotos RAW como un profesional' }),
+4. Procesa fotos RAW como un profesional` }),
   makeGame({ id: 'app-pencil2d', title: 'Pencil2D', source: 'software', originalPrice: 0, genre: 'Animación 2D',
     description: 'Software de animación 2D open source. Soporta bitmap y vector, animación tradicional cuadro por cuadro. Ideal para principiantes y educadores. Software oficial: 2D Animation. Descarga desde https://www.pencil2d.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.pencil2d.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'animación-2d', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.pencil2d.org/download/
+    claimInstructions: `1. Ve a https://www.pencil2d.org/download/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Crea animaciones 2D' }),
+4. Crea animaciones 2D` }),
   makeGame({ id: 'app-synfig', title: 'Synfig Studio', source: 'software', originalPrice: 0, genre: 'Animación 2D',
     description: 'Software de animación 2D vectorial open source. Animación por interpolación, sin tener que dibujar cada cuadro. Soporta capas, efectos, tweens. Software oficial: 2D Vector Animation. Descarga desde https://www.synfig.org.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://www.synfig.org',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'animación-2d', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://www.synfig.org/download/
+    claimInstructions: `1. Ve a https://www.synfig.org/download/
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. Animación 2D vectorial potente' }),
+4. Animación 2D vectorial potente` }),
   makeGame({ id: 'app-obs-studio-desktop', title: 'OBS Studio (Desktop)', source: 'software', originalPrice: 0, genre: 'Streaming',
     description: 'Software de streaming y grabación open source líder. Para Twitch, YouTube, Facebook Live. Multi-escena, filtros, plugins. El estándar de la industria. Software oficial: Streaming Software. Descarga desde https://obsproject.com.',
     imageUrl: '/products/gen/app-opensource-cat.png.svg',
     steamUrl: 'https://obsproject.com',
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['software', 'open-source', 'gratis', 'utility', 'streaming', 'multiplataforma'],
-    claimInstructions: '1. Ve a https://obsproject.com/download
+    claimInstructions: `1. Ve a https://obsproject.com/download
 2. Descarga para tu SO
 3. Ejecuta el instalador
-4. ¡Empieza a streamear!' }),
+4. ¡Empieza a streamear!` }),
 
 ];
 
