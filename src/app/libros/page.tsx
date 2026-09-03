@@ -67,18 +67,23 @@ function BookCard({ book, onView }: { book: ScannedGame; onView: (b: ScannedGame
       className="group bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-premium-lg hover:-translate-y-1 border border-amber-100 hover:border-amber-200"
     >
       <div className="relative aspect-[3/4] bg-gradient-to-br from-amber-100 via-orange-50 to-amber-200 overflow-hidden">
-        {/* Portada estilizada */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-          <BookOpen className="w-12 h-12 text-amber-700 mb-3 group-hover:scale-110 transition-transform" />
-          <h3 className="font-serif font-bold text-base text-amber-900 line-clamp-3 leading-tight mb-1">
-            {cleanTitle}
-          </h3>
-          {year && <span className="text-[10px] text-amber-700 font-semibold uppercase tracking-wider">({year})</span>}
-          <div className="mt-2 h-px w-12 bg-amber-400/40" />
-          <p className="text-[10px] text-amber-800/80 mt-2 line-clamp-1 italic">{author}</p>
-        </div>
-        {/* Pattern decorativo */}
-        <div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,amber-900_8px,amber-900_9px)]" />
+        {/* Portada REAL de Project Gutenberg */}
+        <img
+          src={book.imageUrl}
+          alt={cleanTitle}
+          width={245}
+          height={327}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => {
+            // Fallback: si la portada no carga, mostrar portada estilizada
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+        />
+        {/* Overlay sutil para legibilidad de badges */}
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-900/30 via-transparent to-transparent opacity-60" />
+
         {/* Badge 100% LEGAL */}
         <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-lg uppercase">
           Legal
@@ -87,6 +92,14 @@ function BookCard({ book, onView }: { book: ScannedGame; onView: (b: ScannedGame
         <span className="absolute top-2 right-2 bg-amber-700 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-lg uppercase">
           {lang}
         </span>
+        {/* Info en la parte inferior */}
+        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-amber-950/80 via-amber-900/40 to-transparent text-white">
+          {year && (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-200 drop-shadow-md">
+              {year}
+            </span>
+          )}
+        </div>
       </div>
       <div className="p-3">
         <div className="flex items-center justify-between gap-2">
@@ -97,9 +110,10 @@ function BookCard({ book, onView }: { book: ScannedGame; onView: (b: ScannedGame
             </span>
           )}
         </div>
-        <p className="text-[11px] text-gray-500 line-clamp-2 mt-1 leading-relaxed">
-          {book.description.split('. Autor:')[0]}
-        </p>
+        <h3 className="font-serif font-bold text-sm text-gray-900 line-clamp-2 leading-tight mt-1">
+          {cleanTitle}
+        </h3>
+        <p className="text-[10px] text-amber-700 font-medium italic line-clamp-1 mt-0.5">{author}</p>
         <div className="flex items-center justify-between mt-2 pt-2 border-t border-amber-50">
           <span className="text-xs font-black text-emerald-600">GRATIS</span>
           <span className="text-[10px] text-amber-700 flex items-center gap-1 font-semibold">

@@ -35,7 +35,6 @@ interface ScannedGame {
 function AppCard({ app, onView }: { app: ScannedGame; onView: (a: ScannedGame) => void }) {
   // Detectar categoria por genre
   const genre = app.genre && app.genre.length > 0 ? app.genre[0] : 'Software';
-  const categoryIcon = getCategoryIcon(genre);
   const categoryColor = getCategoryColor(genre);
 
   // Extraer nombre oficial de la descripción
@@ -47,20 +46,22 @@ function AppCard({ app, onView }: { app: ScannedGame; onView: (a: ScannedGame) =
       onClick={() => onView(app)}
       className="group bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-premium-lg hover:-translate-y-1 border border-blue-100 hover:border-blue-200"
     >
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 overflow-hidden">
-        {/* App icon estilizado */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center text-white">
-          <div className={`w-14 h-14 rounded-2xl ${categoryColor} flex items-center justify-center mb-2 shadow-lg group-hover:scale-110 transition-transform`}>
-            {(() => {
-              const Icon = categoryIcon;
-              return <Icon className="w-7 h-7 text-white" />;
-            })()}
-          </div>
-          <h3 className="font-bold text-base line-clamp-2 leading-tight">{app.title}</h3>
-          <p className="text-[10px] text-white/80 mt-1 line-clamp-1">{officialName}</p>
-        </div>
-        {/* Pattern */}
-        <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,white_8px,white_9px)]" />
+      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600">
+        {/* Imagen SVG personalizada de la app */}
+        <img
+          src={app.imageUrl}
+          alt={app.title}
+          width={616}
+          height={353}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+        />
+        {/* Overlay sutil */}
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-950/30 via-transparent to-transparent opacity-50 pointer-events-none" />
         {/* Badge OPEN SOURCE */}
         <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-lg uppercase">
           Open Source
@@ -79,9 +80,10 @@ function AppCard({ app, onView }: { app: ScannedGame; onView: (a: ScannedGame) =
             </span>
           )}
         </div>
-        <p className="text-[11px] text-gray-500 line-clamp-2 mt-1 leading-relaxed">
-          {app.description.split('. Software oficial:')[0]}
-        </p>
+        <h3 className="font-bold text-sm text-gray-900 line-clamp-2 leading-tight mt-1">
+          {app.title}
+        </h3>
+        <p className="text-[10px] text-blue-700 font-medium line-clamp-1 mt-0.5">{officialName}</p>
         <div className="flex items-center justify-between mt-2 pt-2 border-t border-blue-50">
           <span className="text-xs font-black text-emerald-600">GRATIS</span>
           <span className="text-[10px] text-blue-700 flex items-center gap-1 font-semibold">
