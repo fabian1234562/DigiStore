@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getScannedGamesAsProducts } from '@/lib/game-scanner';
+import { calcDigiStorePrice } from '@/lib/pricing';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -7,7 +8,11 @@ export async function GET(request: Request) {
   const sort = searchParams.get('sort') || 'popular';
   const source = searchParams.get('source') || '';
 
-  let products = getScannedGamesAsProducts();
+  let products = getScannedGamesAsProducts().map(p => ({
+    ...p,
+    // Garantizar política DigiStore: $1.00 - $5.00
+    price: calcDigiStorePrice(p.originalPrice && p.originalPrice > 0 ? p.originalPrice : 0),
+  }));
 
   if (source) {
     products = products.filter(p => p.subcategory?.toLowerCase().includes(source.toLowerCase()));

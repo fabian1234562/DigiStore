@@ -9,6 +9,7 @@
 import { NextResponse } from 'next/server';
 import { gameScanner } from '@/lib/game-scanner';
 import type { GameSource } from '@/lib/game-scanner';
+import { calcDigiStorePrice } from '@/lib/pricing';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -26,6 +27,12 @@ export async function GET(request: Request) {
     } else {
       games = gameScanner.getActiveGames();
     }
+
+    // Aplicar política de precios DigiStore ($1.00 - $5.00) a TODO el catálogo
+    games = games.map(g => ({
+      ...g,
+      sellPrice: calcDigiStorePrice(g.originalPrice > 0 ? g.originalPrice : 0),
+    }));
 
     if (asProducts) {
       // Store-compatible format
