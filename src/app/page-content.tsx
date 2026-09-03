@@ -13,7 +13,7 @@ import {
   Monitor, Download, Sword, Puzzle, Car, Target, Users, TrendingUp,
   MousePointerClick, Gift, DollarSign, Percent, Layers, Cpu,
 } from 'lucide-react';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 
 /* ══════════════════════════════════════════════════════════════
@@ -523,6 +523,114 @@ function DealsCarousel({ games }: { games: GameProduct[] }) {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   FREE GAMES SECTION — Juegos 100% GRATIS para reclamar
+   ══════════════════════════════════════════════════════════════ */
+function FreeGamesSection({ freeGames }: { freeGames: GameProduct[] }) {
+  // Top 8 más populares por rating + sold
+  const popularFree = useMemo(
+    () => [...freeGames]
+      .sort((a, b) => ((b.rating || 0) * 1000 + (b.sold || 0)) - ((a.rating || 0) * 1000 + (a.sold || 0)))
+      .slice(0, 8),
+    [freeGames]
+  );
+  if (popularFree.length === 0) return null;
+
+  return (
+    <section className="mx-auto max-w-7xl px-3 sm:px-6 py-6">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-600 to-green-700 p-6 sm:p-8 shadow-xl">
+        {/* Pattern decorativo */}
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,white,transparent_60%)]" />
+        <div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_15px,white_15px,white_16px)]" />
+
+        <div className="relative">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full mb-3">
+                <Gift className="w-3.5 h-3.5" /> 100% GRATIS · CORTESÍA DIGISTORE
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white mb-1 flex items-center gap-2">
+                <Flame className="w-7 h-7 text-amber-300" />
+                Juegos Gratis Más Populares
+              </h2>
+              <p className="text-sm text-white/85">
+                {freeGames.length} productos gratis para reclamar · Sin costo, sin trucos · Te regalamos los más jugados del mundo
+              </p>
+            </div>
+            <Link href="/juegos-gratis"
+              className="inline-flex items-center gap-2 bg-white text-emerald-700 font-bold px-5 py-2.5 rounded-xl hover:bg-emerald-50 transition-all shadow-lg hover:scale-105 text-sm whitespace-nowrap">
+              Ver todos los {freeGames.length} gratis <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Grid de juegos gratis */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {popularFree.map(game => (
+              <FreeGameCard key={game.id} game={game} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FREE GAME CARD — Card compacta para juegos gratis (estilo emerald)
+   ══════════════════════════════════════════════════════════════ */
+function FreeGameCard({ game }: { game: GameProduct }) {
+  const { setSelectedProduct, setProductDetailOpen } = useStore();
+  const handleClick = () => {
+    setSelectedProduct(game as any);
+    setProductDetailOpen(true);
+  };
+  return (
+    <div
+      onClick={handleClick}
+      className="group bg-white rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-2xl hover:-translate-y-1"
+    >
+      <div className="relative aspect-[4/3] bg-gray-800 overflow-hidden">
+        <img
+          src={game.image}
+          alt={game.name}
+          width={616}
+          height={353}
+          decoding="async"
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          onError={e => { (e.target as HTMLImageElement).src = '/products/gen/gaming-cat.png'; }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        {/* Badge 100% GRATIS */}
+        <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[10px] font-black px-2 py-1 rounded-md shadow-lg">
+          100% GRATIS
+        </span>
+        {/* Rating */}
+        {game.rating >= 4 && (
+          <span className="absolute top-2 right-2 bg-amber-400 text-gray-900 text-[10px] font-bold px-2 py-1 rounded-md shadow-lg flex items-center gap-0.5">
+            <Star className="w-2.5 h-2.5 fill-gray-900" /> {game.rating}
+          </span>
+        )}
+      </div>
+      <div className="p-3">
+        <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-1">
+          {game.subcategory}
+        </p>
+        <h3 className="font-bold text-sm leading-tight mb-1 line-clamp-2 text-gray-900 group-hover:text-emerald-700 transition-colors">
+          {game.name}
+        </h3>
+        <div className="flex items-center justify-between">
+          <span className="text-base font-black text-emerald-600">$0.00</span>
+          <span className="text-[10px] text-gray-500 flex items-center gap-0.5">
+            <Gift className="w-3 h-3" /> Reclamar
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    GRAN BANNER CTA — Imagen de fondo, estadísticas, CTA
    ══════════════════════════════════════════════════════════════ */
 function BigCTABanner({ gamesCount, valueTotal }: { gamesCount: number; valueTotal: number }) {
@@ -701,16 +809,21 @@ function Footer() {
    ══════════════════════════════════════════════════════════════ */
 export default function HomePage() {
   const [games, setGames] = useState<GameProduct[]>([]);
+  const [freeGames, setFreeGames] = useState<GameProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastViewed, setLastViewed] = useState<GameProduct | null>(null);
 
   const loadGames = useCallback(async () => {
     try {
-      // Home page: SOLO productos que VENDEMOS (filter=paid).
-      // Los gratis van a /juegos-gratis, no se muestran aqui como pagos.
-      const res = await fetch('/api/scanner/results?products=true&filter=paid');
-      const data = await res.json();
-      if (data.success) setGames(data.games || data.products || []);
+      // Cargar pagos (para mostrar) y gratis (sección separada)
+      const [paidRes, freeRes] = await Promise.all([
+        fetch('/api/scanner/results?products=true&filter=paid'),
+        fetch('/api/scanner/results?products=true&filter=free'),
+      ]);
+      const paidData = await paidRes.json();
+      const freeData = await freeRes.json();
+      if (paidData.success) setGames(paidData.games || paidData.products || []);
+      if (freeData.success) setFreeGames(freeData.games || freeData.products || []);
     } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
@@ -719,6 +832,7 @@ export default function HomePage() {
 
   const gamesCount = games.length;
   const valueTotal = games.reduce((s, g) => s + (g.originalPrice || 0), 0);
+  const freeGamesCount = freeGames.length;
 
   const handleShowDetail = useCallback((game: GameProduct) => {
     setLastViewed(game);
@@ -780,6 +894,10 @@ export default function HomePage() {
             ctaText="Ver software"
             columns={5}
           />
+
+          {/* ═══ SECCIÓN NUEVA: Juegos Gratis Más Populares ═══ */}
+          <FreeGamesSection freeGames={freeGames} />
+
           <BigCTABanner gamesCount={gamesCount} valueTotal={valueTotal} />
           <FeaturedSection
             games={games}

@@ -626,6 +626,31 @@ export const SEED_GAMES: ScannedGame[] = [
     tags: ['software', 'wallpaper-engine', 'dlc', 'editor', 'free-to-play', 'gratis'],
     claimInstructions: '1. Necesitas Wallpaper Engine (pago) instalado\n2. Descarga Steam\n3. Busca Wallpaper Engine Editor Extensions (gratis)\n4. Install DLC gratis' }),
 
+  makeGame({ id: 'free-godot', title: 'Godot Engine', source: 'software', originalPrice: 0, genre: 'Game Engine',
+    description: 'Motor de videojuegos gratuito y open source para crear juegos 2D y 3D desde una interfaz unificada. Ligero, multiplataforma, con su propio lenguaje GDScript similar a Python. La alternativa libre a Unity y Unreal Engine.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/404790/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/404790',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['software', 'game-engine', 'open-source', 'gamedev', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca Godot Engine (gratis)\n3. Click Install - gratuito\n4. Alternativamente: godotengine.org' }),
+
+  makeGame({ id: 'free-tf2', title: 'Team Fortress 2', source: 'steam', originalPrice: 0, genre: 'Class-Based FPS',
+    description: 'FPS clasico de Valve con 9 clases unicas, cada una con personalidad y armas propias. Modos competitivos, intercambio de items, hat economy legendaria. F2P desde 2011, sigue siendo uno de los mas jugados en Steam.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/440/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/440',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['fps', 'class-based', 'multiplayer', 'free-to-play', 'valve', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca Team Fortress 2 (gratis)\n3. Click Install - gratuito\n4. Juega - 100% gratis' }),
+
+  makeGame({ id: 'free-sw-steamvr-perf', title: 'SteamVR Performance Test', source: 'software', originalPrice: 0, genre: 'VR Benchmark',
+    description: 'Herramienta gratuita de Valve para medir si tu PC puede correr SteamVR. Mide el rendimiento grafico y te dice si esta Ready, Capable o Not Ready para VR. Oficial de Valve.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/323910/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/323910',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', 'vr', 'benchmark', 'valve', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca SteamVR Performance Test (gratis)\n3. Click Install - gratuito\n4. Ejecuta el test' }),
+
+
   /* ══════════════════════════════════════════════════════════════
      SOFTWARE PAGO en Steam (vendemos $1-$5 con descuento)
      Verificado via Steam API - originalPrice real
