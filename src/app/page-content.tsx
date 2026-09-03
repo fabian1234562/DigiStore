@@ -11,7 +11,7 @@ import {
   ChevronLeft, ChevronRight, Truck, RotateCcw, Globe, Tag,
   Menu, Eye, Gamepad2, Crown, Clock, Package, Check, Send,
   Monitor, Download, Sword, Puzzle, Car, Target, Users, TrendingUp,
-  MousePointerClick, Gift, DollarSign, Percent, Layers, Cpu,
+  MousePointerClick, Gift, DollarSign, Percent, Layers, Cpu, BookOpen,
   Wallet, Bitcoin,
 } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -134,16 +134,26 @@ function Header() {
             </Link>
           </div>
 
-          {/* Centro: Nav desktop */}
-          <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
+          {/* Centro: Nav desktop con 5 items */}
+          <nav className="hidden lg:flex items-center gap-0.5 text-sm font-medium">
             <Link href="/" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-violet-700 hover:bg-violet-50 transition-colors">Inicio</Link>
-            <Link href="/juegos-gratis" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-violet-700 hover:bg-violet-50 transition-colors flex items-center gap-1.5">
-              Juegos Gratis
-              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span>
+            <Link href="/juegos-gratis?tab=juegos" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center gap-1.5">
+              Juegos
+              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">F2P</span>
             </Link>
-            <Link href="/tienda" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-violet-700 hover:bg-violet-50 transition-colors flex items-center gap-1.5">
+            <Link href="/libros" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-amber-700 hover:bg-amber-50 transition-colors flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5" />
+              Libros
+              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">37</span>
+            </Link>
+            <Link href="/apps-open-source" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors flex items-center gap-1.5">
+              <Download className="w-3.5 h-3.5" />
+              Apps
+              <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">33</span>
+            </Link>
+            <Link href="/tienda" className="px-3.5 py-2 rounded-lg text-gray-700 hover:text-rose-700 hover:bg-rose-50 transition-colors flex items-center gap-1.5">
               Tienda
-              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">$1+</span>
+              <span className="bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">$1+</span>
             </Link>
           </nav>
 
@@ -218,7 +228,7 @@ function Header() {
                 Inicio
               </Link>
               <Link
-                href="/juegos-gratis"
+                href="/juegos-gratis?tab=juegos"
                 className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
                 onClick={() => setMobileMenu(false)}
               >
@@ -226,18 +236,40 @@ function Header() {
                   <Gift className="w-4 h-4 text-emerald-600" />
                 </div>
                 Juegos Gratis
-                <span className="ml-auto bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span>
+                <span className="ml-auto bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">F2P</span>
               </Link>
               <Link
-                href="/tienda"
+                href="/libros"
                 className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
                 onClick={() => setMobileMenu(false)}
               >
                 <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <Tag className="w-4 h-4 text-amber-600" />
+                  <BookOpen className="w-4 h-4 text-amber-600" />
+                </div>
+                Libros Clásicos
+                <span className="ml-auto bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">37</span>
+              </Link>
+              <Link
+                href="/apps-open-source"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                onClick={() => setMobileMenu(false)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <Download className="w-4 h-4 text-blue-600" />
+                </div>
+                Apps Open Source
+                <span className="ml-auto bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">33</span>
+              </Link>
+              <Link
+                href="/tienda"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-rose-50 hover:text-rose-700 transition-colors"
+                onClick={() => setMobileMenu(false)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">
+                  <Tag className="w-4 h-4 text-rose-600" />
                 </div>
                 Tienda
-                <span className="ml-auto bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">$1+</span>
+                <span className="ml-auto bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">$1+</span>
               </Link>
             </nav>
             {/* Footer del drawer */}
