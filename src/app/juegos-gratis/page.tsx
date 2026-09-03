@@ -14,6 +14,7 @@ import type { ScannedGame, GameSource } from '@/lib/game-scanner';
 import { useStore } from '@/lib/store';
 
 const ProductDetailModal = dynamic(() => import('@/components/store/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })), { ssr: false });
+const SharedHeader = dynamic(() => import('@/components/store/SharedHeader').then(m => ({ default: m.SharedHeader })), { ssr: false });
 
 type LucideIcon = React.ComponentType<{ className?: string }>;
 const sourceIcons: Record<string, LucideIcon> = {
@@ -51,55 +52,8 @@ interface ProductForDetail {
    HEADER — con botón "Volver" bien visible
    ══════════════════════════════════════════════════════════════ */
 function Header() {
-  const [mobileMenu, setMobileMenu] = useState(false);
-  const { setCartOpen, setAuthOpen, cartCount } = useStore();
-  return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-              <Gamepad2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-extrabold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent hidden sm:inline">DigiStore</span>
-          </Link>
-          <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full hidden sm:inline-flex items-center gap-1">
-            <Zap className="w-3 h-3" /> 100% GRATIS
-          </span>
-        </div>
-        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">Inicio</Link>
-          <Link href="/juegos-gratis" className="text-violet-600 bg-violet-50 px-3 py-2 rounded-lg flex items-center gap-1">
-            Juegos Gratis <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">100%</span>
-          </Link>
-          <Link href="/tienda" className="hover:text-violet-600 transition-colors px-3 py-2 rounded-lg hover:bg-violet-50">Tienda</Link>
-        </nav>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setCartOpen(true)} className="relative p-2.5 rounded-full hover:bg-gray-100 transition-colors">
-            <ShoppingBag className="w-5 h-5 text-gray-700" />
-            {cartCount() > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-violet-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white">
-                {cartCount()}
-              </span>
-            )}
-          </button>
-          <button onClick={() => setAuthOpen(true)} className="hidden sm:inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-            Entrar
-          </button>
-          <button className="lg:hidden p-2 rounded-full hover:bg-gray-100" onClick={() => setMobileMenu(!mobileMenu)}>
-            <Filter className="w-5 h-5 text-gray-700" />
-          </button>
-        </div>
-      </div>
-      {mobileMenu && (
-        <div className="lg:hidden border-t bg-white px-4 py-3 space-y-1">
-          <Link href="/" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>Inicio</Link>
-          <Link href="/juegos-gratis" className="block text-sm font-medium text-violet-600 bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>Juegos Gratis</Link>
-          <Link href="/tienda" className="block text-sm font-medium text-gray-700 hover:text-violet-600 hover:bg-violet-50 px-3 py-2 rounded-lg" onClick={() => setMobileMenu(false)}>Tienda</Link>
-        </div>
-      )}
-    </header>
-  );
+  // Use shared premium header - ahora con activePage='free'
+  return <SharedHeader activePage="free" />;
 }
 
 /* ══════════════════════════════════════════════════════════════
