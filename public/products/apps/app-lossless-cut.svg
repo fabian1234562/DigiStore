@@ -14,7 +14,7 @@
   <rect width="616" height="353" fill="url(#bg)"/>
   <rect width="616" height="353" fill="url(#dots)"/>
   <rect width="616" height="353" fill="url(#diagonal)"/>
-  <circle cx="308" cy="140" r="120" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="308" cy="140" r="120" fill="rgba(255,255,255,0.15)"/>
   <text x="308" y="160" font-size="100" text-anchor="middle">🎬</text>
   <text x="308" y="240" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="white" text-anchor="middle">LosslessCut</text>
   

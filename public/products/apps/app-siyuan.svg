@@ -14,8 +14,10 @@
   <rect width="616" height="353" fill="url(#bg)"/>
   <rect width="616" height="353" fill="url(#dots)"/>
   <rect width="616" height="353" fill="url(#diagonal)"/>
-  <circle cx="308" cy="140" r="120" fill="rgba(255,255,255,0.1)"/>
-  <text x="308" y="160" font-size="100" text-anchor="middle">📝</text>
+  <circle cx="308" cy="140" r="120" fill="rgba(255,255,255,0.15)"/>
+    <g transform="translate(258, 90) scale(4.17)">
+      <path d="m0 8.455 6.818-6.819L12 6.818l5.182-5.182L24 8.455v13.909l-6.818-6.819v-2.314l5.182 5.182v-9.28L17.182 3.95v11.594L12 20.727l-5.182-5.182v-2.314L12 18.413v-9.28L6.818 3.95v11.594L0 22.364Z" fill="white"/>
+    </g>
   <text x="308" y="240" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="white" text-anchor="middle">SiYuan</text>
   
   <text x="308" y="305" font-family="Inter, sans-serif" font-size="14" fill="rgba(255,255,255,0.85)" text-anchor="middle" font-weight="500">Editor de texto</text>
