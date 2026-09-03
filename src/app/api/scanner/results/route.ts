@@ -49,33 +49,43 @@ export async function GET(request: Request) {
 
     if (asProducts) {
       // Store-compatible format
-      const products = games.map(g => ({
-        id: `digistore-${g.id}`,
-        name: g.title,
-        description: g.description,
-        price: g.sellPrice,
-        originalPrice: g.originalPrice > 0 ? g.originalPrice : undefined,
-        category: g.tags.includes('software') ? 'Software y Licencias' : 'Juegos Digitales',
-        subcategory: g.source === 'epic-games' ? 'Epic Games' :
-                   g.source === 'prime-gaming' ? 'Prime Gaming' :
-                   g.source === 'gog' ? 'GOG.com' :
-                   g.source === 'humble' ? 'Humble Bundle' :
-                   g.source === 'indiegala' ? 'IndieGala' :
-                   g.source === 'fanatical' ? 'Fanatical' :
-                   g.source === 'steam' ? 'Steam' :
-                   g.source === 'software' ? 'Software' :
-                   g.source,
-        image: g.imageUrl || '/products/gen/gaming-cat.png',
-        rating: g.rating || 4,
-        reviews: 0,
-        sold: Math.floor(Math.random() * 50) + 10,
-        deliveryTime: 'Inmediato',
-        platform: g.platform.join(', '),
-        region: 'Global',
-        tags: [...g.tags, 'digital-product'],
-        stock: 999,
-        featured: g.status === 'expiring',
-      }));
+      const products = games.map(g => {
+        // Subcategoria: si es software, usar el genre real (Antivirus, VPN, Utilidad, etc.)
+        // Si no, usar el nombre de la fuente (Epic Games, Steam, etc.)
+        let subcategory: string;
+        if (g.source === 'software') {
+          subcategory = g.genre && g.genre.length > 0 ? g.genre[0] : 'Software';
+        } else {
+          subcategory = g.source === 'epic-games' ? 'Epic Games' :
+                     g.source === 'prime-gaming' ? 'Prime Gaming' :
+                     g.source === 'gog' ? 'GOG.com' :
+                     g.source === 'humble' ? 'Humble Bundle' :
+                     g.source === 'indiegala' ? 'IndieGala' :
+                     g.source === 'fanatical' ? 'Fanatical' :
+                     g.source === 'steam' ? 'Steam' :
+                     g.source === 'software' ? 'Software' :
+                     g.source;
+        }
+        return {
+          id: `digistore-${g.id}`,
+          name: g.title,
+          description: g.description,
+          price: g.sellPrice,
+          originalPrice: g.originalPrice > 0 ? g.originalPrice : undefined,
+          category: g.tags.includes('software') ? 'Software y Licencias' : 'Juegos Digitales',
+          subcategory,
+          image: g.imageUrl || '/products/gen/gaming-cat.png',
+          rating: g.rating || 4,
+          reviews: 0,
+          sold: Math.floor(Math.random() * 50) + 10,
+          deliveryTime: 'Inmediato',
+          platform: g.platform.join(', '),
+          region: 'Global',
+          tags: [...g.tags, 'digital-product'],
+          stock: 999,
+          featured: g.status === 'expiring',
+        };
+      });
       return NextResponse.json({ success: true, products, total: products.length });
     }
 

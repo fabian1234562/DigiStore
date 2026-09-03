@@ -8,8 +8,9 @@ const ProductDetail = dynamic(() => import('@/components/store/ProductDetailModa
 const ScannerStatus = dynamic(() => import('@/components/store/ScannerStatus').then(m => ({ default: m.ScannerStatus })), { ssr: false });
 import {
   ShoppingCart, Search, Zap, Shield, LogIn, Menu, ArrowRight,
-  Gamepad2, Crown, Filter, X, Star, Send, SlidersHorizontal,
-  Flame, TrendingUp, Sparkles, Eye, Tag,
+  Gamepad2, Crown, Filter, X, Star, Send, SlidersHorizontal, Heart,
+  Flame, TrendingUp, Sparkles, Eye, Tag, Shield as ShieldIcon,
+  Lock, HardDrive, Wrench, Save, Wifi, Palette, Video, Cpu,
 } from 'lucide-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
@@ -35,7 +36,37 @@ interface GameProduct {
   featured: boolean;
 }
 
-const SOURCES = ['all', 'Epic Games', 'Prime Gaming', 'GOG.com', 'Humble Bundle', 'IndieGala', 'Fanatical', 'Steam', 'Software y Licencias'];
+// Tabs principales: Juegos | Software
+type MainTab = 'juegos' | 'software' | 'all';
+
+// Categorías de juegos (basadas en fuentes reales)
+const JUEGOS_CATEGORIES = [
+  { id: 'all', name: 'Todos', icon: Gamepad2 },
+  { id: 'Epic Games', name: 'Epic Games', icon: Flame },
+  { id: 'Prime Gaming', name: 'Prime Gaming', icon: Crown },
+  { id: 'GOG.com', name: 'GOG.com', icon: Tag },
+  { id: 'Humble Bundle', name: 'Humble Bundle', icon: Heart },
+  { id: 'IndieGala', name: 'IndieGala', icon: Sparkles },
+  { id: 'Fanatical', name: 'Fanatical', icon: TrendingUp },
+  { id: 'Steam', name: 'Steam', icon: Gamepad2 },
+];
+
+// Categorías de software (basadas en genre real)
+const SOFTWARE_CATEGORIES = [
+  { id: 'all', name: 'Todos', icon: Shield },
+  { id: 'Antivirus', name: 'Antivirus', icon: Shield },
+  { id: 'VPN', name: 'VPN', icon: Lock },
+  { id: 'Utilidad', name: 'Utilidades PC', icon: Wrench },
+  { id: 'Backup', name: 'Backup', icon: Save },
+  { id: 'Privacidad', name: 'Privacidad', icon: Lock },
+  { id: 'Pixel Art Animation', name: 'Pixel Art', icon: Palette },
+  { id: 'Digital Painting', name: 'Pintura Digital', icon: Palette },
+  { id: 'Desktop Wallpaper', name: 'Wallpapers', icon: Sparkles },
+  { id: 'Audio Utility', name: 'Audio', icon: Video },
+  { id: '3D Modeling', name: '3D Modeling', icon: Cpu },
+  { id: 'Window Utility', name: 'Ventanas', icon: Wrench },
+  { id: 'VR Utility', name: 'VR', icon: HardDrive },
+];
 
 function StoreHeader() {
   const { cartOpen, setCartOpen, authOpen, setAuthOpen, cartCount } = useStore();
@@ -194,17 +225,16 @@ export default function TiendaPage() {
   const [games, setGames] = useState<GameProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [source, setSource] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [mainTab, setMainTab] = useState<MainTab>('all');
   const [sortBy, setSortBy] = useState('popular');
   const [showFilters, setShowFilters] = useState(false);
 
   const loadGames = useCallback(async () => {
     try {
-      // SOLO productos que VENDEMOS (filter=paid). Los gratis van a /juegos-gratis.
       const res = await fetch('/api/scanner/results?products=true&filter=paid');
       const data = await res.json();
       if (data.success) {
-        // Normalizar precios al rango $1-$5
         const raw: GameProduct[] = data.games || data.products || [];
         const normalized = raw.map(g => normalizeProductPricing(g as any));
         setGames(normalized);
@@ -215,8 +245,21 @@ export default function TiendaPage() {
 
   useEffect(() => { loadGames(); }, [loadGames]);
 
-  const filtered = games
-    .filter(g => source === 'all' || g.subcategory === source)
+  // Productos por tab principal
+  const juegosProducts = useMemo(() => games.filter(g => g.category !== 'Software y Licencias'), [games]);
+  const softwareProducts = useMemo(() => games.filter(g => g.category === 'Software y Licencias'), [games]);
+
+  // Tabs disponibles según el tab principal
+  const currentCategories = mainTab === 'juegos' ? JUEGOS_CATEGORIES
+                          : mainTab === 'software' ? SOFTWARE_CATEGORIES
+                          : [{ id: 'all', name: 'Todos', icon: Gamepad2 }];
+
+  const currentProducts = mainTab === 'juegos' ? juegosProducts
+                       : mainTab === 'software' ? softwareProducts
+                       : games;
+
+  const filtered = currentProducts
+    .filter(g => activeCategory === 'all' || g.subcategory === activeCategory)
     .filter(g => !search || g.name.toLowerCase().includes(search.toLowerCase()) || g.description.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price;
@@ -226,34 +269,86 @@ export default function TiendaPage() {
       return 0;
     });
 
-  // Categorías para recomendaciones
-  const topSelling = useMemo(() => [...games].sort((a, b) => (b.sold || 0) - (a.sold || 0)).slice(0, 12), [games]);
-  const topRated = useMemo(() => [...games].filter(g => (g.rating || 0) >= 4).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 12), [games]);
-  const expiringSoon = useMemo(() => games.filter(g => g.featured).slice(0, 12), [games]);
-  const popularCategories = useMemo(() => {
-    const map: Record<string, number> = {};
-    games.forEach(g => { if (g.subcategory) map[g.subcategory] = (map[g.subcategory] || 0) + 1; });
-    return Object.entries(map).sort((a, b) => b[1] - a[1]);
-  }, [games]);
+  // Recomendaciones (solo de los productos del tab actual)
+  const topSelling = useMemo(() => [...currentProducts].sort((a, b) => (b.sold || 0) - (a.sold || 0)).slice(0, 12), [currentProducts]);
+  const topRated = useMemo(() => [...currentProducts].filter(g => (g.rating || 0) >= 4).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 12), [currentProducts]);
+  const expiringSoon = useMemo(() => currentProducts.filter(g => g.featured).slice(0, 12), [currentProducts]);
 
-  const hasActiveSearch = search || source !== 'all' || sortBy !== 'popular';
+  const hasActiveSearch = search || activeCategory !== 'all' || sortBy !== 'popular' || mainTab !== 'all';
 
   return (
     <div className="min-h-screen bg-gray-50/50">
       <StoreHeader />
 
       {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-violet-600 to-indigo-700 text-white">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-8">
-          <h1 className="text-2xl md:text-3xl font-extrabold">Tienda Digital</h1>
-          <p className="text-sm text-white/70 mt-1">
-            {games.length} productos disponibles · Precios desde $1.00 hasta $4.99 · Entrega inmediata
-          </p>
+      <div className="relative overflow-hidden bg-gradient-to-br from-violet-700 via-indigo-700 to-purple-800 text-white">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,white,transparent_50%)]" />
+        <div className="relative mx-auto max-w-7xl px-3 sm:px-6 py-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold">Tienda Digital</h1>
+              <p className="text-sm text-white/80 mt-1">
+                {games.length} productos · Precios $1.00 - $4.99 · Entrega inmediata
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <span className="bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                {juegosProducts.length} Juegos
+              </span>
+              <span className="bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                {softwareProducts.length} Software
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Scanner Status bar — visible & actionable */}
       <ScannerStatus variant="inline" />
+
+      {/* ═══ TABS PRINCIPALES: Juegos | Software | Todo ═══ */}
+      <div className="bg-white border-b sticky top-0 z-30">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6">
+          <div className="flex gap-1 overflow-x-auto">
+            <button
+              onClick={() => { setMainTab('all'); setActiveCategory('all'); }}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                mainTab === 'all'
+                  ? 'border-violet-600 text-violet-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              <Gamepad2 className="w-4 h-4" />
+              Todo
+              <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{games.length}</span>
+            </button>
+            <button
+              onClick={() => { setMainTab('juegos'); setActiveCategory('all'); }}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                mainTab === 'juegos'
+                  ? 'border-violet-600 text-violet-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              <Flame className="w-4 h-4" />
+              Juegos
+              <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{juegosProducts.length}</span>
+            </button>
+            <button
+              onClick={() => { setMainTab('software'); setActiveCategory('all'); }}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                mainTab === 'software'
+                  ? 'border-violet-600 text-violet-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              <Shield className="w-4 h-4" />
+              Software
+              <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{softwareProducts.length}</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* ═══ RECOMENDACIONES — solo cuando no hay búsqueda activa ═══ */}
       {!hasActiveSearch && !loading && (
@@ -289,19 +384,31 @@ export default function TiendaPage() {
       <div className="mx-auto max-w-7xl px-3 sm:px-6 py-6">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
-          <aside className="w-full md:w-56 shrink-0">
+          <aside className="w-full md:w-60 shrink-0">
             <div className="bg-white rounded-2xl border p-4 space-y-4 sticky top-20">
-              <h3 className="font-bold text-sm flex items-center gap-2"><SlidersHorizontal className="w-4 h-4" /> Filtros</h3>
+              <h3 className="font-bold text-sm flex items-center gap-2"><SlidersHorizontal className="w-4 h-4" /> Categorías</h3>
               <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Fuente</label>
                 <div className="mt-1.5 space-y-1">
-                  {SOURCES.map(s => {
-                    const count = s === 'all' ? games.length : games.filter(g => g.subcategory === s).length;
+                  {currentCategories.map(c => {
+                    const Icon = c.icon;
+                    const count = c.id === 'all'
+                      ? currentProducts.length
+                      : currentProducts.filter(g => g.subcategory === c.id).length;
                     return (
-                      <button key={s} onClick={() => setSource(s)}
-                        className={`flex items-center justify-between w-full text-left text-sm px-3 py-1.5 rounded-lg transition-colors ${source === s ? 'bg-violet-100 text-violet-700 font-semibold' : 'hover:bg-gray-100 text-gray-600'}`}>
-                        <span>{s === 'all' ? 'Todas las fuentes' : s}</span>
-                        <span className="text-[10px] text-gray-400 ml-2">{count}</span>
+                      <button
+                        key={c.id}
+                        onClick={() => setActiveCategory(c.id)}
+                        className={`flex items-center gap-2 justify-between w-full text-left text-sm px-3 py-1.5 rounded-lg transition-colors ${
+                          activeCategory === c.id
+                            ? 'bg-violet-100 text-violet-700 font-semibold'
+                            : 'hover:bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2 min-w-0">
+                          <Icon className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">{c.name}</span>
+                        </span>
+                        <span className="text-[10px] text-gray-400 ml-2 shrink-0">{count}</span>
                       </button>
                     );
                   })}
@@ -345,7 +452,7 @@ export default function TiendaPage() {
               <div className="text-center py-20">
                 <Gamepad2 className="w-16 h-16 text-gray-200 mx-auto mb-4" />
                 <p className="text-gray-500">No se encontraron productos</p>
-                <button onClick={() => { setSearch(''); setSource('all'); setSortBy('popular'); }}
+                <button onClick={() => { setSearch(''); setActiveCategory('all'); setSortBy('popular'); }}
                   className="mt-4 text-violet-600 text-sm font-semibold hover:underline">
                   Limpiar filtros
                 </button>
@@ -355,7 +462,7 @@ export default function TiendaPage() {
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-xs text-gray-500">
                     Mostrando <strong className="text-gray-700">{filtered.length}</strong> productos
-                    {hasActiveSearch && <button onClick={() => { setSearch(''); setSource('all'); setSortBy('popular'); }} className="ml-2 text-violet-600 hover:underline">limpiar</button>}
+                    {hasActiveSearch && <button onClick={() => { setSearch(''); setActiveCategory('all'); setSortBy('popular'); }} className="ml-2 text-violet-600 hover:underline">limpiar</button>}
                   </p>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -380,14 +487,17 @@ export default function TiendaPage() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Fuente</label>
+                <label className="text-xs font-semibold text-gray-500 uppercase">Categoría</label>
                 <div className="mt-1.5 space-y-1">
-                  {SOURCES.map(s => (
-                    <button key={s} onClick={() => { setSource(s); setShowFilters(false); }}
-                      className={`block w-full text-left text-sm px-3 py-1.5 rounded-lg ${source === s ? 'bg-violet-100 text-violet-700 font-semibold' : 'hover:bg-gray-100 text-gray-600'}`}>
-                      {s === 'all' ? 'Todas' : s}
-                    </button>
-                  ))}
+                  {currentCategories.map(c => {
+                    const Icon = c.icon;
+                    return (
+                      <button key={c.id} onClick={() => { setActiveCategory(c.id); setShowFilters(false); }}
+                        className={`flex items-center gap-2 block w-full text-left text-sm px-3 py-1.5 rounded-lg ${activeCategory === c.id ? 'bg-violet-100 text-violet-700 font-semibold' : 'hover:bg-gray-100 text-gray-600'}`}>
+                        <Icon className="w-3.5 h-3.5" /> {c.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
               <div>

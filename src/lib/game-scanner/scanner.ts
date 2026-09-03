@@ -272,31 +272,40 @@ export async function runFullScan(): Promise<{
 
 /** Obtener juegos como productos para la tienda */
 export function getScannedGamesAsProducts() {
-  return gameScanner.getActiveGames().map(game => ({
-    id: `prod-${game.id}`,
-    name: game.title,
-    description: game.description,
-    price: game.sellPrice,
-    originalPrice: game.originalPrice > 0 ? game.originalPrice : undefined,
-    subcategory: game.source === 'epic-games' ? 'Epic Games' :
-               game.source === 'prime-gaming' ? 'Prime Gaming' :
-               game.source === 'gog' ? 'GOG.com' :
-               game.source === 'humble' ? 'Humble Bundle' :
-               game.source === 'indiegala' ? 'IndieGala' :
-               game.source === 'fanatical' ? 'Fanatical' :
-               game.source === 'steam' ? 'Steam' :
-               game.source === 'software' ? 'Software' :
-               'Otras Fuentes',
-    category: game.tags.includes('software') ? 'Software y Licencias' : 'Juegos Digitales',
-    image: game.imageUrl || '/products/gen/gaming-cat.png',
-    rating: game.rating || 4,
-    reviews: 0,
-    sold: Math.floor(Math.random() * 50) + 10,
-    deliveryTime: 'Inmediato',
-    platform: game.platform.join(', '),
-    region: 'Global',
-    tags: [...game.tags, 'digital', '100-profit'],
-    stock: game.unlimitedStock ? 999 : game.stock,
-    featured: game.status === 'expiring',
-  }));
+  return gameScanner.getActiveGames().map(game => {
+    // Subcategoria: si es software, usar el genre real (Antivirus, VPN, etc.)
+    let subcategory: string;
+    if (game.source === 'software') {
+      subcategory = game.genre && game.genre.length > 0 ? game.genre[0] : 'Software';
+    } else {
+      subcategory = game.source === 'epic-games' ? 'Epic Games' :
+                 game.source === 'prime-gaming' ? 'Prime Gaming' :
+                 game.source === 'gog' ? 'GOG.com' :
+                 game.source === 'humble' ? 'Humble Bundle' :
+                 game.source === 'indiegala' ? 'IndieGala' :
+                 game.source === 'fanatical' ? 'Fanatical' :
+                 game.source === 'steam' ? 'Steam' :
+                 game.source === 'software' ? 'Software' :
+                 'Otras Fuentes';
+    }
+    return {
+      id: `prod-${game.id}`,
+      name: game.title,
+      description: game.description,
+      price: game.sellPrice,
+      originalPrice: game.originalPrice > 0 ? game.originalPrice : undefined,
+      subcategory,
+      category: game.tags.includes('software') ? 'Software y Licencias' : 'Juegos Digitales',
+      image: game.imageUrl || '/products/gen/gaming-cat.png',
+      rating: game.rating || 4,
+      reviews: 0,
+      sold: Math.floor(Math.random() * 50) + 10,
+      deliveryTime: 'Inmediato',
+      platform: game.platform.join(', '),
+      region: 'Global',
+      tags: [...game.tags, 'digital', '100-profit'],
+      stock: game.unlimitedStock ? 999 : game.stock,
+      featured: game.status === 'expiring',
+    };
+  });
 }

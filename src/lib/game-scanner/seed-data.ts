@@ -441,10 +441,6 @@ export const SEED_GAMES: ScannedGame[] = [
     imageUrl: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b0186c5c1aae.jpg',
     platform: ['Windows', 'macOS', 'Android', 'iOS'], deliveryType: 'key', rating: 4, tags: ['software', 'ad-blocker', 'privacy', 'license'] }),
 
-  makeGame({ id: 'sw-5', title: 'Zemana AntiMalware Premium', source: 'software', originalPrice: 24.99, genre: 'Antivirus',
-    description: 'Segundo opinion contra malware con tecnologia en la nube. Escaneo rapido, proteccion en tiempo real y eliminacion de rootkits.',
-    imageUrl: 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/be0c60ac502f.png',
-    platform: ['Windows'], deliveryType: 'key', rating: 4, tags: ['software', 'antivirus', 'anti-malware', 'cloud'] }),
 
   makeGame({ id: 'sw-6', title: 'NordVPN (3 Meses)', source: 'software', originalPrice: 39.99, genre: 'VPN',
     description: 'VPN premium con mas de 5800 servidores en 60 paises. Cifrado AES-256, kill switch, proteccion contra fugas DNS y soporte 24/7.',
