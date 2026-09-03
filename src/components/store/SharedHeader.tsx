@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import {
-  ShoppingCart, LogIn, Menu, X, Gamepad2, Zap, Gift, Tag,
+  ShoppingCart, LogIn, Menu, X, Gamepad2, Zap, Gift, Tag, BookOpen, Download,
 } from 'lucide-react';
 
 /**
@@ -19,11 +19,18 @@ import {
  * - Tap targets mobile mínimos 44px
  * - Bloqueo de scroll cuando drawer abierto
  * - Cierre con Escape o tap fuera
+ *
+ * Items del menu (orden fijo):
+ * 1. Inicio (violet)
+ * 2. Juegos Gratis (emerald) - F2P
+ * 3. Libros (amber) - clasicos de dominio publico
+ * 4. Apps Open Source (blue) - software libre
+ * 5. Tienda (rose/amber) - productos pagos $1-$5
  */
 
 interface SharedHeaderProps {
-  /** 'home' resalta Inicio, 'free' resalta Juegos Gratis, 'store' resalta Tienda */
-  activePage?: 'home' | 'free' | 'store';
+  /** 'home' resalta Inicio, 'free' resalta Juegos Gratis, 'books' resalta Libros, 'apps' resalta Apps Open Source, 'store' resalta Tienda */
+  activePage?: 'home' | 'free' | 'books' | 'apps' | 'store';
 }
 
 export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
@@ -93,8 +100,8 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
             </Link>
           </div>
 
-          {/* Centro: Nav desktop */}
-          <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
+          {/* Centro: Nav desktop con 5 items */}
+          <nav className="hidden lg:flex items-center gap-0.5 text-sm font-medium">
             <Link
               href="/"
               className={`px-3.5 py-2 rounded-lg transition-colors ${
@@ -106,30 +113,50 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
               Inicio
             </Link>
             <Link
-              href="/juegos-gratis"
+              href="/juegos-gratis?tab=juegos"
               className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 ${
                 activePage === 'free'
                   ? 'text-emerald-700 bg-emerald-50 font-semibold'
                   : 'text-gray-700 hover:text-emerald-700 hover:bg-emerald-50'
               }`}
             >
-              Juegos Gratis
-              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                100%
-              </span>
+              Juegos
+              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">F2P</span>
+            </Link>
+            <Link
+              href="/libros"
+              className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 ${
+                activePage === 'books'
+                  ? 'text-amber-700 bg-amber-50 font-semibold'
+                  : 'text-gray-700 hover:text-amber-700 hover:bg-amber-50'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              Libros
+              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">37</span>
+            </Link>
+            <Link
+              href="/apps-open-source"
+              className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 ${
+                activePage === 'apps'
+                  ? 'text-blue-700 bg-blue-50 font-semibold'
+                  : 'text-gray-700 hover:text-blue-700 hover:bg-blue-50'
+              }`}
+            >
+              <Download className="w-3.5 h-3.5" />
+              Apps
+              <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">33</span>
             </Link>
             <Link
               href="/tienda"
               className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 ${
                 activePage === 'store'
-                  ? 'text-amber-700 bg-amber-50 font-semibold'
-                  : 'text-gray-700 hover:text-amber-700 hover:bg-amber-50'
+                  ? 'text-rose-700 bg-rose-50 font-semibold'
+                  : 'text-gray-700 hover:text-rose-700 hover:bg-rose-50'
               }`}
             >
               Tienda
-              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                $1+
-              </span>
+              <span className="bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">$1+</span>
             </Link>
           </nav>
 
@@ -204,7 +231,7 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
                 Inicio
               </Link>
               <Link
-                href="/juegos-gratis"
+                href="/juegos-gratis?tab=juegos"
                 className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors ${
                   activePage === 'free'
                     ? 'bg-emerald-50 text-emerald-700'
@@ -217,23 +244,57 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
                 </div>
                 Juegos Gratis
                 <span className="ml-auto bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                  100%
+                  F2P
                 </span>
               </Link>
               <Link
-                href="/tienda"
+                href="/libros"
                 className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors ${
-                  activePage === 'store'
+                  activePage === 'books'
                     ? 'bg-amber-50 text-amber-700'
                     : 'text-gray-700 hover:bg-amber-50 hover:text-amber-700'
                 }`}
                 onClick={() => setMobileMenu(false)}
               >
                 <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <Tag className="w-4 h-4 text-amber-600" />
+                  <BookOpen className="w-4 h-4 text-amber-600" />
+                </div>
+                Libros Clásicos
+                <span className="ml-auto bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  37
+                </span>
+              </Link>
+              <Link
+                href="/apps-open-source"
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors ${
+                  activePage === 'apps'
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                }`}
+                onClick={() => setMobileMenu(false)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <Download className="w-4 h-4 text-blue-600" />
+                </div>
+                Apps Open Source
+                <span className="ml-auto bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  33
+                </span>
+              </Link>
+              <Link
+                href="/tienda"
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors ${
+                  activePage === 'store'
+                    ? 'bg-rose-50 text-rose-700'
+                    : 'text-gray-700 hover:bg-rose-50 hover:text-rose-700'
+                }`}
+                onClick={() => setMobileMenu(false)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">
+                  <Tag className="w-4 h-4 text-rose-600" />
                 </div>
                 Tienda
-                <span className="ml-auto bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                <span className="ml-auto bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                   $1+
                 </span>
               </Link>
