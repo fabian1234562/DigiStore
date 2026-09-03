@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import {
   Search, Zap, Shield, RefreshCw, Gamepad2, ExternalLink,
   Clock, Flame, ArrowLeft, ArrowRight, Filter, X, Loader2, Eye,
-  Monitor, Gift, Heart, Crown, Disc, Smartphone, Tag,
+  Monitor, Gift, Heart, Crown, Disc, Smartphone, Tag, BookOpen, Download,
   Sparkles, TrendingUp, Star, ShoppingBag, CheckCircle2, AlertTriangle,
 } from 'lucide-react';
 import { GAME_SOURCES } from '@/lib/game-scanner';
@@ -230,6 +230,7 @@ export default function JuegosGratisPage() {
   const [selectedSource, setSelectedSource] = useState<GameSource | 'all'>('all');
   const [selectedGame, setSelectedGame] = useState<ScannedGame | null>(null);
   const [summary, setSummary] = useState<any>(null);
+  const [mainTab, setMainTab] = useState<'juegos' | 'libros' | 'apps' | 'all'>('all');
   const { setSelectedProduct, setProductDetailOpen } = useStore();
 
   const loadGames = useCallback(async () => {
@@ -266,11 +267,25 @@ export default function JuegosGratisPage() {
   useEffect(() => { loadGames(); }, [loadGames]);
 
   // Filtro: solo productos que sean REALMENTE gratis (status active o expiring)
-  const freeGames = useMemo(() => games.filter(g =>
+  const allFree = useMemo(() => games.filter(g =>
     g.status === 'active' || g.status === 'expiring'
   ), [games]);
 
-  const filteredGames = useMemo(() => freeGames.filter(g => {
+  // Filtrado por tab principal
+  const isBook = (g: ScannedGame) => g.genre && g.genre.includes('Libro Clásico');
+  const isOpenSourceApp = (g: ScannedGame) => g.tags && g.tags.includes('open-source');
+  const isF2PGame = (g: ScannedGame) => !isBook(g) && !isOpenSourceApp(g);
+
+  const juegosFree = useMemo(() => allFree.filter(isF2PGame), [allFree]);
+  const librosFree = useMemo(() => allFree.filter(isBook), [allFree]);
+  const appsFree = useMemo(() => allFree.filter(isOpenSourceApp), [allFree]);
+
+  const currentTabGames = mainTab === 'juegos' ? juegosFree
+                       : mainTab === 'libros' ? librosFree
+                       : mainTab === 'apps' ? appsFree
+                       : allFree;
+
+  const filteredGames = useMemo(() => currentTabGames.filter(g => {
     if (selectedSource !== 'all' && g.source !== selectedSource) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -279,14 +294,14 @@ export default function JuegosGratisPage() {
         g.tags.some(t => t.includes(q));
     }
     return true;
-  }), [freeGames, selectedSource, searchQuery]);
+  }), [currentTabGames, selectedSource, searchQuery]);
 
   // Top 4 productos destacados (con mayor valor original) para mostrar como "Gancho"
   const featured = useMemo(() =>
-    [...freeGames]
+    [...currentTabGames]
       .sort((a, b) => (b.originalPrice || 0) - (a.originalPrice || 0))
       .slice(0, 4)
-  , [freeGames]);
+  , [currentTabGames]);
 
   // Handle claim (mostrar modal con instrucciones)
   const handleClaim = (game: ScannedGame) => setSelectedGame(game);
@@ -358,11 +373,11 @@ export default function JuegosGratisPage() {
                 <p className="text-xs uppercase tracking-wider text-white/70 font-semibold mb-4">Resumen del escaneo</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <div className="text-2xl font-black text-emerald-300">{freeGames.length}</div>
+                    <div className="text-2xl font-black text-emerald-300">{allFree.length}</div>
                     <div className="text-[10px] text-white/60 uppercase">Productos gratis</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-black text-amber-300">${freeGames.reduce((sum, g) => sum + (g.originalPrice || 0), 0).toFixed(0)}</div>
+                    <div className="text-2xl font-black text-amber-300">${allFree.reduce((sum, g) => sum + (g.originalPrice || 0), 0).toFixed(0)}</div>
                     <div className="text-[10px] text-white/60 uppercase">Valor total</div>
                   </div>
                   <div>
@@ -370,12 +385,68 @@ export default function JuegosGratisPage() {
                     <div className="text-[10px] text-white/60 uppercase">Escaneos</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-black text-pink-300">{freeGames.filter(g => g.status === 'expiring').length}</div>
+                    <div className="text-2xl font-black text-pink-300">{allFree.filter(g => g.status === 'expiring').length}</div>
                     <div className="text-[10px] text-white/60 uppercase">Por expirar</div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ TABS PRINCIPALES: Todo | Juegos | Libros | Apps ═══ */}
+      <div className="bg-white border-b sticky top-0 z-30">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+          <div className="flex gap-1 overflow-x-auto no-scrollbar">
+            <button
+              onClick={() => { setMainTab('all'); setSelectedSource('all'); }}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                mainTab === 'all'
+                  ? 'border-emerald-600 text-emerald-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              <Zap className="w-4 h-4" />
+              Todo
+              <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{allFree.length}</span>
+            </button>
+            <button
+              onClick={() => { setMainTab('juegos'); setSelectedSource('all'); }}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                mainTab === 'juegos'
+                  ? 'border-violet-600 text-violet-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              <Gamepad2 className="w-4 h-4" />
+              Juegos
+              <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{juegosFree.length}</span>
+            </button>
+            <button
+              onClick={() => { setMainTab('libros'); setSelectedSource('all'); }}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                mainTab === 'libros'
+                  ? 'border-amber-600 text-amber-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              Libros
+              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{librosFree.length}</span>
+            </button>
+            <button
+              onClick={() => { setMainTab('apps'); setSelectedSource('all'); }}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                mainTab === 'apps'
+                  ? 'border-blue-600 text-blue-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              <Download className="w-4 h-4" />
+              Apps Open Source
+              <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{appsFree.length}</span>
+            </button>
           </div>
         </div>
       </div>
