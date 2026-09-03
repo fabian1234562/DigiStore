@@ -12,6 +12,7 @@ import {
   Menu, Eye, Gamepad2, Crown, Clock, Package, Check, Send,
   Monitor, Download, Sword, Puzzle, Car, Target, Users, TrendingUp,
   MousePointerClick, Gift, DollarSign, Percent, Layers, Cpu,
+  Wallet, Bitcoin,
 } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
@@ -44,23 +45,27 @@ interface GameProduct {
    ══════════════════════════════════════════════════════════════ */
 function AnnouncementBar() {
   return (
-    <div className="bg-[#212529] text-white text-xs">
-      <div className="mx-auto flex max-w-7xl items-center justify-between h-9 px-3 sm:px-6">
+    <div className="bg-gradient-to-r from-violet-950 via-indigo-950 to-purple-950 text-white text-xs relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_50%,white,transparent_50%)]" />
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between h-9 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-1.5">
           <Truck className="w-3.5 h-3.5 text-amber-400" />
-          <span className="hidden sm:inline">Entrega instantanea en pedidos digitales</span>
-          <span className="sm:hidden">Entrega instantanea</span>
+          <span className="hidden sm:inline font-medium">Entrega instantánea en pedidos digitales</span>
+          <span className="sm:hidden font-medium">Entrega instantánea</span>
         </div>
         <div className="hidden items-center gap-4 md:flex">
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1.5 font-medium">
             <Shield className="w-3.5 h-3.5 text-emerald-400" />
-            100% Ganancia en juegos gratis
+            100% productos verificados
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1.5 font-medium">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            Usa DIGI10 para 10% OFF
+            <span>Precios desde <strong className="text-amber-300">$1</strong></span>
           </span>
         </div>
+        <span className="md:hidden flex items-center gap-1 font-bold text-amber-300">
+          $1+
+        </span>
       </div>
     </div>
   );
@@ -329,21 +334,31 @@ function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; 
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-3 sm:px-6">
-        <div className="flex flex-col lg:flex-row items-center min-h-[420px] md:min-h-[500px] gap-8 py-12 md:py-16">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row items-center min-h-[480px] sm:min-h-[500px] lg:min-h-[560px] gap-6 lg:gap-10 py-10 sm:py-14 lg:py-16">
           {/* Left: Text content */}
-          <div className="flex-1 text-white max-w-xl">
-            <div className={`inline-flex items-center gap-1.5 ${slide.badgeColor} text-white text-[11px] font-bold px-3 py-1 rounded-full mb-5 tracking-wide`}>
-              <Sparkles className="w-3.5 h-3.5" />
+          <div className="flex-1 text-white max-w-xl animate-fade-in">
+            <div className={`inline-flex items-center gap-1.5 ${slide.badgeColor} text-white text-[10px] sm:text-[11px] font-bold px-3 py-1.5 rounded-full mb-5 tracking-wide shadow-lg`}>
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               {slide.badge}
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-[1.1] drop-shadow-xl">{slide.title}</h1>
-            <p className="text-sm sm:text-base text-white/85 mb-8 leading-relaxed drop-shadow-md max-w-md">{slide.desc}</p>
-            <div className="flex flex-wrap items-center gap-3">
-              <Link href={slide.href} className="inline-flex items-center gap-2 bg-white text-gray-900 font-bold px-7 py-3.5 rounded-xl hover:bg-gray-100 transition-all text-sm shadow-2xl hover:scale-105">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-[1.1] drop-shadow-xl">
+              {slide.title}
+            </h1>
+            <p className="text-sm sm:text-base lg:text-lg text-white/85 mb-6 sm:mb-8 leading-relaxed drop-shadow-md max-w-md line-clamp-3 sm:line-clamp-none">
+              {slide.desc}
+            </p>
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <Link
+                href={slide.href}
+                className="inline-flex items-center gap-2 bg-white text-gray-900 font-bold px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl hover:bg-violet-50 transition-all text-sm shadow-2xl hover:scale-105"
+              >
                 {slide.cta} <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link href="/tienda" className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white font-semibold px-6 py-3.5 rounded-xl hover:bg-white/25 transition-all text-sm border border-white/20">
+              <Link
+                href="/tienda"
+                className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md text-white font-semibold px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl hover:bg-white/25 transition-all text-sm border border-white/20"
+              >
                 <Eye className="w-4 h-4" /> Ver Tienda
               </Link>
             </div>
@@ -351,20 +366,20 @@ function HeroSection({ games, gamesCount, valueTotal }: { games: GameProduct[]; 
 
           {/* Right: Featured product image card */}
           {topGame && (
-            <div className="w-full lg:w-[360px] shrink-0">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-white/10 group">
+            <div className="w-full lg:w-[360px] shrink-0 animate-slide-up">
+              <div className="relative rounded-2xl overflow-hidden shadow-premium-lg border border-white/10 group">
                 <div className="aspect-[16/10] bg-gray-800">
                   <img src={topGame.image} alt={topGame.name} width={616} height={353}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
                       <p className="text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-0.5">{topGame.subcategory}</p>
                       <h3 className="text-white font-bold text-sm line-clamp-1">{topGame.name}</h3>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p className="text-xs text-gray-400 line-through">${(topGame.originalPrice || 0).toFixed(2)}</p>
                       <p className="text-lg font-black text-emerald-400">${topGame.price.toFixed(2)}</p>
                     </div>
@@ -894,46 +909,77 @@ function TrustStrip() {
    ══════════════════════════════════════════════════════════════ */
 function Footer() {
   return (
-    <footer className="bg-[#212529] text-white">
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 py-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center"><Gamepad2 className="w-5 h-5" /></div>
-              <span className="font-bold">DigiStore</span>
+    <footer className="relative bg-gradient-to-b from-[#0f0a1e] via-[#1a1333] to-[#0a0a0f] text-white overflow-hidden">
+      {/* Pattern decorativo */}
+      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_20%_30%,white,transparent_40%)]" />
+      <div className="absolute inset-0 opacity-3 bg-[repeating-linear-gradient(45deg,transparent,transparent_30px,white_30px,white_31px)]" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+          {/* Brand */}
+          <div className="col-span-2 md:col-span-1">
+            <Link href="/" className="flex items-center gap-2.5 mb-4 group">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center shadow-glow-violet group-hover:scale-105 transition-transform">
+                <Gamepad2 className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-lg font-extrabold text-gradient-violet">DigiStore</span>
+            </Link>
+            <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-xs">
+              Juegos y software digital al mejor precio. Escaneamos plataformas y te traemos los mejores productos, gratis y premium.
+            </p>
+            <div className="flex gap-2 mt-4">
+              <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-1 rounded-full border border-emerald-500/30">
+                100% Verificado
+              </span>
+              <span className="bg-violet-500/20 text-violet-300 text-[10px] font-bold px-2 py-1 rounded-full border border-violet-500/30">
+                $1 - $5
+              </span>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed">Juegos y software digital al mejor precio. Escaneamos plataformas y te traemos los mejores productos gratis para revender.</p>
           </div>
+
+          {/* Navegación */}
           <div>
-            <h4 className="font-semibold text-sm mb-3">Navegacion</h4>
-            <ul className="space-y-2 text-xs text-gray-400">
-              <li><Link href="/" className="hover:text-white transition-colors">Inicio</Link></li>
-              <li><Link href="/juegos-gratis" className="hover:text-white transition-colors">Juegos Gratis</Link></li>
-              <li><Link href="/tienda" className="hover:text-white transition-colors">Tienda</Link></li>
+            <h4 className="font-bold text-sm mb-3 text-white">Navegación</h4>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-gray-400">
+              <li><Link href="/" className="hover:text-violet-300 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3" /> Inicio</Link></li>
+              <li><Link href="/juegos-gratis" className="hover:text-emerald-300 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3" /> Juegos Gratis <span className="bg-emerald-500/20 text-emerald-300 text-[9px] font-bold px-1.5 py-0.5 rounded-full">100%</span></Link></li>
+              <li><Link href="/tienda" className="hover:text-amber-300 transition-colors flex items-center gap-1.5"><ArrowRight className="w-3 h-3" /> Tienda <span className="bg-amber-500/20 text-amber-300 text-[9px] font-bold px-1.5 py-0.5 rounded-full">$1+</span></Link></li>
             </ul>
           </div>
+
+          {/* Fuentes */}
           <div>
-            <h4 className="font-semibold text-sm mb-3">Fuentes</h4>
-            <ul className="space-y-2 text-xs text-gray-400">
-              <li>Epic Games Store</li>
-              <li>Prime Gaming</li>
-              <li>GOG.com</li>
-              <li>Steam</li>
-              <li>Humble Bundle</li>
-              <li>IndieGala</li>
+            <h4 className="font-bold text-sm mb-3 text-white">Fuentes escaneadas</h4>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-gray-400">
+              <li className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Epic Games Store</li>
+              <li className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Prime Gaming</li>
+              <li className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> GOG.com</li>
+              <li className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Steam</li>
+              <li className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Humble Bundle</li>
+              <li className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> IndieGala</li>
             </ul>
           </div>
+
+          {/* Pagos */}
           <div>
-            <h4 className="font-semibold text-sm mb-3">Pagos</h4>
-            <ul className="space-y-2 text-xs text-gray-400">
-              <li>MercadoPago</li>
-              <li>PayPal</li>
-              <li>Bitcoin / USDT</li>
+            <h4 className="font-bold text-sm mb-3 text-white">Métodos de pago</h4>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-gray-400">
+              <li className="flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5 text-blue-400" /> MercadoPago</li>
+              <li className="flex items-center gap-1.5"><Wallet className="w-3.5 h-3.5 text-amber-400" /> PayPal</li>
+              <li className="flex items-center gap-1.5"><Bitcoin className="w-3.5 h-3.5 text-orange-400" /> Bitcoin / USDT</li>
             </ul>
+            <div className="mt-4 inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold px-2.5 py-1.5 rounded-full">
+              <Shield className="w-3 h-3" /> Pago Seguro y Encriptado
+            </div>
           </div>
         </div>
-        <div className="border-t border-gray-700 mt-8 pt-6 text-center text-xs text-gray-500">
+
+        <div className="border-t border-white/10 mt-8 sm:mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
           <p>&copy; {new Date().getFullYear()} DigiStore. Todos los derechos reservados.</p>
+          <p className="flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-violet-400" />
+            Productos digitales al mejor precio
+          </p>
         </div>
       </div>
     </footer>
