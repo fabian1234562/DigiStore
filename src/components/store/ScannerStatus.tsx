@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   RefreshCw, Clock, Zap, CheckCircle2, AlertTriangle, Loader2, Activity,
+  Database, TrendingUp, Radar, Sparkles,
 } from 'lucide-react';
 
 interface ScanSummary {
@@ -41,11 +42,9 @@ function timeAgo(isoDate: string | null): string {
 }
 
 function nextScanIn(): string {
-  // Cron: 0 */6 * * *  → 00:00, 06:00, 12:00, 18:00 UTC
+  // Cron: 30 6 * * *  → 06:30 UTC todos los dias
   const now = new Date();
-  const hours = [0, 6, 12, 18, 24, 30];
-  const nextH = hours.find(h => h > now.getUTCHours()) ?? 24 + 0;
-  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), nextH, 0, 0));
+  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 6, 30, 0));
   if (next.getTime() < now.getTime()) {
     next.setUTCDate(next.getUTCDate() + 1);
   }
@@ -71,7 +70,6 @@ export function ScannerStatus({
       const res = await fetch('/api/scanner/summary', { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      // El endpoint devuelve { success, summary, isScanning, totalGamesInStore }
       const s = data.summary || {};
       setSummary({
         isScanning: data.isScanning ?? false,
@@ -128,55 +126,130 @@ export function ScannerStatus({
         <div className="h-3 w-48 bg-gray-100 rounded" />
       </div>
     ) : (
-      <div className="bg-violet-50 border-y animate-pulse">
+      <div className="bg-gradient-to-r from-violet-100 to-indigo-100 border-y animate-pulse">
         <div className="mx-auto max-w-7xl px-3 sm:px-6 py-3">
-          <div className="h-4 w-64 bg-violet-100 rounded" />
+          <div className="h-12 w-full bg-white/50 rounded-xl" />
         </div>
       </div>
     );
   }
 
-  /* ═══ VARIANT: INLINE BANNER (dentro de la página de tienda) ═══ */
+  const isScanning = summary?.isScanning || triggering;
+  const totalProducts = summary?.totalGames ?? 0;
+  const lastScan = timeAgo(summary?.lastScanAt ?? null);
+  const nextScan = nextScanIn();
+  const totalValue = summary?.estimatedValue ?? 0;
+
+  /* ═══ VARIANT: INLINE BANNER — rediseñado ═══ */
   if (variant === 'inline') {
     return (
-      <div className="bg-gradient-to-r from-violet-50 to-indigo-50 border-y">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-3">
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#1e1b4b] via-[#312e81] to-[#1e3a8a] border-y border-indigo-300/20">
+        {/* Pattern decorativo */}
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_50%,white,transparent_40%)]" />
+        <div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,white_10px,white_11px)]" />
+
+        {/* Animated glow line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-400/60 to-transparent" />
+
+        <div className="relative mx-auto max-w-7xl px-3 sm:px-6 py-3.5">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs sm:text-sm">
-              <div className={`w-2 h-2 rounded-full ${summary?.isScanning ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'}`} />
-              <span className="font-semibold text-gray-700">
-                {summary?.isScanning ? 'Escaneando productos...' : `${summary?.totalGames ?? 0} productos activos`}
-              </span>
-              <span className="text-gray-400">·</span>
-              <span className="text-gray-600 hidden sm:inline">
-                <Clock className="w-3 h-3 inline mr-1" />
-                Último escaneo: <strong className="text-gray-800">{timeAgo(summary?.lastScanAt ?? null)}</strong>
-              </span>
-              <span className="text-gray-400 hidden md:inline">·</span>
-              <span className="text-gray-600 hidden md:inline">
-                <Activity className="w-3 h-3 inline mr-1" />
-                Próx. escaneo automático: <strong className="text-violet-600">{nextScanIn()}</strong>
-              </span>
-            </div>
-            {showManualTrigger && (
-              <button
-                onClick={triggerScan}
-                disabled={triggering || summary?.isScanning}
-                className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-              >
-                {triggering || summary?.isScanning ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-3.5 h-3.5" />
+
+            {/* Lado izquierdo: Stats con icono radar animado */}
+            <div className="flex items-center gap-3 sm:gap-4">
+              {/* Radar icon con animación */}
+              <div className={`relative w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isScanning ? 'bg-amber-400/20 border border-amber-400/40' : 'bg-emerald-400/20 border border-emerald-400/40'}`}>
+                <Radar className={`w-5 h-5 ${isScanning ? 'text-amber-300 animate-spin' : 'text-emerald-300'}`} style={{ animationDuration: '2s' }} />
+                {isScanning && (
+                  <span className="absolute inset-0 rounded-xl border-2 border-amber-400/40 animate-ping" />
                 )}
-                {triggering || summary?.isScanning ? 'Escaneando...' : 'Escanear ahora'}
-              </button>
-            )}
+              </div>
+
+              {/* Stats principales */}
+              <div className="flex items-center gap-3 sm:gap-5">
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase tracking-wider text-violet-200/70 font-semibold leading-none mb-0.5">
+                    {isScanning ? 'Escaneando' : 'Productos'}
+                  </span>
+                  <span className="text-base sm:text-lg font-black text-white leading-none flex items-center gap-1">
+                    {isScanning ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : null}
+                    {isScanning ? 'en vivo' : totalProducts}
+                  </span>
+                </div>
+
+                <div className="hidden sm:flex flex-col border-l border-white/20 pl-4">
+                  <span className="text-[10px] uppercase tracking-wider text-violet-200/70 font-semibold leading-none mb-0.5 flex items-center gap-1">
+                    <Database className="w-3 h-3" /> Valor
+                  </span>
+                  <span className="text-base font-black text-amber-300 leading-none">
+                    ${totalValue.toFixed(0)}
+                  </span>
+                </div>
+
+                <div className="hidden md:flex flex-col border-l border-white/20 pl-4">
+                  <span className="text-[10px] uppercase tracking-wider text-violet-200/70 font-semibold leading-none mb-0.5 flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> Último
+                  </span>
+                  <span className="text-sm font-bold text-white leading-none">
+                    {lastScan}
+                  </span>
+                </div>
+
+                <div className="hidden lg:flex flex-col border-l border-white/20 pl-4">
+                  <span className="text-[10px] uppercase tracking-wider text-violet-200/70 font-semibold leading-none mb-0.5 flex items-center gap-1">
+                    <Activity className="w-3 h-3" /> Próximo
+                  </span>
+                  <span className="text-sm font-bold text-emerald-300 leading-none">
+                    {nextScan}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Lado derecho: Botón + status indicator */}
+            <div className="flex items-center gap-2">
+              {/* Status dot */}
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
+                <div className={`w-1.5 h-1.5 rounded-full ${isScanning ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'}`} />
+                <span className="text-[10px] font-semibold text-white/80 uppercase tracking-wider">
+                  {isScanning ? 'Live' : 'Ready'}
+                </span>
+              </div>
+
+              {showManualTrigger && (
+                <button
+                  onClick={triggerScan}
+                  disabled={isScanning}
+                  className="group relative inline-flex items-center gap-1.5 bg-white hover:bg-violet-50 disabled:opacity-60 text-violet-700 text-xs font-bold px-3.5 py-2 rounded-lg transition-all shadow-lg hover:shadow-violet-500/30 hover:scale-105 disabled:hover:scale-100"
+                >
+                  {isScanning ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-500" />
+                  )}
+                  <span className="hidden sm:inline">
+                    {isScanning ? 'Escaneando...' : 'Escanear ahora'}
+                  </span>
+                  <Sparkles className="w-3 h-3 hidden lg:inline text-amber-500" />
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Mensaje de resultado */}
           {lastResult && (
-            <div className={`mt-2 text-xs flex items-center gap-1.5 ${lastResult.ok ? 'text-emerald-700' : 'text-rose-700'}`}>
-              {lastResult.ok ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
+            <div className={`mt-2.5 text-xs flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg ${lastResult.ok ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/30' : 'bg-rose-500/20 text-rose-200 border border-rose-400/30'}`}>
+              {lastResult.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
               {lastResult.msg}
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div className="mt-2 text-xs flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-rose-500/20 text-rose-200 border border-rose-400/30">
+              <AlertTriangle className="w-3.5 h-3.5" />
+              {error}
             </div>
           )}
         </div>
@@ -184,69 +257,91 @@ export function ScannerStatus({
     );
   }
 
-  /* ═══ VARIANT: CARD (para el panel admin) ═══ */
+  /* ═══ VARIANT: CARD (para admin) — rediseñado ═══ */
   return (
-    <div className="rounded-2xl border bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${summary?.isScanning ? 'bg-amber-100' : 'bg-emerald-100'}`}>
-            <Activity className={`w-4 h-4 ${summary?.isScanning ? 'text-amber-600 animate-pulse' : 'text-emerald-600'}`} />
+    <div className="relative overflow-hidden rounded-2xl border border-indigo-200/50 bg-gradient-to-br from-white via-violet-50/30 to-indigo-50/30 p-5 shadow-sm">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-violet-200/20 rounded-full blur-3xl -mr-16 -mt-16" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-amber-200/20 rounded-full blur-3xl -ml-12 -mb-12" />
+
+      <div className="relative">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shadow-md ${isScanning ? 'bg-amber-100' : 'bg-emerald-100'}`}>
+              <Radar className={`w-4.5 h-4.5 ${isScanning ? 'text-amber-600 animate-spin' : 'text-emerald-600'}`} style={{ animationDuration: '2s', width: '18px', height: '18px' }} />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-sm text-gray-900">Escáner DigiStore</h3>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                {isScanning ? 'En progreso' : 'Activo · Listo'}
+              </p>
+            </div>
           </div>
-          <h3 className="font-bold text-sm">Estado del Escáner</h3>
+          {showManualTrigger && (
+            <button
+              onClick={triggerScan}
+              disabled={isScanning}
+              className="inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-50 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all shadow-md hover:shadow-lg hover:scale-105"
+            >
+              {isScanning ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="w-3.5 h-3.5" />
+              )}
+              {isScanning ? 'Escaneando' : 'Escanear ahora'}
+            </button>
+          )}
         </div>
-        {showManualTrigger && (
-          <button
-            onClick={triggerScan}
-            disabled={triggering || summary?.isScanning}
-            className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-          >
-            {triggering || summary?.isScanning ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <RefreshCw className="w-3.5 h-3.5" />
-            )}
-            {triggering || summary?.isScanning ? 'Escaneando...' : 'Escanear ahora'}
-          </button>
+
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 border border-white shadow-sm">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Database className="w-3 h-3 text-violet-600" />
+              <p className="text-[10px] text-gray-500 uppercase font-semibold">Productos activos</p>
+            </div>
+            <p className="text-2xl font-black text-gray-900">{totalProducts}</p>
+          </div>
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 border border-white shadow-sm">
+            <div className="flex items-center gap-1.5 mb-1">
+              <TrendingUp className="w-3 h-3 text-emerald-600" />
+              <p className="text-[10px] text-gray-500 uppercase font-semibold">Valor estimado</p>
+            </div>
+            <p className="text-2xl font-black text-emerald-600">${totalValue.toFixed(0)}</p>
+          </div>
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 border border-white shadow-sm">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Clock className="w-3 h-3 text-amber-600" />
+              <p className="text-[10px] text-gray-500 uppercase font-semibold">Último escaneo</p>
+            </div>
+            <p className="text-sm font-bold text-gray-700">{lastScan}</p>
+          </div>
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 border border-white shadow-sm">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Activity className="w-3 h-3 text-violet-600" />
+              <p className="text-[10px] text-gray-500 uppercase font-semibold">Próximo auto</p>
+            </div>
+            <p className="text-sm font-bold text-violet-600">{nextScan}</p>
+          </div>
+        </div>
+
+        <div className="text-[10px] text-gray-500 border-t border-indigo-100 pt-3 flex items-center gap-1.5">
+          <Zap className="w-3 h-3 text-amber-500" />
+          Auto-escaneo diario a las <strong className="text-gray-700">06:30 UTC</strong> vía Vercel Cron
+        </div>
+
+        {lastResult && (
+          <div className={`mt-3 text-xs flex items-center gap-1.5 p-2.5 rounded-lg ${lastResult.ok ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}>
+            {lastResult.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+            {lastResult.msg}
+          </div>
+        )}
+
+        {error && (
+          <div className="mt-3 text-xs text-rose-600 bg-rose-50 p-2.5 rounded-lg flex items-center gap-1.5 border border-rose-200">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            {error}
+          </div>
         )}
       </div>
-
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-gray-50 rounded-lg p-3">
-          <p className="text-[10px] text-gray-500 uppercase font-semibold">Productos activos</p>
-          <p className="text-xl font-black text-gray-900">{summary?.totalGames ?? 0}</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-3">
-          <p className="text-[10px] text-gray-500 uppercase font-semibold">Valor estimado</p>
-          <p className="text-xl font-black text-emerald-600">${(summary?.estimatedValue ?? 0).toFixed(0)}</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-3">
-          <p className="text-[10px] text-gray-500 uppercase font-semibold">Último escaneo</p>
-          <p className="text-xs font-bold text-gray-700">{timeAgo(summary?.lastScanAt ?? null)}</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-3">
-          <p className="text-[10px] text-gray-500 uppercase font-semibold">Próximo auto</p>
-          <p className="text-xs font-bold text-violet-600">{nextScanIn()}</p>
-        </div>
-      </div>
-
-      <div className="text-[10px] text-gray-500 border-t pt-3">
-        <Zap className="w-3 h-3 inline mr-1 text-amber-500" />
-        Cron configurado cada <strong>6 horas</strong> (00:00, 06:00, 12:00, 18:00 UTC) vía Vercel Cron.
-      </div>
-
-      {lastResult && (
-        <div className={`mt-3 text-xs flex items-center gap-1.5 p-2 rounded ${lastResult.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
-          {lastResult.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
-          {lastResult.msg}
-        </div>
-      )}
-
-      {error && (
-        <div className="mt-3 text-xs text-rose-600 bg-rose-50 p-2 rounded flex items-center gap-1.5">
-          <AlertTriangle className="w-3.5 h-3.5" />
-          {error}
-        </div>
-      )}
     </div>
   );
 }

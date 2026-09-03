@@ -537,6 +537,166 @@ export const SEED_GAMES: ScannedGame[] = [
     platform: ['PC', 'PlayStation', 'Xbox'], deliveryType: 'claim-link', rating: 5,
     tags: ['hero-shooter', 'marvel', 'multiplayer', 'free-to-play', 'gratis'],
     claimInstructions: '1. Descarga Steam\n2. Busca Marvel Rivals (gratis)\n3. Instala (~50GB)\n4. Juega - gratuito' }),
+
+  /* ══════════════════════════════════════════════════════════════
+     SOFTWARE 100% GRATIS en Steam (F2P verificado, is_free=true)
+     Verificado via Steam API appdetails?appids=ID
+     ══════════════════════════════════════════════════════════════ */
+  makeGame({ id: 'free-sw-obs', title: 'OBS Studio', source: 'software', originalPrice: 0, genre: 'Streaming Software',
+    description: 'Software gratuito y open source para grabacion de video y streaming en vivo. El estandar de la industria para Twitch, YouTube y Facebook Live. Multiplataforma (Windows, Mac, Linux).',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1905180/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/1905180',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 5,
+    tags: ['software', 'streaming', 'recording', 'free-to-play', 'open-source', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca OBS Studio (gratis)\n3. Click "Install" - gratuito\n4. Configura escenas y empieza a streamear' }),
+
+  makeGame({ id: 'free-sw-blender', title: 'Blender 3D', source: 'software', originalPrice: 0, genre: '3D Modeling',
+    description: 'Suite 3D gratuita y open source. Modelado, animacion, simulacion, renderizado, composicion, tracking, edicion de video y creacion de juegos. Usado por profesionales en cine, TV y videojuegos.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/365670/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/365670',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['software', '3d-modeling', 'animation', 'rendering', 'free-to-play', 'open-source', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca Blender 3D (gratis)\n3. Click Install - gratuito\n4. Alternativamente descarga de blender.org' }),
+
+  makeGame({ id: 'free-sw-sharex', title: 'ShareX', source: 'software', originalPrice: 0, genre: 'Screenshot Tool',
+    description: 'Programa gratuito y open source para capturar o grabar areas seleccionadas de la pantalla. Sube automaticamente a imgur, YouTube, Dropbox, Google Drive, etc. Anotaciones, efectos y OCR incluidos.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/400040/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/400040',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 5,
+    tags: ['software', 'screenshot', 'screen-recording', 'free-to-play', 'open-source', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca ShareX (gratis)\n3. Click Install - gratuito\n4. Configura teclas rapidas y destinos de subida' }),
+
+  makeGame({ id: 'free-sw-steamvr', title: 'SteamVR', source: 'software', originalPrice: 0, genre: 'VR Runtime',
+    description: 'Plataforma VR de Steam. Acceso a juegos VR usando HTC Vive, Oculus Rift, Windows Mixed Reality y Valve Index. Required para jugar cualquier titulo VR en Steam.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/250820/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/250820',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', 'vr', 'runtime', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca SteamVR (gratis)\n3. Click Install - gratuito\n4. Conecta tu headset VR y juega' }),
+
+  makeGame({ id: 'free-sw-vtube', title: 'VTube Studio', source: 'software', originalPrice: 0, genre: 'VTuber Software',
+    description: 'Todo lo que necesitas para ser un VTuber Live2D. Animaciones innovadoras, efectos, integracion con Twitch y YouTube. Free-to-use con marcas de agua opcionales.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1325860/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/1325860',
+    platform: ['PC', 'Mac'], deliveryType: 'claim-link', rating: 5,
+    tags: ['software', 'vtuber', 'streaming', 'live2d', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca VTube Studio (gratis)\n3. Install - gratuito\n4. Carga tu modelo Live2D y empieza' }),
+
+  makeGame({ id: 'free-sw-animaze', title: 'Animaze by FaceRig', source: 'software', originalPrice: 0, genre: 'Avatar Streaming',
+    description: 'Stream, chat o crea videos con avatares 2D y 3D world-class. Usa uno de los avatares incluidos o crea el tuyo. Tracking facial avanzado con webcam.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1364390/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/1364390',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', 'avatar', 'streaming', 'facetracking', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca Animaze by FaceRig (gratis)\n3. Install - gratuito\n4. Calibra tu webcam y empieza' }),
+
+  makeGame({ id: 'free-sw-vroid', title: 'VRoid Studio', source: 'software', originalPrice: 0, genre: '3D Character Creator',
+    description: 'Software de creacion de personajes 3D desarrollado por Pixiv para crear avatares VR y VTubers. Edita cabello, ropa, accesorios. Exporta a VRChat y otras plataformas.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1486350/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/1486350',
+    platform: ['PC', 'Mac'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', '3d-character', 'vrchat', 'vtuber', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca VRoid Studio (gratis)\n3. Install - gratuito\n4. Crea tu avatar y exportalo a VRChat' }),
+
+  makeGame({ id: 'free-sw-ivry', title: 'iVRy Driver for SteamVR', source: 'software', originalPrice: 0, genre: 'VR Driver',
+    description: 'Usa tu iPhone, Android, GearVR, Oculus, Vive Wave, Pico Mobile o Sony PlayStationVR como headset VR para SteamVR. Convierte tu telefono en un VR headset.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/992490/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/992490',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', 'vr', 'driver', 'mobile-vr', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca iVRy Driver for SteamVR (gratis)\n3. Install - gratuito\n4. Conecta tu movil via USB/WiFi' }),
+
+  makeGame({ id: 'free-sw-reality-blender', title: 'Reality Blender', source: 'software', originalPrice: 0, genre: 'VR Overlay',
+    description: 'Permite ver tu entorno real como overlay 2D dentro del headset VR. Util para mixed reality y no perder el entorno mientras estas en VR.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/844060/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/844060',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', 'vr', 'mixed-reality', 'overlay', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca Reality Blender (gratis)\n3. Install - gratuito\n4. Activa desde SteamVR' }),
+
+  makeGame({ id: 'free-sw-marmoset-tb3', title: 'Marmoset Toolbag 3 - Portfolio Renders', source: 'software', originalPrice: 0, genre: '3D Rendering Tutorial',
+    description: 'Tutorial gratuito para 3D Artists. Aprende a configurar escenas para renders de portfolio con Marmoset Toolbag 3. Ideal para artistas 3D y game developers.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/688340/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/688340',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', '3d-rendering', 'tutorial', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Descarga Steam\n2. Busca Marmoset Toolbag 3 (tutorial gratis)\n3. Install - gratuito' }),
+
+  makeGame({ id: 'free-sw-we-editor', title: 'Wallpaper Engine - Editor Extensions', source: 'software', originalPrice: 0, genre: 'Wallpaper Editor DLC',
+    description: 'Extension DLC gratuita para Wallpaper Engine que agrega funciones avanzadas de edicion. Requiere Wallpaper Engine base (pago). Crea wallpapers animados con mas opciones.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1790230/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/1790230',
+    platform: ['PC'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', 'wallpaper-engine', 'dlc', 'editor', 'free-to-play', 'gratis'],
+    claimInstructions: '1. Necesitas Wallpaper Engine (pago) instalado\n2. Descarga Steam\n3. Busca Wallpaper Engine Editor Extensions (gratis)\n4. Install DLC gratis' }),
+
+  /* ══════════════════════════════════════════════════════════════
+     SOFTWARE PAGO en Steam (vendemos $1-$5 con descuento)
+     Verificado via Steam API - originalPrice real
+     ══════════════════════════════════════════════════════════════ */
+  makeGame({ id: 'sw-krita', title: 'Krita', source: 'software', originalPrice: 9.99, genre: 'Digital Painting',
+    description: 'Herramienta de arte digital potente, open source y community-driven. Para ilustracion, concept art, comics y textura 3D. Soporta HDR, CMYK, PSD y mas.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/280680/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/280680',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'key', rating: 5,
+    tags: ['software', 'digital-painting', 'illustration', 'open-source', 'art'] }),
+
+  makeGame({ id: 'sw-wallpaper-engine', title: 'Wallpaper Engine', source: 'software', originalPrice: 4.99, genre: 'Desktop Wallpaper',
+    description: 'Usa wallpapers animados en tu desktop. Anima tus propias imagenes para crear wallpapers personalizados. Soporta video, audio, sitios web, aplicacion de efectos.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/431960/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/431960',
+    platform: ['PC'], deliveryType: 'key', rating: 5,
+    tags: ['software', 'wallpaper', 'desktop', 'customization', 'animation'] }),
+
+  makeGame({ id: 'sw-soundpad', title: 'Soundpad', source: 'software', originalPrice: 4.99, genre: 'Audio Utility',
+    description: 'Reproduce sonidos en chats de voz con alta calidad digital. Agrega sonidos o musica a tu voz durante llamadas Discord, Teamspeak, Steam Voice, etc.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/629520/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/629520',
+    platform: ['PC'], deliveryType: 'key', rating: 5,
+    tags: ['software', 'audio', 'voice-chat', 'utility', 'discord'] }),
+
+  makeGame({ id: 'sw-borderless', title: 'Borderless Gaming', source: 'software', originalPrice: 6.99, genre: 'Window Utility',
+    description: 'Juega en modo borderless full-screen sin perder alt-tab. Solucion al problema de juegos que no soportan modo ventana sin bordes. Excelente para multimonitor.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/388080/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/388080',
+    platform: ['PC'], deliveryType: 'key', rating: 4,
+    tags: ['software', 'gaming-utility', 'window', 'fullscreen', 'multimonitor'] }),
+
+  makeGame({ id: 'sw-pixelorama', title: 'Pixelorama', source: 'software', originalPrice: 9.99, genre: 'Pixel Art Tool',
+    description: 'Potente y accesible herramienta de pixel art open source. Crea sprites, animaciones y arte para videojuegos. Multiplataforma con Godot Engine.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/2779170/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/2779170',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'key', rating: 4,
+    tags: ['software', 'pixel-art', 'sprite', 'animation', 'open-source'] }),
+
+  makeGame({ id: 'sw-aseprite', title: 'Aseprite', source: 'software', originalPrice: 19.99, genre: 'Pixel Art Animation',
+    description: 'Herramienta de pixel art para crear animaciones 2D, sprites y cualquier tipo de grafico de juegos. El estandar de la industria para pixel art profesional.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/431730/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/431730',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'key', rating: 5,
+    tags: ['software', 'pixel-art', 'animation', 'sprite', 'indie'] }),
+
+  makeGame({ id: 'sw-hexels', title: 'Marmoset Hexels 3', source: 'software', originalPrice: 19.00, genre: 'Pixel Vector Art',
+    description: 'Herramienta de pintura grid-based para vector art, pixel art, diseno y animacion. Transforma pixeles en obras de arte vectoriales con facilidad.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/428340/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/428340',
+    platform: ['PC', 'Mac'], deliveryType: 'key', rating: 4,
+    tags: ['software', 'pixel-art', 'vector', 'art', 'design'] }),
+
+  makeGame({ id: 'sw-3dcoat', title: '3DCoat Modding Tool', source: 'software', originalPrice: 29.99, genre: '3D Modeling',
+    description: 'Edicion basica de 3DCoat disenada para modding de items in-game (armas, escudos, etc.). Voxel sculpting, retopologia, PBR texturing en una sola herramienta.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/776920/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/776920',
+    platform: ['PC'], deliveryType: 'key', rating: 4,
+    tags: ['software', '3d-modeling', 'modding', 'voxel', 'sculpting'] }),
+
+  makeGame({ id: 'sw-steamvr-monitor', title: 'SteamVR Device Monitor', source: 'software', originalPrice: 9.99, genre: 'VR Utility',
+    description: 'Disenado para VR business y entretenimiento (Home y Location-Based VR). Monitorea el estado de dispositivos VR en tiempo real. Util para salas VR comerciales.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1176510/capsule_616x353.jpg',
+    steamUrl: 'https://store.steampowered.com/app/1176510',
+    platform: ['PC'], deliveryType: 'key', rating: 3,
+    tags: ['software', 'vr', 'monitoring', 'business', 'utility'] }),
+
 ];
 
 /** Estadisticas de la base de datos verificada */
