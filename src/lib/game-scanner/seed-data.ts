@@ -47,14 +47,14 @@ function makeGame(opts: {
     deliveryType,
     platform: platforms,
     genre: [opts.genre],
-    claimUrl: opts.steamUrl || source === 'epic-games' ? 'https://store.epicgames.com/en-US/free-games' :
+    claimUrl: opts.steamUrl || (source === 'epic-games' ? 'https://store.epicgames.com/en-US/free-games' :
               source === 'prime-gaming' ? 'https://gaming.amazon.com/home' :
               source === 'gog' ? 'https://www.gog.com/en/games?price=free' :
               source === 'humble' ? 'https://www.humblebundle.com/store/free' :
               source === 'indiegala' ? 'https://www.indiegala.com/giveaways' :
               source === 'fanatical' ? 'https://www.fanatical.com/en/free' :
               source === 'software' ? 'https://giveawayoftheday.com/' :
-              'https://store.steampowered.com/genre/Free%20to%20Play/',
+              'https://store.steampowered.com/genre/Free%20to%20Play/'),
     claimInstructions: opts.claimInstructions || `Producto digital escaneado desde ${source === 'epic-games' ? 'Epic Games Store' : source === 'prime-gaming' ? 'Prime Gaming' : source === 'gog' ? 'GOG.com' : source === 'humble' ? 'Humble Bundle' : source === 'steam' ? 'Steam' : source}. Instrucciones de activacion incluidas tras la compra.`,
     stock: 0,
     unlimitedStock: true,
