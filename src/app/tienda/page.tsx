@@ -4,7 +4,7 @@ import { useStore } from '@/lib/store';
 import dynamic from 'next/dynamic';
 const CartDrawer = dynamic(() => import('@/components/store/CartDrawer').then(m => ({ default: m.CartDrawer })), { ssr: false });
 const AuthDialog = dynamic(() => import('@/components/auth/AuthDialog').then(m => ({ default: m.AuthDialog })), { ssr: false });
-const ProductDetail = dynamic(() => import('@/components/store/ProductDetail').then(m => ({ default: m.ProductDetail })), { ssr: false });
+const ProductDetail = dynamic(() => import('@/components/store/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })), { ssr: false });
 const ScannerStatus = dynamic(() => import('@/components/store/ScannerStatus').then(m => ({ default: m.ScannerStatus })), { ssr: false });
 import {
   ShoppingCart, Search, Zap, Shield, LogIn, Menu, ArrowRight,
