@@ -8,11 +8,15 @@ export async function GET(request: Request) {
   const sort = searchParams.get('sort') || 'popular';
   const source = searchParams.get('source') || '';
 
-  let products = getScannedGamesAsProducts().map(p => ({
-    ...p,
-    // Garantizar política DigiStore: $1.00 - $5.00
-    price: calcDigiStorePrice(p.originalPrice && p.originalPrice > 0 ? p.originalPrice : 0),
-  }));
+  // /api/products SOLO devuelve productos que VENDEMOS (originalPrice > 0).
+  // Los productos F2P (originalPrice = 0) son regalados en /juegos-gratis, no se venden.
+  let products = getScannedGamesAsProducts()
+    .filter(p => (p.originalPrice ?? 0) > 0) // excluir free
+    .map(p => ({
+      ...p,
+      // Garantizar política DigiStore: $1.00 - $5.00
+      price: calcDigiStorePrice(p.originalPrice && p.originalPrice > 0 ? p.originalPrice : 0),
+    }));
 
   if (source) {
     products = products.filter(p => p.subcategory?.toLowerCase().includes(source.toLowerCase()));

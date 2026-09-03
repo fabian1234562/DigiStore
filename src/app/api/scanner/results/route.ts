@@ -16,6 +16,8 @@ export async function GET(request: Request) {
   const source = url.searchParams.get('source') as GameSource | null;
   const query = url.searchParams.get('q');
   const asProducts = url.searchParams.get('products') === 'true';
+  // Filtro de tipo: 'paid' (vendemos $1-$5), 'free' (regalamos), 'all' (default)
+  const filter = url.searchParams.get('filter') || 'all';
 
   try {
     let games;
@@ -28,10 +30,21 @@ export async function GET(request: Request) {
       games = gameScanner.getActiveGames();
     }
 
+    // Aplicar filtro paid/free
+    if (filter === 'paid') {
+      // Productos que VENDEMOS: tienen originalPrice > 0
+      games = games.filter(g => g.originalPrice > 0);
+    } else if (filter === 'free') {
+      // Productos que REGALAMOS: tienen originalPrice = 0 (F2P)
+      games = games.filter(g => !g.originalPrice || g.originalPrice === 0);
+    }
+
     // Aplicar política de precios DigiStore ($1.00 - $5.00) a TODO el catálogo
     games = games.map(g => ({
       ...g,
-      sellPrice: calcDigiStorePrice(g.originalPrice > 0 ? g.originalPrice : 0),
+      sellPrice: g.originalPrice > 0
+        ? calcDigiStorePrice(g.originalPrice)
+        : 0, // F2P = $0
     }));
 
     if (asProducts) {

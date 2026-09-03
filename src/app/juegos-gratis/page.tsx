@@ -280,7 +280,9 @@ export default function JuegosGratisPage() {
 
   const loadGames = useCallback(async () => {
     try {
-      const res = await fetch('/api/scanner/results');
+      // SOLO productos 100% GRATIS (filter=free, originalPrice = 0).
+      // Los pagos van a /tienda, NO se mezclan.
+      const res = await fetch('/api/scanner/results?filter=free');
       const data = await res.json();
       if (data.success) {
         setGames(data.games);

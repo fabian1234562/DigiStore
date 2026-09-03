@@ -108,7 +108,6 @@ function StoreCard({ game }: { game: GameProduct }) {
         {discount > 0 && (
           <span className="absolute top-2.5 left-2.5 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg">-{discount}%</span>
         )}
-        <span className="absolute top-2.5 right-2.5 bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg">GRATIS</span>
         {/* Hover overlay with eye icon */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
@@ -201,7 +200,8 @@ export default function TiendaPage() {
 
   const loadGames = useCallback(async () => {
     try {
-      const res = await fetch('/api/scanner/results?products=true');
+      // SOLO productos que VENDEMOS (filter=paid). Los gratis van a /juegos-gratis.
+      const res = await fetch('/api/scanner/results?products=true&filter=paid');
       const data = await res.json();
       if (data.success) {
         // Normalizar precios al rango $1-$5
