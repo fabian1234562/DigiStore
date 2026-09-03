@@ -19,9 +19,9 @@
   <text x="308" y="240" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="white" text-anchor="middle">Ollama</text>
   
   <text x="308" y="305" font-family="Inter, sans-serif" font-size="14" fill="rgba(255,255,255,0.85)" text-anchor="middle" font-weight="500">IA Chat Local</text>
-  <text x="308" y="328" font-family="Inter, sans-serif" font-size="12" fill="rgba(255,255,255,0.7)" text-anchor="middle">⭐ 180K★ · $3.99</text>
+  <text x="308" y="328" font-family="Inter, sans-serif" font-size="12" fill="rgba(255,255,255,0.7)" text-anchor="middle">⭐ 180K★ · $5.00</text>
   <rect x="20" y="20" width="105" height="22" rx="11" fill="#10b981"/>
   <text x="72" y="35" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="white" text-anchor="middle">OPEN SOURCE</text>
   <rect x="520" y="20" width="76" height="22" rx="11" fill="white" opacity="0.9"/>
-  <text x="558" y="35" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">$3.99</text>
+  <text x="558" y="35" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">$5.00</text>
 </svg>
