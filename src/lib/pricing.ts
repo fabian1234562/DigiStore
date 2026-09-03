@@ -22,7 +22,7 @@
 export const MIN_PRICE = 1;
 export const MAX_PRICE = 5;
 export const PRICE_TIERS = [
-  { minOriginal: 50, sellPrice: 4.99, label: 'Premium AAA' },
+  { minOriginal: 50, sellPrice: 5.00, label: 'Premium AAA / IA / Security' },
   { minOriginal: 20, sellPrice: 3.99, label: 'AA / Mid' },
   { minOriginal: 10, sellPrice: 2.99, label: 'Indie / Buen precio' },
   { minOriginal: 5,  sellPrice: 1.99, label: 'Barato' },
