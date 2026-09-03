@@ -10,23 +10,14 @@
   </defs>
   <rect width="616" height="353" fill="url(#bg)"/>
   <rect width="616" height="353" fill="url(#p)"/>
-  <!-- Pattern diagonal -->
-  <rect width="616" height="353" fill="rgba(255,255,255,0.04)" style="background:repeating-linear-gradient(45deg,transparent,transparent 20px,white 20px,white 21px)"/>
-  <!-- Glow central -->
   <circle cx="308" cy="140" r="120" fill="rgba(255,255,255,0.1)"/>
-  <!-- App icon big (emoji-style) -->
-  <text x="308" y="160" font-size="100" text-anchor="middle">💻</text>
-  <!-- App name -->
-  <text x="308" y="230" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="white" text-anchor="middle">VS Code sin</text>
-  <text x="308" y="260" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="white" text-anchor="middle">telemetría</text>
-  <!-- Categoria abajo -->
-  <text x="308" y="310" font-family="Inter, sans-serif" font-size="14" fill="rgba(255,255,255,0.7)" text-anchor="middle" font-weight="500">Editor de código</text>
-  <!-- Badge Open Source -->
+  <text x="308" y="160" font-size="100" text-anchor="middle">🌿</text>
+  <text x="308" y="240" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="white" text-anchor="middle">SiYuan</text>
+  
+  <text x="308" y="305" font-family="Inter, sans-serif" font-size="14" fill="rgba(255,255,255,0.85)" text-anchor="middle" font-weight="500">Editor de texto</text>
+  <text x="308" y="328" font-family="Inter, sans-serif" font-size="12" fill="rgba(255,255,255,0.7)" text-anchor="middle">⭐ 46K★ · Open Source</text>
   <rect x="20" y="20" width="105" height="22" rx="11" fill="#10b981"/>
   <text x="72" y="35" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="white" text-anchor="middle">OPEN SOURCE</text>
-  <!-- Badge Free -->
   <rect x="540" y="20" width="56" height="22" rx="11" fill="white" opacity="0.9"/>
   <text x="568" y="35" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#059669" text-anchor="middle">FREE</text>
-  <!-- DigiStore watermark -->
-  <text x="308" y="335" font-family="Inter, sans-serif" font-size="10" fill="rgba(255,255,255,0.4)" text-anchor="middle">DigiStore · 100% Legal</text>
 </svg>
