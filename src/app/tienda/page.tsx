@@ -52,21 +52,34 @@ const JUEGOS_CATEGORIES = [
   { id: 'Steam', name: 'Steam', icon: Gamepad2 },
 ];
 
-// Categorías de software (basadas en genre real)
+// Categorías de software (las MÁS VIRALES primero)
 const SOFTWARE_CATEGORIES = [
   { id: 'all', name: 'Todos', icon: Shield },
-  { id: 'Antivirus', name: 'Antivirus', icon: Shield },
-  { id: 'VPN', name: 'VPN', icon: Lock },
-  { id: 'Utilidad', name: 'Utilidades PC', icon: Wrench },
-  { id: 'Backup', name: 'Backup', icon: Save },
-  { id: 'Privacidad', name: 'Privacidad', icon: Lock },
-  { id: 'Pixel Art Animation', name: 'Pixel Art', icon: Palette },
-  { id: 'Digital Painting', name: 'Pintura Digital', icon: Palette },
-  { id: 'Desktop Wallpaper', name: 'Wallpapers', icon: Sparkles },
-  { id: 'Audio Utility', name: 'Audio', icon: Video },
-  { id: '3D Modeling', name: '3D Modeling', icon: Cpu },
-  { id: 'Window Utility', name: 'Ventanas', icon: Wrench },
-  { id: 'VR Utility', name: 'VR', icon: HardDrive },
+  // IA - lo más viral primero
+  { id: 'IA Clonación de Voz', name: '🎤 IA Voz', icon: Cpu },
+  { id: 'IA Face Swap', name: '👤 IA Face Swap', icon: Cpu },
+  { id: 'IA Generación de Video', name: '🎬 IA Video', icon: Video },
+  { id: 'IA Generación de Imagen', name: '🎨 IA Imagen', icon: Palette },
+  { id: 'IA Texto a Voz', name: '🗣 IA TTS', icon: Cpu },
+  { id: 'IA Chat Local', name: '🤖 IA Chat', icon: Cpu },
+  { id: 'IA Transcripción', name: '📝 IA Transcripción', icon: Cpu },
+  { id: 'IA Lip Sync', name: '👄 IA Lip Sync', icon: Cpu },
+  // Hackeo ético - segundo más viral
+  { id: 'Hackeo Ético', name: '🛡 Hackeo Ético', icon: Shield },
+  // Software tradicional
+  { id: 'Antivirus', name: '🛡 Antivirus', icon: Shield },
+  { id: 'VPN', name: '🔐 VPN', icon: Lock },
+  { id: 'Utilidad', name: '🔧 Utilidades', icon: Wrench },
+  { id: 'Backup', name: '💾 Backup', icon: Save },
+  { id: 'Privacidad', name: '🔒 Privacidad', icon: Lock },
+  { id: 'Editor de código', name: '💻 Código', icon: Cpu },
+  { id: 'Edición de video', name: '🎬 Video', icon: Video },
+  { id: 'Edición de audio', name: '🎵 Audio', icon: Video },
+  { id: 'Edición de imagen', name: '🎨 Imagen', icon: Palette },
+  { id: 'Ofimática', name: '📊 Ofimática', icon: Save },
+  { id: '3D Modeling', name: '🧊 3D', icon: Cpu },
+  { id: 'Reproductor multimedia', name: '▶ Player', icon: Video },
+  { id: 'Navegador web', name: '🌐 Browser', icon: Wifi },
 ];
 
 function StoreHeader() {
@@ -271,17 +284,32 @@ export default function TiendaPage() {
     .filter(g => activeCategory === 'all' || g.subcategory === activeCategory)
     .filter(g => !search || g.name.toLowerCase().includes(search.toLowerCase()) || g.description.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
+      // Por defecto: ordenar por popularidad (rating * 1000 + sold)
+      if (sortBy === 'popular' || sortBy === 'default') {
+        const scoreA = (a.rating || 0) * 1000 + (a.sold || 0);
+        const scoreB = (b.rating || 0) * 1000 + (b.sold || 0);
+        return scoreB - scoreA;
+      }
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
       if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
-      if (sortBy === 'popular') return (b.sold || 0) - (a.sold || 0);
       return 0;
     });
 
-  // Recomendaciones (solo de los productos del tab actual)
-  const topSelling = useMemo(() => [...currentProducts].sort((a, b) => (b.sold || 0) - (a.sold || 0)).slice(0, 12), [currentProducts]);
-  const topRated = useMemo(() => [...currentProducts].filter(g => (g.rating || 0) >= 4).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 12), [currentProducts]);
-  const expiringSoon = useMemo(() => currentProducts.filter(g => g.featured).slice(0, 12), [currentProducts]);
+  // Recomendaciones (solo de los productos del tab actual) - ordenadas por popularidad real
+  const topSelling = useMemo(() => 
+    [...currentProducts]
+      .sort((a, b) => ((b.rating || 0) * 1000 + (b.sold || 0)) - ((a.rating || 0) * 1000 + (a.sold || 0)))
+      .slice(0, 12), [currentProducts]);
+  const topRated = useMemo(() => 
+    [...currentProducts]
+      .filter(g => (g.rating || 0) >= 4)
+      .sort((a, b) => ((b.rating || 0) * 1000 + (b.sold || 0)) - ((a.rating || 0) * 1000 + (a.sold || 0)))
+      .slice(0, 12), [currentProducts]);
+  const expiringSoon = useMemo(() => 
+    currentProducts.filter(g => g.featured)
+      .sort((a, b) => (b.originalPrice || 0) - (a.originalPrice || 0))
+      .slice(0, 12), [currentProducts]);
 
   const hasActiveSearch = search || activeCategory !== 'all' || sortBy !== 'popular' || mainTab !== 'all';
 
@@ -365,24 +393,16 @@ export default function TiendaPage() {
         </div>
       </div>
 
-      {/* ═══ RECOMENDACIONES — solo cuando no hay búsqueda activa ═══ */}
+      {/* ═══ RECOMENDACIONES — productos más virales primero ═══ */}
       {!hasActiveSearch && !loading && (
         <>
           <RecommendationSection
-            games={expiringSoon}
-            title="🔥 Ofertas por Tiempo Limitado"
-            subtitle="Productos que expiran pronto — último chance"
-            icon={Flame}
-            filterFn={(g) => g.featured}
-            accentColor="rose"
-          />
-          <RecommendationSection
             games={topSelling}
-            title="🏆 Más Vendidos"
-            subtitle="Los favoritos de la comunidad DigiStore"
-            icon={TrendingUp}
+            title="🔥 Más Populares"
+            subtitle="Los productos más vendidos y virales de DigiStore"
+            icon={Flame}
             filterFn={() => true}
-            accentColor="amber"
+            accentColor="rose"
           />
           <RecommendationSection
             games={topRated}
@@ -391,6 +411,14 @@ export default function TiendaPage() {
             icon={Star}
             filterFn={(g) => (g.rating || 0) >= 4}
             accentColor="violet"
+          />
+          <RecommendationSection
+            games={expiringSoon}
+            title="💎 Mayor Valor"
+            subtitle="Productos con mayor valor original"
+            icon={TrendingUp}
+            filterFn={(g) => g.featured}
+            accentColor="amber"
           />
         </>
       )}
