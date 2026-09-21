@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import {
   ShoppingCart, LogIn, Menu, X, Gamepad2, Zap, Gift, Tag, Download,
+  ShieldCheck,
 } from 'lucide-react';
 
 /**
@@ -15,12 +16,13 @@ import {
  * 1. Inicio (violet)
  * 2. Juegos Gratis (emerald) - F2P
  * 3. Apps Open Source (blue) - software libre
- * 4. Tienda (rose/amber) - productos pagos $1-$5
+ * 4. Security (fuchsia) - cybersecurity open source
+ * 5. Tienda (rose/amber) - productos pagos $1-$5
  */
 
 interface SharedHeaderProps {
-  /** 'home' resalta Inicio, 'free' resalta Juegos Gratis, 'apps' resalta Apps Open Source, 'store' resalta Tienda */
-  activePage?: 'home' | 'free' | 'apps' | 'store';
+  /** 'home' resalta Inicio, 'free' resalta Juegos Gratis, 'apps' resalta Apps Open Source, 'security' resalta Security, 'store' resalta Tienda */
+  activePage?: 'home' | 'free' | 'apps' | 'security' | 'store';
 }
 
 export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
@@ -124,6 +126,18 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
               <Download className="w-3.5 h-3.5" />
               Apps
               <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">33</span>
+            </Link>
+            <Link
+              href="/security"
+              className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 ${
+                activePage === 'security'
+                  ? 'text-fuchsia-700 bg-fuchsia-50 font-semibold'
+                  : 'text-gray-700 hover:text-fuchsia-700 hover:bg-fuchsia-50'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Security
+              <span className="bg-fuchsia-100 text-fuchsia-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">NEW</span>
             </Link>
             <Link
               href="/tienda"
@@ -240,6 +254,23 @@ export function SharedHeader({ activePage = 'home' }: SharedHeaderProps) {
                 Apps Open Source
                 <span className="ml-auto bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                   33
+                </span>
+              </Link>
+              <Link
+                href="/security"
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors ${
+                  activePage === 'security'
+                    ? 'bg-fuchsia-50 text-fuchsia-700'
+                    : 'text-gray-700 hover:bg-fuchsia-50 hover:text-fuchsia-700'
+                }`}
+                onClick={() => setMobileMenu(false)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-fuchsia-100 flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4 text-fuchsia-600" />
+                </div>
+                Security
+                <span className="ml-auto bg-fuchsia-100 text-fuchsia-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  NEW
                 </span>
               </Link>
               <Link
