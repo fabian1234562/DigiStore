@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Star, GitFork, Calendar, ExternalLink, BookOpen } from 'lucide-react';
+import { useState, useMemo, useCallback } from 'react';
+import {
+  Star, GitFork, Calendar, ExternalLink, BookOpen,
+  Download, Loader2, CheckCircle2, Package, AlertTriangle,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SecurityProject } from '@/app/api/security/search/route';
 
@@ -105,10 +108,60 @@ function timeAgo(dateStr: string): string {
   return `hace ${Math.floor(days / 365)}a`;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   LICENSE STATUS — best-effort detection from license name string.
+   The server uses the authoritative SPDX key in /api/security/analyze.
+   ══════════════════════════════════════════════════════════════ */
+interface LicenseBadge {
+  emoji: string;
+  label: string;
+  className: string;
+}
+
+function detectLicenseBadge(licenseName: string | null): LicenseBadge {
+  if (!licenseName) {
+    return {
+      emoji: '🔴',
+      label: 'Sin licencia',
+      className: 'bg-red-950/70 text-red-300 border-red-800',
+    };
+  }
+  const n = licenseName.toLowerCase();
+
+  // Permissive
+  if (
+    /^(\bmit\b|apache|bsd|isc|unlicense|0bsd|cc0|zlib|boost|wtfpl|gpl|gnu general public)/.test(
+      n,
+    ) ||
+    n.includes('gnu general public license') ||
+    n === 'gpl-2.0' ||
+    n === 'gpl-3.0'
+  ) {
+    return {
+      emoji: '🟢',
+      label: 'Redistribuible',
+      className: 'bg-emerald-950/70 text-emerald-300 border-emerald-800',
+    };
+  }
+  // Review
+  if (/lgpl|mpl|agpl|epl|cddl|eupl|cc-by|cc by|artistic|polyform/.test(n)) {
+    return {
+      emoji: '🟡',
+      label: 'Revisar',
+      className: 'bg-amber-950/70 text-amber-300 border-amber-800',
+    };
+  }
+  // Unknown / forbidden
+  return {
+    emoji: '🔴',
+    label: 'No distribuir',
+    className: 'bg-red-950/70 text-red-300 border-red-800',
+  };
+}
+
 /**
  * Genera un SVG data URL PREMIUM como fallback visual.
  * Diseño: gradiente + grid + glow + icono de escudo/candado + nombre grande.
- * Inspirado en tarjetas de productos tech modernos.
  */
 function generateFallbackSvg(project: SecurityProject): string {
   const initials = project.name
@@ -119,7 +172,6 @@ function generateFallbackSvg(project: SecurityProject): string {
     .map((w) => w.charAt(0).toUpperCase())
     .join('');
 
-  // Color base derivado del nombre (hash → hue)
   const hash = project.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const hue = hash % 360;
   const bg1 = `hsl(${hue}, 70%, 20%)`;
@@ -127,7 +179,6 @@ function generateFallbackSvg(project: SecurityProject): string {
   const accent = `hsl(${hue}, 90%, 65%)`;
   const accentDim = `hsl(${hue}, 60%, 40%)`;
 
-  // Emoji según topic/categoría
   const topics = (project.topics || []).join(' ').toLowerCase();
   let emoji = '🛡';
   if (topics.includes('osint')) emoji = '🔍';
@@ -190,12 +241,22 @@ function generateFallbackSvg(project: SecurityProject): string {
 interface ProjectCardProps {
   project: SecurityProject;
   onOpen?: (project: SecurityProject) => void;
+  /** True if this project has been imported into the DigiStore catalog */
+  imported?: boolean;
+  /** Notifies parent when import status changes (so parent can refresh catalog) */
+  onImportedChange?: (repo: string, imported: boolean) => void;
 }
 
-export function ProjectCard({ project, onOpen }: ProjectCardProps) {
+type ImportState = 'idle' | 'loading' | 'success' | 'error';
+
+export function ProjectCard({ project, onOpen, imported = false, onImportedChange }: ProjectCardProps) {
   const [imgError, setImgError] = useState(false);
   const [ogError, setOgError] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
+
+  const [importState, setImportState] = useState<ImportState>('idle');
+  const [importMessage, setImportMessage] = useState<string>('');
+  const [localImported, setLocalImported] = useState<boolean>(imported);
 
   const activity = useMemo(
     () => getActivityStatus(project.lastUpdate, project.archived),
@@ -203,19 +264,17 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
   );
 
   const langColor = useMemo(() => getLanguageColor(project.language), [project.language]);
+  const licenseBadge = useMemo(() => detectLicenseBadge(project.license), [project.license]);
 
-  // Estrategia de imagen:
-  // 1. Open Graph image (preview del repo generado por GitHub)
-  // 2. Avatar del owner en tamaño grande
-  // 3. SVG premium generado (gradiente + emoji + stats)
   const ogUrl = project.ogImage || `https://opengraph.githubassets.com/1/${project.fullName}`;
   const avatarUrl = `${project.ownerAvatar}&s=600`;
   const fallbackSvg = useMemo(() => generateFallbackSvg(project), [project]);
 
-  // Determinar qué imagen mostrar
   const showOg = !ogError && !imgError;
   const showAvatar = ogError && !avatarError && !imgError;
   const showFallback = (ogError && avatarError) || imgError;
+
+  const isImported = localImported;
 
   const handleClick = () => {
     if (onOpen) onOpen(project);
@@ -227,6 +286,68 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
       handleClick();
     }
   };
+
+  /* ── Import handler ── */
+  const handleImport = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (importState === 'loading' || isImported) return;
+      setImportState('loading');
+      setImportMessage('');
+      try {
+        const res = await fetch('/api/security/import', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ repo: project.fullName }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setImportState('success');
+          setLocalImported(true);
+          setImportMessage(data.message || 'Importado correctamente.');
+          onImportedChange?.(project.fullName, true);
+        } else {
+          setImportState('error');
+          setImportMessage(data.error || data.detail || 'No se pudo importar.');
+        }
+      } catch (err) {
+        setImportState('error');
+        setImportMessage(err instanceof Error ? err.message : 'Error de red.');
+      }
+    },
+    [importState, isImported, project.fullName, onImportedChange],
+  );
+
+  /* ── Download handler — fetch the ZIP and trigger a browser download ── */
+  const handleDownload = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!isImported) return;
+      // Find the project id from the catalog API. Since the search ProjectCard
+      // only knows the repo slug, we look it up there.
+      try {
+        const catRes = await fetch(
+          `/api/security/catalog?q=${encodeURIComponent(project.fullName)}`,
+          { cache: 'no-store' },
+        );
+        const catData = await catRes.json();
+        const found = (catData.projects || []).find(
+          (p: { repo: string }) => p.repo === project.fullName.toLowerCase(),
+        );
+        if (!found) {
+          setImportMessage('Proyecto no encontrado en el catálogo.');
+          setImportState('error');
+          return;
+        }
+        // Trigger ZIP download via direct browser navigation
+        window.location.href = `/api/security/download/${found.id}`;
+      } catch (err) {
+        setImportMessage(err instanceof Error ? err.message : 'Error al descargar.');
+        setImportState('error');
+      }
+    },
+    [isImported, project.fullName],
+  );
 
   return (
     <article
@@ -243,7 +364,6 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
     >
       {/* Preview image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-gray-950">
-        {/* 1. Open Graph image (preview del repo) */}
         {showOg && (
           <img
             src={ogUrl}
@@ -256,7 +376,6 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
             onError={() => setOgError(true)}
           />
         )}
-        {/* 2. Avatar del owner (fallback) */}
         {showAvatar && (
           <img
             src={avatarUrl}
@@ -269,7 +388,6 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
             onError={() => setAvatarError(true)}
           />
         )}
-        {/* 3. SVG premium generado (último fallback) */}
         {showFallback && (
           <img
             src={fallbackSvg}
@@ -283,7 +401,7 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/30 to-transparent pointer-events-none" />
 
-        {/* Top badges */}
+        {/* Top badges: activity + license */}
         <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2 pointer-events-none">
           <span
             className={cn(
@@ -294,12 +412,34 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
             <span className={cn('w-1.5 h-1.5 rounded-full', activity.dot)} />
             {activity.label}
           </span>
-          {project.stars >= 10000 && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border bg-amber-500/20 text-amber-300 border-amber-500/40 backdrop-blur-md">
-              <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
-              Top
+          <div className="flex flex-col items-end gap-1">
+            {project.stars >= 10000 && (
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border bg-amber-500/20 text-amber-300 border-amber-500/40 backdrop-blur-md">
+                <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                Top
+              </span>
+            )}
+            {/* License badge */}
+            <span
+              title={`${project.license || 'Sin licencia'} — ${licenseBadge.label}`}
+              className={cn(
+                'inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md',
+                licenseBadge.className,
+              )}
+            >
+              <span aria-hidden="true">{licenseBadge.emoji}</span>
+              <span className="hidden sm:inline">{licenseBadge.label}</span>
             </span>
-          )}
+            {isImported && (
+              <span
+                title="Importado en DigiStore"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border bg-violet-500/30 text-violet-200 border-violet-400/50 backdrop-blur-md"
+              >
+                <Package className="w-2.5 h-2.5" />
+                Importado
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Author + language at bottom of image */}
@@ -366,6 +506,20 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
           )}
         </div>
 
+        {/* Import status / message */}
+        {importState === 'error' && importMessage && (
+          <div className="flex items-start gap-1.5 text-[10px] text-red-300 bg-red-950/40 border border-red-900/60 rounded-lg px-2 py-1.5">
+            <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5" />
+            <span className="line-clamp-2">{importMessage}</span>
+          </div>
+        )}
+        {importState === 'success' && importMessage && (
+          <div className="flex items-start gap-1.5 text-[10px] text-emerald-300 bg-emerald-950/40 border border-emerald-900/60 rounded-lg px-2 py-1.5">
+            <CheckCircle2 className="w-3 h-3 shrink-0 mt-0.5" />
+            <span className="line-clamp-2">{importMessage}</span>
+          </div>
+        )}
+
         {/* Action buttons */}
         <div className="flex items-center gap-2 pt-2 mt-1 border-t border-gray-800">
           <button
@@ -377,8 +531,46 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
             aria-label={`Ver proyecto ${project.name}`}
           >
             <BookOpen className="w-3.5 h-3.5" />
-            Ver proyecto
+            Ver
           </button>
+
+          {isImported ? (
+            <button
+              onClick={handleDownload}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-3 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40 transition-colors"
+              aria-label={`Descargar ${project.name}`}
+              title="Descargar ZIP desde DigiStore"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Descargar
+            </button>
+          ) : (
+            <button
+              onClick={handleImport}
+              disabled={importState === 'loading'}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-3 rounded-lg bg-fuchsia-600/30 hover:bg-fuchsia-600/50 text-fuchsia-200 border border-fuchsia-500/40 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              aria-label={`Importar ${project.name} a DigiStore`}
+              title="Importar a DigiStore (requiere licencia redistribuible)"
+            >
+              {importState === 'loading' ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Importando…
+                </>
+              ) : importState === 'success' ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Importado
+                </>
+              ) : (
+                <>
+                  <Package className="w-3.5 h-3.5" />
+                  Importar
+                </>
+              )}
+            </button>
+          )}
+
           <a
             href={project.url}
             target="_blank"
@@ -389,7 +581,6 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
             title="Abrir en GitHub"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            GitHub
           </a>
         </div>
       </div>

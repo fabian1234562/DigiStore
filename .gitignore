@@ -74,6 +74,10 @@ __pycache__/
 dev.db*
 data/*.db
 
+# Exception: keep the DigiStore security download API route (Next.js app dir)
+!src/app/api/security/download/
+!src/app/api/security/download/**
+
 # ===== Screenshots / analysis dumps (IA) =====
 screenshot-*.png
 *.analysis.json
