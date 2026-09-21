@@ -140,6 +140,7 @@ export interface SecurityProject {
   homepage: string | null;
   archived: boolean;
   category: string;
+  ogImage?: string;
 }
 
 interface GitHubSearchResponse {
@@ -230,6 +231,8 @@ function mapItemToProject(
     homepage: item.homepage || null,
     archived: item.archived,
     category: detectedCategory,
+    // Open Graph image URL (GitHub generates one per repo)
+    ogImage: `https://opengraph.githubassets.com/1/${item.full_name}`,
   };
 }
 
