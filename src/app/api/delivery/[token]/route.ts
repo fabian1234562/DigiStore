@@ -50,9 +50,9 @@ function escapeHtml(s: string): string {
  */
 export async function GET(
   request: Request,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
-  const token = params.token;
+  const { token } = await params;
   const url = new URL(request.url);
   const forceDownload = url.searchParams.get('download') === '1';
 

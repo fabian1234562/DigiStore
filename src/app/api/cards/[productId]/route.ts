@@ -20,14 +20,14 @@ const CARDS_DIR = path.join(process.cwd(), 'public', 'downloads', 'cards');
 
 export async function GET(
   request: Request,
-  { params }: { params: { productId: string } }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
-  const productId = params.productId;
+  const { productId } = await params;
 
   // Sanitize: only allow alphanumeric, dash, underscore
-  if (!/^[a-zA-Z0-9_-]+$/.test(productId)) {
+  if (!productId || !/^[a-zA-Z0-9_-]+$/.test(productId)) {
     return NextResponse.json(
-      { error: 'invalid_product_id' },
+      { error: 'invalid_product_id', productId },
       { status: 400 }
     );
   }
