@@ -7,9 +7,20 @@
  *   distribution_allowed = true
  *
  * Las 3 condiciones deben cumplirse simultáneamente.
+ *
+ * MODO DUAL:
+ *   - Si DATABASE_URL está configurada → usa Prisma (DB)
+ *   - Si NO está configurada → usa fallback catalog (in-memory + filesystem)
+ *     Esto permite que funcione en Vercel sin DB configurada.
  */
 
-import { db } from '@/lib/db';
+import { db, isDbAvailable } from '@/lib/db';
+import {
+  getFallbackProductById,
+  getFallbackProductBySlug,
+  listFallbackDownloadableProducts,
+  getFallbackCatalog,
+} from '@/lib/fallback-catalog';
 
 export interface ProductInput {
   slug: string;
@@ -60,24 +71,11 @@ export interface ProductUpdate {
 }
 
 /**
- * Verifica si DB está disponible.
- */
-async function isDbAvailable(): Promise<boolean> {
-  try {
-    await db.$queryRaw`SELECT 1`;
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Crea un producto nuevo.
+ * Crea un producto nuevo. Solo funciona con DB.
  */
 export async function createProduct(input: ProductInput) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) {
-    throw new Error('Database not available. Set DATABASE_URL env var.');
+  if (!isDbAvailable()) {
+    throw new Error('Database not available. Set DATABASE_URL env var to create products.');
   }
 
   return await db.product.create({
@@ -117,9 +115,16 @@ export async function listProducts(filter?: {
   verified?: boolean;
   download_enabled?: boolean;
 }) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) {
-    return [];
+  if (!isDbAvailable()) {
+    // Fallback: usar catálogo estático
+    const catalog = await getFallbackCatalog();
+    return catalog.filter((p) => {
+      if (filter?.category && p.category !== filter.category) return false;
+      if (filter?.is_free !== undefined && p.is_free !== filter.is_free) return false;
+      if (filter?.verified !== undefined && p.verified !== filter.verified) return false;
+      if (filter?.download_enabled !== undefined && p.download_enabled !== filter.download_enabled) return false;
+      return true;
+    });
   }
 
   const where: any = {};
@@ -138,24 +143,20 @@ export async function listProducts(filter?: {
  * Obtiene un producto por ID.
  */
 export async function getProductById(id: string) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return null;
-
-  return await db.product.findUnique({
-    where: { id },
-  });
+  if (!isDbAvailable()) {
+    return await getFallbackProductById(id);
+  }
+  return await db.product.findUnique({ where: { id } });
 }
 
 /**
  * Obtiene un producto por slug.
  */
 export async function getProductBySlug(slug: string) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return null;
-
-  return await db.product.findUnique({
-    where: { slug },
-  });
+  if (!isDbAvailable()) {
+    return await getFallbackProductBySlug(slug);
+  }
+  return await db.product.findUnique({ where: { slug } });
 }
 
 /**
@@ -165,8 +166,9 @@ export async function listDownloadableProducts(filter?: {
   category?: string;
   is_free?: boolean;
 }) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return [];
+  if (!isDbAvailable()) {
+    return await listFallbackDownloadableProducts(filter);
+  }
 
   const where: any = {
     verified: true,
@@ -183,12 +185,11 @@ export async function listDownloadableProducts(filter?: {
 }
 
 /**
- * Actualiza un producto.
+ * Actualiza un producto. Solo funciona con DB.
  */
 export async function updateProduct(id: string, update: ProductUpdate) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) {
-    throw new Error('Database not available');
+  if (!isDbAvailable()) {
+    throw new Error('Database not available. Cannot update products in fallback mode.');
   }
 
   const data: any = { ...update };
@@ -203,11 +204,10 @@ export async function updateProduct(id: string, update: ProductUpdate) {
 }
 
 /**
- * Elimina un producto.
+ * Elimina un producto. Solo funciona con DB.
  */
 export async function deleteProduct(id: string): Promise<boolean> {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return false;
+  if (!isDbAvailable()) return false;
 
   try {
     await db.product.delete({ where: { id } });
@@ -232,10 +232,10 @@ export function canBeDownloaded(product: any): boolean {
 
 /**
  * Marca un producto como verificado (después de calcular SHA-256, etc).
+ * Solo funciona con DB.
  */
 export async function markProductVerified(id: string, sha256: string) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return null;
+  if (!isDbAvailable()) return null;
 
   return await db.product.update({
     where: { id },
@@ -248,10 +248,10 @@ export async function markProductVerified(id: string, sha256: string) {
 
 /**
  * Activa o desactiva la descarga de un producto.
+ * Solo funciona con DB.
  */
 export async function setDownloadEnabled(id: string, enabled: boolean) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return null;
+  if (!isDbAvailable()) return null;
 
   return await db.product.update({
     where: { id },
@@ -261,10 +261,10 @@ export async function setDownloadEnabled(id: string, enabled: boolean) {
 
 /**
  * Marca o desmarca la autorización de distribución.
+ * Solo funciona con DB.
  */
 export async function setDistributionAllowed(id: string, allowed: boolean) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return null;
+  if (!isDbAvailable()) return null;
 
   return await db.product.update({
     where: { id },
@@ -274,6 +274,7 @@ export async function setDistributionAllowed(id: string, allowed: boolean) {
 
 /**
  * Asocia un archivo a un producto (después de subirlo al storage).
+ * Solo funciona con DB.
  */
 export async function attachFileToProduct(
   id: string,
@@ -286,8 +287,7 @@ export async function attachFileToProduct(
     version?: string;
   },
 ) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return null;
+  if (!isDbAvailable()) return null;
 
   return await db.product.update({
     where: { id },
@@ -307,8 +307,7 @@ export async function attachFileToProduct(
  * Obtiene estadísticas de descargas de un producto.
  */
 export async function getProductStats(id: string) {
-  const dbOk = await isDbAvailable();
-  if (!dbOk) return null;
+  if (!isDbAvailable()) return null;
 
   const deliveries = await db.delivery.findMany({
     where: { product_id: id },

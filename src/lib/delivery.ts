@@ -19,7 +19,7 @@
  *   - Log de IP + user agent para auditoría
  */
 
-import { db } from '@/lib/db';
+import { db, isDbAvailable } from '@/lib/db';
 import crypto from 'crypto';
 
 const DEFAULT_EXPIRY_HOURS = 24;
@@ -34,6 +34,8 @@ interface MemoryDelivery {
   deliveryFormat: string;
   storageKey: string;
   sha256: string;
+  fileSize: number;
+  version: string;
   userEmail: string;
   userId?: string;
   orderId?: string;
@@ -55,18 +57,6 @@ if (!globalThis.deliveryStore) {
 }
 
 const memoryStore = globalThis.deliveryStore;
-
-/**
- * Verifica si Prisma está disponible (DB configurada).
- */
-async function isDbAvailable(): Promise<boolean> {
-  try {
-    await db.$queryRaw`SELECT 1`;
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 /**
  * Genera un token criptográfico seguro de 64 chars hex (32 bytes).
@@ -114,9 +104,9 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-  // Buscar producto
+  // Buscar producto (DB o fallback catálogo)
   let product: any = null;
-  const dbOk = await isDbAvailable();
+  const dbOk = isDbAvailable();
 
   if (dbOk) {
     try {
@@ -126,6 +116,12 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
     } catch (err) {
       console.error('[delivery] DB error fetching product:', err);
     }
+  }
+
+  // Si no está en DB o no hay DB, intentar fallback catálogo
+  if (!product) {
+    const { getFallbackProductById } = await import('@/lib/fallback-catalog');
+    product = await getFallbackProductById(input.productId);
   }
 
   if (!product) {
@@ -188,7 +184,7 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
       // Fallback a memoria
     }
   } else {
-    // Modo memoria (dev)
+    // Modo memoria (dev) - guardar con datos completos del producto
     const memDelivery: MemoryDelivery = {
       token,
       productId: product.id,
@@ -197,6 +193,8 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
       deliveryFormat: product.file_type || 'application/octet-stream',
       storageKey: product.storage_key || '',
       sha256: product.sha256 || '',
+      fileSize: product.file_size || 0,
+      version: product.version || '1.0.0',
       userEmail: input.userEmail,
       userId: input.userId,
       orderId: input.orderId,
@@ -249,7 +247,7 @@ export async function verifyDelivery(token: string): Promise<VerifyDeliveryResul
     return { valid: false, error: 'invalid_token_format' };
   }
 
-  const dbOk = await isDbAvailable();
+  const dbOk = isDbAvailable();
 
   // Buscar en DB
   if (dbOk) {
@@ -259,54 +257,50 @@ export async function verifyDelivery(token: string): Promise<VerifyDeliveryResul
         include: { product: true },
       });
 
-      if (!delivery) {
-        return { valid: false, error: 'token_not_found' };
-      }
+      if (delivery) {
+        if (delivery.invalidated) {
+          return { valid: false, error: 'token_invalidated' };
+        }
+        if (new Date() > delivery.expires_at) {
+          return { valid: false, error: 'token_expired' };
+        }
+        if (delivery.downloads_count >= delivery.max_downloads) {
+          return { valid: false, error: 'download_limit_reached' };
+        }
 
-      if (delivery.invalidated) {
-        return { valid: false, error: 'token_invalidated', delivery: undefined };
-      }
+        const p = delivery.product;
+        if (!p.verified || !p.download_enabled || !p.distribution_allowed) {
+          return { valid: false, error: 'product_not_available' };
+        }
 
-      if (new Date() > delivery.expires_at) {
-        return { valid: false, error: 'token_expired' };
+        return {
+          valid: true,
+          delivery: {
+            token: delivery.token,
+            productId: p.id,
+            productName: p.name,
+            fileName: p.file_name || '',
+            fileType: p.file_type || 'application/octet-stream',
+            fileSize: p.file_size || 0,
+            storageKey: p.storage_key || '',
+            sha256: p.sha256 || '',
+            version: p.version,
+            userEmail: delivery.user_email,
+            orderId: delivery.order_id || undefined,
+            expiresAt: delivery.expires_at,
+            downloadsCount: delivery.downloads_count,
+            maxDownloads: delivery.max_downloads,
+            remaining: delivery.max_downloads - delivery.downloads_count,
+          },
+        };
       }
-
-      if (delivery.downloads_count >= delivery.max_downloads) {
-        return { valid: false, error: 'download_limit_reached' };
-      }
-
-      // Verificar que el producto sigue cumpliendo las reglas
-      const p = delivery.product;
-      if (!p.verified || !p.download_enabled || !p.distribution_allowed) {
-        return { valid: false, error: 'product_not_available' };
-      }
-
-      return {
-        valid: true,
-        delivery: {
-          token: delivery.token,
-          productId: p.id,
-          productName: p.name,
-          fileName: p.file_name || '',
-          fileType: p.file_type || 'application/octet-stream',
-          fileSize: p.file_size || 0,
-          storageKey: p.storage_key || '',
-          sha256: p.sha256 || '',
-          version: p.version,
-          userEmail: delivery.user_email,
-          orderId: delivery.order_id || undefined,
-          expiresAt: delivery.expires_at,
-          downloadsCount: delivery.downloads_count,
-          maxDownloads: delivery.max_downloads,
-          remaining: delivery.max_downloads - delivery.downloads_count,
-        },
-      };
+      // Si no está en DB, continuar a memoria
     } catch (err) {
       console.error('[delivery] DB error verifying:', err);
     }
   }
 
-  // Fallback a memoria
+  // Buscar en memoria (fallback)
   const memDelivery = memoryStore.get(token);
   if (!memDelivery) {
     return { valid: false, error: 'token_not_found' };
@@ -330,10 +324,10 @@ export async function verifyDelivery(token: string): Promise<VerifyDeliveryResul
       productName: memDelivery.productName,
       fileName: memDelivery.fileName,
       fileType: memDelivery.deliveryFormat,
-      fileSize: 0,
+      fileSize: memDelivery.fileSize,
       storageKey: memDelivery.storageKey,
       sha256: memDelivery.sha256,
-      version: '1.0.0',
+      version: memDelivery.version,
       userEmail: memDelivery.userEmail,
       orderId: memDelivery.orderId,
       expiresAt: new Date(memDelivery.expiresAt),
@@ -351,7 +345,7 @@ export async function recordDownload(
   token: string,
   metadata: { ipAddress?: string; userAgent?: string; bytesServed?: number },
 ): Promise<void> {
-  const dbOk = await isDbAvailable();
+  const dbOk = isDbAvailable();
 
   if (dbOk) {
     try {
@@ -402,7 +396,7 @@ export async function invalidateDelivery(
   token: string,
   reason: string,
 ): Promise<boolean> {
-  const dbOk = await isDbAvailable();
+  const dbOk = isDbAvailable();
 
   if (dbOk) {
     try {
@@ -432,7 +426,7 @@ export async function invalidateDelivery(
  * Limpieza de tokens expirados (para cron o llamada manual).
  */
 export async function cleanupExpiredDeliveries(): Promise<number> {
-  const dbOk = await isDbAvailable();
+  const dbOk = isDbAvailable();
   if (!dbOk) {
     let cleaned = 0;
     const now = Date.now();
