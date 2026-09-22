@@ -61,22 +61,26 @@ comparison-*.json
 # La IA NO debe subir su carpeta de trabajo al repo. Bloqueo total:
 .zscripts/
 skills/
-db/
-mini-services/
-examples/
-download/
-tool-results/
+/db/
+/mini-services/
+/examples/
+/tool-results/
 *.pyc
 __pycache__/
 .agent-*/
 *.prod.db
-*.dev.db
-dev.db*
+# dev.db included in git for Vercel seed data
 data/*.db
 
 # Exception: keep the DigiStore security download API route (Next.js app dir)
 !src/app/api/security/download/
 !src/app/api/security/download/**
+
+# Exception: keep the DigiStore download API + page (Next.js app dir)
+!src/app/api/download/
+!src/app/api/download/**
+!src/app/download/
+!src/app/download/**
 
 # ===== Screenshots / analysis dumps (IA) =====
 screenshot-*.png
