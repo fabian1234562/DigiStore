@@ -1,0 +1,1036 @@
+{
+  "cards": [
+    {
+      "productId": "free-sw-obs",
+      "cardFile": "free-sw-obs.pdf",
+      "downloadUrl": "https://obsproject.com/download",
+      "title": "OBS Studio"
+    },
+    {
+      "productId": "free-sw-blender",
+      "cardFile": "free-sw-blender.pdf",
+      "downloadUrl": "https://www.blender.org/download/",
+      "title": "Blender 3D"
+    },
+    {
+      "productId": "free-sw-sharex",
+      "cardFile": "free-sw-sharex.pdf",
+      "downloadUrl": "https://getsharex.com/downloads/",
+      "title": "ShareX"
+    },
+    {
+      "productId": "free-sw-steamvr",
+      "cardFile": "free-sw-steamvr.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/250820",
+      "title": "SteamVR"
+    },
+    {
+      "productId": "free-sw-vtube",
+      "cardFile": "free-sw-vtube.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/1325860",
+      "title": "VTube Studio"
+    },
+    {
+      "productId": "free-sw-animaze",
+      "cardFile": "free-sw-animaze.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/1364390",
+      "title": "Animaze by FaceRig"
+    },
+    {
+      "productId": "free-sw-vroid",
+      "cardFile": "free-sw-vroid.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/1486350",
+      "title": "VRoid Studio"
+    },
+    {
+      "productId": "free-sw-ivry",
+      "cardFile": "free-sw-ivry.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/992490",
+      "title": "iVRy Driver for SteamVR"
+    },
+    {
+      "productId": "free-sw-reality-blender",
+      "cardFile": "free-sw-reality-blender.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/844060",
+      "title": "Reality Blender"
+    },
+    {
+      "productId": "free-sw-marmoset-tb3",
+      "cardFile": "free-sw-marmoset-tb3.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/688340",
+      "title": "Marmoset Toolbag 3 - Portfolio Renders"
+    },
+    {
+      "productId": "free-sw-we-editor",
+      "cardFile": "free-sw-we-editor.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/1790230",
+      "title": "Wallpaper Engine - Editor Extensions"
+    },
+    {
+      "productId": "free-godot",
+      "cardFile": "free-godot.pdf",
+      "downloadUrl": "https://godotengine.org/download/",
+      "title": "Godot Engine"
+    },
+    {
+      "productId": "free-tf2",
+      "cardFile": "free-tf2.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/440",
+      "title": "Team Fortress 2"
+    },
+    {
+      "productId": "free-sw-steamvr-perf",
+      "cardFile": "free-sw-steamvr-perf.pdf",
+      "downloadUrl": "https://store.steampowered.com/app/323910",
+      "title": "SteamVR Performance Test"
+    },
+    {
+      "productId": "app-gimp",
+      "cardFile": "app-gimp.pdf",
+      "downloadUrl": "https://www.gimp.org/downloads/",
+      "title": "GIMP"
+    },
+    {
+      "productId": "app-inkscape",
+      "cardFile": "app-inkscape.pdf",
+      "downloadUrl": "https://inkscape.org/release/",
+      "title": "Inkscape"
+    },
+    {
+      "productId": "app-krita-desktop",
+      "cardFile": "app-krita-desktop.pdf",
+      "downloadUrl": "https://krita.org/en/download/",
+      "title": "Krita (Desktop)"
+    },
+    {
+      "productId": "app-libreoffice",
+      "cardFile": "app-libreoffice.pdf",
+      "downloadUrl": "https://www.libreoffice.org/download/",
+      "title": "LibreOffice"
+    },
+    {
+      "productId": "app-openoffice",
+      "cardFile": "app-openoffice.pdf",
+      "downloadUrl": "https://www.openoffice.org/download/",
+      "title": "Apache OpenOffice"
+    },
+    {
+      "productId": "app-audacity-real",
+      "cardFile": "app-audacity-real.pdf",
+      "downloadUrl": "https://www.audacityteam.org/download/",
+      "title": "Audacity (Real)"
+    },
+    {
+      "productId": "app-lmms",
+      "cardFile": "app-lmms.pdf",
+      "downloadUrl": "https://lmms.io/download",
+      "title": "LMMS"
+    },
+    {
+      "productId": "app-ardour",
+      "cardFile": "app-ardour.pdf",
+      "downloadUrl": "https://ardour.org/download.html",
+      "title": "Ardour"
+    },
+    {
+      "productId": "app-musescore",
+      "cardFile": "app-musescore.pdf",
+      "downloadUrl": "https://musescore.org/en/download",
+      "title": "MuseScore"
+    },
+    {
+      "productId": "app-openshot",
+      "cardFile": "app-openshot.pdf",
+      "downloadUrl": "https://www.openshot.org/download/",
+      "title": "OpenShot"
+    },
+    {
+      "productId": "app-shotcut",
+      "cardFile": "app-shotcut.pdf",
+      "downloadUrl": "https://shotcut.org/download/",
+      "title": "Shotcut"
+    },
+    {
+      "productId": "app-kdenlive",
+      "cardFile": "app-kdenlive.pdf",
+      "downloadUrl": "https://kdenlive.org/en/download/",
+      "title": "Kdenlive"
+    },
+    {
+      "productId": "app-handbrake",
+      "cardFile": "app-handbrake.pdf",
+      "downloadUrl": "https://handbrake.fr/downloads.php",
+      "title": "HandBrake"
+    },
+    {
+      "productId": "app-vlc",
+      "cardFile": "app-vlc.pdf",
+      "downloadUrl": "https://www.videolan.org/vlc/",
+      "title": "VLC media player"
+    },
+    {
+      "productId": "app-mpv",
+      "cardFile": "app-mpv.pdf",
+      "downloadUrl": "https://mpv.io/installation/",
+      "title": "mpv"
+    },
+    {
+      "productId": "app-notepadpp",
+      "cardFile": "app-notepadpp.pdf",
+      "downloadUrl": "https://notepad-plus-plus.org/downloads/",
+      "title": "Notepad++"
+    },
+    {
+      "productId": "app-vscode",
+      "cardFile": "app-vscode.pdf",
+      "downloadUrl": "https://code.visualstudio.com/Download",
+      "title": "Visual Studio Code"
+    },
+    {
+      "productId": "app-firefox",
+      "cardFile": "app-firefox.pdf",
+      "downloadUrl": "https://www.mozilla.org/firefox/new/",
+      "title": "Mozilla Firefox"
+    },
+    {
+      "productId": "app-thunderbird",
+      "cardFile": "app-thunderbird.pdf",
+      "downloadUrl": "https://www.thunderbird.net/",
+      "title": "Mozilla Thunderbird"
+    },
+    {
+      "productId": "app-7zip",
+      "cardFile": "app-7zip.pdf",
+      "downloadUrl": "https://www.7-zip.org/download.html",
+      "title": "7-Zip"
+    },
+    {
+      "productId": "app-filezilla",
+      "cardFile": "app-filezilla.pdf",
+      "downloadUrl": "https://filezilla-project.org/download.php",
+      "title": "FileZilla"
+    },
+    {
+      "productId": "app-rufus",
+      "cardFile": "app-rufus.pdf",
+      "downloadUrl": "https://rufus.ie/es/",
+      "title": "Rufus"
+    },
+    {
+      "productId": "app-etcher",
+      "cardFile": "app-etcher.pdf",
+      "downloadUrl": "https://etcher.balena.io/",
+      "title": "balenaEtcher"
+    },
+    {
+      "productId": "app-darktable",
+      "cardFile": "app-darktable.pdf",
+      "downloadUrl": "https://www.darktable.org/install/",
+      "title": "Darktable"
+    },
+    {
+      "productId": "app-rawtherapee",
+      "cardFile": "app-rawtherapee.pdf",
+      "downloadUrl": "https://rawtherapee.com/downloads/",
+      "title": "RawTherapee"
+    },
+    {
+      "productId": "app-pencil2d",
+      "cardFile": "app-pencil2d.pdf",
+      "downloadUrl": "https://www.pencil2d.org/download/",
+      "title": "Pencil2D"
+    },
+    {
+      "productId": "app-synfig",
+      "cardFile": "app-synfig.pdf",
+      "downloadUrl": "https://www.synfig.org/download/",
+      "title": "Synfig Studio"
+    },
+    {
+      "productId": "app-obs-studio-desktop",
+      "cardFile": "app-obs-studio-desktop.pdf",
+      "downloadUrl": "https://obsproject.com/download",
+      "title": "OBS Studio (Desktop)"
+    },
+    {
+      "productId": "app-vscodium-real",
+      "cardFile": "app-vscodium-real.pdf",
+      "downloadUrl": "https://github.com/VSCodium/vscodium/releases",
+      "title": "VSCodium"
+    },
+    {
+      "productId": "app-helix",
+      "cardFile": "app-helix.pdf",
+      "downloadUrl": "https://github.com/helix-editor/helix/releases",
+      "title": "Helix Editor"
+    },
+    {
+      "productId": "app-lapce",
+      "cardFile": "app-lapce.pdf",
+      "downloadUrl": "https://github.com/lapce/lapce/releases",
+      "title": "Lapce Editor"
+    },
+    {
+      "productId": "app-lossless-cut",
+      "cardFile": "app-lossless-cut.pdf",
+      "downloadUrl": "https://github.com/mifi/lossless-cut/releases",
+      "title": "LosslessCut"
+    },
+    {
+      "productId": "app-olive-editor",
+      "cardFile": "app-olive-editor.pdf",
+      "downloadUrl": "https://github.com/olive-editor/olive/releases",
+      "title": "Olive Video Editor"
+    },
+    {
+      "productId": "app-files-win",
+      "cardFile": "app-files-win.pdf",
+      "downloadUrl": "https://github.com/files-community/Files/releases",
+      "title": "Files App"
+    },
+    {
+      "productId": "app-filebrowser",
+      "cardFile": "app-filebrowser.pdf",
+      "downloadUrl": "https://filebrowser.org",
+      "title": "File Browser"
+    },
+    {
+      "productId": "app-excalidraw",
+      "cardFile": "app-excalidraw.pdf",
+      "downloadUrl": "https://excalidraw.com",
+      "title": "Excalidraw"
+    },
+    {
+      "productId": "app-jspaint",
+      "cardFile": "app-jspaint.pdf",
+      "downloadUrl": "https://jspaint.app",
+      "title": "JS Paint"
+    },
+    {
+      "productId": "app-ladybird",
+      "cardFile": "app-ladybird.pdf",
+      "downloadUrl": "https://github.com/LadybirdBrowser/ladybird/releases",
+      "title": "Ladybird Browser"
+    },
+    {
+      "productId": "app-alacritty",
+      "cardFile": "app-alacritty.pdf",
+      "downloadUrl": "https://github.com/alacritty/alacritty/releases",
+      "title": "Alacritty"
+    },
+    {
+      "productId": "app-tabby",
+      "cardFile": "app-tabby.pdf",
+      "downloadUrl": "https://github.com/Eugeny/tabby/releases",
+      "title": "Tabby Terminal"
+    },
+    {
+      "productId": "app-windows-terminal",
+      "cardFile": "app-windows-terminal.pdf",
+      "downloadUrl": "https://github.com/microsoft/terminal/releases",
+      "title": "Windows Terminal"
+    },
+    {
+      "productId": "app-lazygit",
+      "cardFile": "app-lazygit.pdf",
+      "downloadUrl": "https://github.com/jesseduffield/lazygit/releases",
+      "title": "Lazygit"
+    },
+    {
+      "productId": "app-kap",
+      "cardFile": "app-kap.pdf",
+      "downloadUrl": "https://github.com/wulkano/Kap/releases",
+      "title": "Kap"
+    },
+    {
+      "productId": "app-tinode",
+      "cardFile": "app-tinode.pdf",
+      "downloadUrl": "https://github.com/tinode/chat/releases",
+      "title": "Tinode Chat"
+    },
+    {
+      "productId": "app-lutris",
+      "cardFile": "app-lutris.pdf",
+      "downloadUrl": "https://github.com/lutris/lutris/releases",
+      "title": "Lutris"
+    },
+    {
+      "productId": "app-keepassdx",
+      "cardFile": "app-keepassdx.pdf",
+      "downloadUrl": "https://github.com/Kunzisoft/KeePassDX/releases",
+      "title": "KeePassDX"
+    },
+    {
+      "productId": "app-gopass",
+      "cardFile": "app-gopass.pdf",
+      "downloadUrl": "https://github.com/gopasspw/gopass/releases",
+      "title": "gopass"
+    },
+    {
+      "productId": "app-gh-appflowy",
+      "cardFile": "app-gh-appflowy.pdf",
+      "downloadUrl": "https://appflowy.com",
+      "title": "AppFlowy"
+    },
+    {
+      "productId": "app-marktext",
+      "cardFile": "app-marktext.pdf",
+      "downloadUrl": "https://github.com/marktext/marktext/releases",
+      "title": "MarkText"
+    },
+    {
+      "productId": "app-logseq",
+      "cardFile": "app-logseq.pdf",
+      "downloadUrl": "https://github.com/logseq/logseq/releases",
+      "title": "Logseq"
+    },
+    {
+      "productId": "app-siyuan",
+      "cardFile": "app-siyuan.pdf",
+      "downloadUrl": "https://github.com/siyuan-note/siyuan/releases",
+      "title": "SiYuan"
+    },
+    {
+      "productId": "app-xournalpp",
+      "cardFile": "app-xournalpp.pdf",
+      "downloadUrl": "https://github.com/xournalpp/xournalpp/releases",
+      "title": "Xournal++"
+    },
+    {
+      "productId": "app-keepassxc",
+      "cardFile": "app-keepassxc.pdf",
+      "downloadUrl": "https://keepassxc.org/download/",
+      "title": "KeePassXC"
+    },
+    {
+      "productId": "app-bitwarden",
+      "cardFile": "app-bitwarden.pdf",
+      "downloadUrl": "https://bitwarden.com/download/",
+      "title": "Bitwarden"
+    },
+    {
+      "productId": "app-flameshot",
+      "cardFile": "app-flameshot.pdf",
+      "downloadUrl": "https://flameshot.org/docs/installation/",
+      "title": "Flameshot"
+    },
+    {
+      "productId": "app-peek",
+      "cardFile": "app-peek.pdf",
+      "downloadUrl": "https://github.com/phw/peek/releases",
+      "title": "Peek"
+    },
+    {
+      "productId": "app-greenshot",
+      "cardFile": "app-greenshot.pdf",
+      "downloadUrl": "https://getgreenshot.org/downloads/",
+      "title": "Greenshot"
+    },
+    {
+      "productId": "app-signal",
+      "cardFile": "app-signal.pdf",
+      "downloadUrl": "https://signal.org/download/",
+      "title": "Signal Desktop"
+    },
+    {
+      "productId": "app-retroarch",
+      "cardFile": "app-retroarch.pdf",
+      "downloadUrl": "https://www.retroarch.com/?page=downloads",
+      "title": "RetroArch"
+    },
+    {
+      "productId": "app-pcsx2",
+      "cardFile": "app-pcsx2.pdf",
+      "downloadUrl": "https://pcsx2.net/downloads/",
+      "title": "PCSX2"
+    },
+    {
+      "productId": "app-dosbox-x",
+      "cardFile": "app-dosbox-x.pdf",
+      "downloadUrl": "https://github.com/joncampbell123/dosbox-x/releases",
+      "title": "DOSBox-X"
+    },
+    {
+      "productId": "app-prusaslicer",
+      "cardFile": "app-prusaslicer.pdf",
+      "downloadUrl": "https://www.prusa3d.com/prusaslicer/",
+      "title": "PrusaSlicer"
+    },
+    {
+      "productId": "app-cura",
+      "cardFile": "app-cura.pdf",
+      "downloadUrl": "https://ultimaker.com/software/ultimaker-cura",
+      "title": "Ultimaker Cura"
+    },
+    {
+      "productId": "app-octoprint",
+      "cardFile": "app-octoprint.pdf",
+      "downloadUrl": "https://octoprint.org/download/",
+      "title": "OctoPrint"
+    },
+    {
+      "productId": "app-strawberry",
+      "cardFile": "app-strawberry.pdf",
+      "downloadUrl": "https://www.strawberrymusicplayer.org/",
+      "title": "Strawberry Music Player"
+    },
+    {
+      "productId": "app-clementine",
+      "cardFile": "app-clementine.pdf",
+      "downloadUrl": "https://www.clementine-player.org/downloads",
+      "title": "Clementine Music Player"
+    },
+    {
+      "productId": "app-rvc-webui",
+      "cardFile": "app-rvc-webui.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "RVC Voice Cloning WebUI"
+    },
+    {
+      "productId": "app-gpt-sovits",
+      "cardFile": "app-gpt-sovits.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "GPT-SoVITS"
+    },
+    {
+      "productId": "app-so-vits-svc",
+      "cardFile": "app-so-vits-svc.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "So-VITS-SVC"
+    },
+    {
+      "productId": "app-coqui-tts",
+      "cardFile": "app-coqui-tts.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Coqui TTS"
+    },
+    {
+      "productId": "app-voicebox",
+      "cardFile": "app-voicebox.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Voicebox AI Studio"
+    },
+    {
+      "productId": "app-cosyvoice",
+      "cardFile": "app-cosyvoice.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "CosyVoice"
+    },
+    {
+      "productId": "app-moneyprinter",
+      "cardFile": "app-moneyprinter.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "MoneyPrinterTurbo"
+    },
+    {
+      "productId": "app-cogvideo",
+      "cardFile": "app-cogvideo.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "CogVideoX"
+    },
+    {
+      "productId": "app-ltx-video",
+      "cardFile": "app-ltx-video.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "LTX-Video"
+    },
+    {
+      "productId": "app-deep-live-cam",
+      "cardFile": "app-deep-live-cam.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Deep-Live-Cam"
+    },
+    {
+      "productId": "app-faceswap",
+      "cardFile": "app-faceswap.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "FaceSwap (Deepfakes)"
+    },
+    {
+      "productId": "app-deepfacelive",
+      "cardFile": "app-deepfacelive.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "DeepFaceLive"
+    },
+    {
+      "productId": "app-deepfacelab",
+      "cardFile": "app-deepfacelab.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "DeepFaceLab"
+    },
+    {
+      "productId": "app-sd-webui",
+      "cardFile": "app-sd-webui.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Stable Diffusion WebUI"
+    },
+    {
+      "productId": "app-comfyui",
+      "cardFile": "app-comfyui.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "ComfyUI"
+    },
+    {
+      "productId": "app-whisper-cpp",
+      "cardFile": "app-whisper-cpp.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Whisper.cpp"
+    },
+    {
+      "productId": "app-whisperx",
+      "cardFile": "app-whisperx.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "WhisperX"
+    },
+    {
+      "productId": "app-ollama",
+      "cardFile": "app-ollama.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Ollama"
+    },
+    {
+      "productId": "app-khoj",
+      "cardFile": "app-khoj.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Khoj AI"
+    },
+    {
+      "productId": "app-livetalking",
+      "cardFile": "app-livetalking.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "LiveTalking"
+    },
+    {
+      "productId": "app-sherlock",
+      "cardFile": "app-sherlock.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Sherlock OSINT"
+    },
+    {
+      "productId": "app-imhex",
+      "cardFile": "app-imhex.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "ImHex Hex Editor"
+    },
+    {
+      "productId": "app-trivy",
+      "cardFile": "app-trivy.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Trivy Vulnerability Scanner"
+    },
+    {
+      "productId": "app-maigret",
+      "cardFile": "app-maigret.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Maigret OSINT"
+    },
+    {
+      "productId": "app-web-check",
+      "cardFile": "app-web-check.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Web-Check OSINT"
+    },
+    {
+      "productId": "app-nuclei",
+      "cardFile": "app-nuclei.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Nuclei Scanner"
+    },
+    {
+      "productId": "app-hydra",
+      "cardFile": "app-hydra.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "THC-Hydra"
+    },
+    {
+      "productId": "app-osv-scanner",
+      "cardFile": "app-osv-scanner.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "OSV Scanner (Google)"
+    },
+    {
+      "productId": "app-safeline-waf",
+      "cardFile": "app-safeline-waf.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "SafeLine WAF"
+    },
+    {
+      "productId": "app-payloads-all-things",
+      "cardFile": "app-payloads-all-things.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "PayloadsAllTheThings"
+    },
+    {
+      "productId": "app-sniffnet",
+      "cardFile": "app-sniffnet.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Sniffnet"
+    },
+    {
+      "productId": "app-ciphey",
+      "cardFile": "app-ciphey.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Ciphey"
+    },
+    {
+      "productId": "app-zphisher",
+      "cardFile": "app-zphisher.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Zphisher"
+    },
+    {
+      "productId": "app-wireshark",
+      "cardFile": "app-wireshark.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Wireshark"
+    },
+    {
+      "productId": "app-prowler",
+      "cardFile": "app-prowler.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Prowler"
+    },
+    {
+      "productId": "app-juice-shop",
+      "cardFile": "app-juice-shop.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "OWASP Juice Shop"
+    },
+    {
+      "productId": "app-wifi-cracking",
+      "cardFile": "app-wifi-cracking.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Wifi Cracking Toolkit"
+    },
+    {
+      "productId": "app-urh",
+      "cardFile": "app-urh.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Universal Radio Hacker"
+    },
+    {
+      "productId": "app-airgeddon",
+      "cardFile": "app-airgeddon.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Airgeddon"
+    },
+    {
+      "productId": "app-tpot",
+      "cardFile": "app-tpot.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "T-Pot Honeypot"
+    },
+    {
+      "productId": "app-arkime",
+      "cardFile": "app-arkime.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Arkime"
+    },
+    {
+      "productId": "app-red-team-toolkit",
+      "cardFile": "app-red-team-toolkit.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Red Team Toolkit"
+    },
+    {
+      "productId": "app-jadx",
+      "cardFile": "app-jadx.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "jadx - Java Decompiler"
+    },
+    {
+      "productId": "app-spiderfoot",
+      "cardFile": "app-spiderfoot.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "SpiderFoot OSINT"
+    },
+    {
+      "productId": "app-social-analyzer",
+      "cardFile": "app-social-analyzer.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Social Analyzer OSINT"
+    },
+    {
+      "productId": "app-ffuf",
+      "cardFile": "app-ffuf.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "ffuf - Web Fuzzer"
+    },
+    {
+      "productId": "app-lynis",
+      "cardFile": "app-lynis.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Lynis Security Audit"
+    },
+    {
+      "productId": "app-xsstrike",
+      "cardFile": "app-xsstrike.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "XSStrike"
+    },
+    {
+      "productId": "app-hacker-roadmap",
+      "cardFile": "app-hacker-roadmap.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Hacker Roadmap"
+    },
+    {
+      "productId": "app-dvwa",
+      "cardFile": "app-dvwa.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "DVWA - Web Vulnerable"
+    },
+    {
+      "productId": "app-vuls",
+      "cardFile": "app-vuls.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Vuls Vulnerability Scanner"
+    },
+    {
+      "productId": "app-pwndbg",
+      "cardFile": "app-pwndbg.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "pwndbg - GDB for Exploits"
+    },
+    {
+      "productId": "app-network-manager",
+      "cardFile": "app-network-manager.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "NETworkManager"
+    },
+    {
+      "productId": "app-recaf",
+      "cardFile": "app-recaf.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Recaf - Bytecode Editor"
+    },
+    {
+      "productId": "app-aflplusplus",
+      "cardFile": "app-aflplusplus.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "AFL++ Fuzzer"
+    },
+    {
+      "productId": "app-default-creds",
+      "cardFile": "app-default-creds.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "DefaultCreds Cheat Sheet"
+    },
+    {
+      "productId": "app-ad-exploitation",
+      "cardFile": "app-ad-exploitation.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Active Directory Exploitation"
+    },
+    {
+      "productId": "app-suricata",
+      "cardFile": "app-suricata.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Suricata IDS/IPS"
+    },
+    {
+      "productId": "app-misp",
+      "cardFile": "app-misp.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "MISP Threat Intel"
+    },
+    {
+      "productId": "app-zmap",
+      "cardFile": "app-zmap.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "ZMap - Internet Scanner"
+    },
+    {
+      "productId": "app-apkleaks",
+      "cardFile": "app-apkleaks.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "APKLeaks"
+    },
+    {
+      "productId": "app-bjorn",
+      "cardFile": "app-bjorn.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Bjorn - Network Scanner"
+    },
+    {
+      "productId": "app-fluxion",
+      "cardFile": "app-fluxion.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Fluxion - WiFi Auditing"
+    },
+    {
+      "productId": "app-bytecode-viewer",
+      "cardFile": "app-bytecode-viewer.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Bytecode Viewer"
+    },
+    {
+      "productId": "app-brook",
+      "cardFile": "app-brook.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Brook - Network Tool"
+    },
+    {
+      "productId": "app-oss-fuzz",
+      "cardFile": "app-oss-fuzz.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "OSS-Fuzz (Google)"
+    },
+    {
+      "productId": "app-h4cker",
+      "cardFile": "app-h4cker.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "h4cker - Security Resources"
+    },
+    {
+      "productId": "app-gitleaks",
+      "cardFile": "app-gitleaks.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Gitleaks - Secret Scanner"
+    },
+    {
+      "productId": "app-apktool",
+      "cardFile": "app-apktool.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Apktool - Android Reverse Eng"
+    },
+    {
+      "productId": "app-rustscan",
+      "cardFile": "app-rustscan.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "RustScan - Modern Port Scanner"
+    },
+    {
+      "productId": "app-theharvester",
+      "cardFile": "app-theharvester.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "TheHarvester - OSINT"
+    },
+    {
+      "productId": "app-hackbrowserdata",
+      "cardFile": "app-hackbrowserdata.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "HackBrowserData"
+    },
+    {
+      "productId": "app-subfinder",
+      "cardFile": "app-subfinder.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Subfinder - Subdomain Scanner"
+    },
+    {
+      "productId": "app-termshark",
+      "cardFile": "app-termshark.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Termshark - Terminal Wireshark"
+    },
+    {
+      "productId": "app-objection",
+      "cardFile": "app-objection.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Objection - Mobile Pentest"
+    },
+    {
+      "productId": "app-angr",
+      "cardFile": "app-angr.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "angr - Binary Analysis"
+    },
+    {
+      "productId": "app-gef",
+      "cardFile": "app-gef.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "GEF - GDB Enhanced"
+    },
+    {
+      "productId": "app-yakit",
+      "cardFile": "app-yakit.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Yakit - Cybersec Platform"
+    },
+    {
+      "productId": "app-faraday",
+      "cardFile": "app-faraday.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Faraday - Vuln Management"
+    },
+    {
+      "productId": "app-privacy-sexy",
+      "cardFile": "app-privacy-sexy.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Privacy Sexy"
+    },
+    {
+      "productId": "app-apk-mitm",
+      "cardFile": "app-apk-mitm.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "apk-mitm - Auto SSL Bypass"
+    },
+    {
+      "productId": "app-hae",
+      "cardFile": "app-hae.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "HaE - Burp Suite Highlighter"
+    },
+    {
+      "productId": "app-esp32-div",
+      "cardFile": "app-esp32-div.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "ESP32-DIV Wireless Tool"
+    },
+    {
+      "productId": "app-gosearch",
+      "cardFile": "app-gosearch.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "GoSearch - OSINT 300+"
+    },
+    {
+      "productId": "app-bruteshark",
+      "cardFile": "app-bruteshark.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "BruteShark - Network Analysis"
+    },
+    {
+      "productId": "app-pwndoc",
+      "cardFile": "app-pwndoc.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "PwnDoc - Pentest Reports"
+    },
+    {
+      "productId": "app-decompiler-explorer",
+      "cardFile": "app-decompiler-explorer.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Decompiler Explorer"
+    },
+    {
+      "productId": "app-hijacker",
+      "cardFile": "app-hijacker.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Hijacker - WiFi GUI"
+    },
+    {
+      "productId": "app-sudomy",
+      "cardFile": "app-sudomy.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Sudomy - Subdomain Tool"
+    },
+    {
+      "productId": "app-noseyparker",
+      "cardFile": "app-noseyparker.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "NoseyParker - Secret Scanner"
+    },
+    {
+      "productId": "app-sandmap",
+      "cardFile": "app-sandmap.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Sandmap - Nmap on Steroids"
+    },
+    {
+      "productId": "app-ethical-hacking-tools",
+      "cardFile": "app-ethical-hacking-tools.pdf",
+      "downloadUrl": "https://giveawayoftheday.com/",
+      "title": "Ethical Hacking Tools"
+    }
+  ]
+}

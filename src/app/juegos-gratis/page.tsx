@@ -133,10 +133,50 @@ function FreeProductCard({
 }
 
 /* ══════════════════════════════════════════════════════════════
-   CLAIM MODAL — Cómo reclamar el juego gratis
+   CLAIM MODAL — Descarga directa de tarjeta de activación
    ══════════════════════════════════════════════════════════════ */
+type DownloadState = 'idle' | 'downloading' | 'success' | 'error';
+
 function ClaimModal({ game, onClose }: { game: ScannedGame | null; onClose: () => void }) {
+  const [state, setState] = useState<DownloadState>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (game) {
+      setState('idle');
+      setErrorMsg('');
+    }
+  }, [game]);
+
   if (!game) return null;
+
+  const handleDownloadCard = async () => {
+    setState('downloading');
+    setErrorMsg('');
+    try {
+      // Llama a la API que sirve la tarjeta PDF
+      const res = await fetch(`/api/cards/${encodeURIComponent(game.id)}`);
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || `HTTP ${res.status}`);
+      }
+      // Convierte la respuesta a blob y dispara la descarga
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `digi-store-${game.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setState('success');
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Error desconocido');
+      setState('error');
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
@@ -172,16 +212,81 @@ function ClaimModal({ game, onClose }: { game: ScannedGame | null; onClose: () =
           </div>
           <p className="mt-4 text-sm text-gray-600 leading-relaxed">{game.description}</p>
 
-          {game.claimInstructions && (
-            <div className="mt-5 rounded-xl bg-violet-50 border border-violet-200 p-4">
-              <h4 className="text-xs font-bold text-violet-700 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                <Gift className="w-3.5 h-3.5" /> Cómo reclamarlo gratis
-              </h4>
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-sans">{game.claimInstructions}</pre>
+          {/* ─── NUEVA SECCIÓN: Tarjeta de Activación Digital ─── */}
+          <div className="mt-5 rounded-xl bg-gradient-to-br from-violet-50 to-fuchsia-50 border border-violet-200 p-5">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center shrink-0 shadow-lg shadow-violet-500/30">
+                <Download className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-bold text-gray-900 text-sm">Tarjeta de Activación Digital</h4>
+                <p className="mt-0.5 text-xs text-gray-600 leading-relaxed">
+                  Descarga una tarjeta PDF con el QR del link directo, instrucciones claras y todos los datos del producto.
+                  Escanea el QR con tu celular o abre el link desde tu PC para obtener el juego/app al instante.
+                </p>
+              </div>
             </div>
-          )}
 
-          <div className="mt-6 rounded-xl bg-emerald-50 border border-emerald-200 p-4">
+            {/* Estado de descarga */}
+            {state === 'success' && (
+              <div className="mt-3 rounded-lg bg-emerald-100 border border-emerald-300 p-3 flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="text-xs text-emerald-800">
+                  <p className="font-bold">¡Tarjeta descargada!</p>
+                  <p className="mt-0.5">Revisa tu carpeta de descargas. Abre el PDF y escanea el QR para reclamar tu producto.</p>
+                </div>
+              </div>
+            )}
+            {state === 'error' && (
+              <div className="mt-3 rounded-lg bg-red-100 border border-red-300 p-3 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                <div className="text-xs text-red-800">
+                  <p className="font-bold">No se pudo descargar la tarjeta</p>
+                  <p className="mt-0.5">{errorMsg}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Botón principal */}
+            <button
+              onClick={handleDownloadCard}
+              disabled={state === 'downloading'}
+              className="mt-3 w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-violet-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {state === 'downloading' ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Generando tarjeta…
+                </>
+              ) : state === 'success' ? (
+                <>
+                  <Download className="w-4 h-4" />
+                  Descargar de nuevo
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  Descargar Tarjeta de Activación
+                </>
+              )}
+            </button>
+
+            {/* Link alternativo directo (si el cliente prefiere ir directo) */}
+            {game.claimUrl && (
+              <div className="mt-3 pt-3 border-t border-violet-200">
+                <p className="text-[11px] text-gray-500 mb-1.5">
+                  ¿Prefieres ir directo a la fuente?{' '}
+                  <a href={game.claimUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-violet-600 hover:underline font-semibold inline-flex items-center gap-1">
+                    Abrir enlace <ExternalLink className="w-3 h-3" />
+                  </a>
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Cómo funciona */}
+          <div className="mt-4 rounded-xl bg-emerald-50 border border-emerald-200 p-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-5 h-5 text-white" />
@@ -189,29 +294,21 @@ function ClaimModal({ game, onClose }: { game: ScannedGame | null; onClose: () =
               <div>
                 <h4 className="font-bold text-emerald-800 text-sm">¿Cómo funciona?</h4>
                 <p className="mt-1 text-xs text-emerald-700 leading-relaxed">
-                  Te llevamos el juego gratis como muestra de cortesía. Solo pagas los productos premium en la tienda ($1-$5). Sin trucos, sin costos ocultos.
+                  Descargas la tarjeta PDF → escaneas el QR con tu celular o abres el link desde tu PC → descargas el producto directamente desde la fuente oficial. Sin pasos extra, sin pagar nada extra.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-between gap-3">
+          <div className="mt-5 flex items-center justify-between gap-3">
             <div>
               <div className="text-3xl font-black text-emerald-600">$0.00</div>
               <div className="text-xs text-gray-500">Ahorro: ${game.originalPrice.toFixed(2)}</div>
             </div>
-            <div className="flex gap-2">
-              {game.claimUrl && (
-                <a href={game.claimUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 rounded-xl border border-gray-200 hover:border-violet-300 hover:bg-violet-50 px-4 py-2.5 text-sm text-gray-700 transition">
-                  <ExternalLink className="w-3.5 h-3.5" /> Ver fuente
-                </a>
-              )}
-              <Link href="/tienda"
-                className="flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 px-5 py-2.5 text-sm font-bold text-white transition">
-                  Ver tienda <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+            <Link href="/tienda"
+              className="flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 px-5 py-2.5 text-sm font-bold text-white transition">
+              Ver tienda <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       </div>
