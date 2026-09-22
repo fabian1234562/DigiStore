@@ -63,10 +63,12 @@ function FreeProductCard({
   game,
   onClaim,
   onView,
+  downloading,
 }: {
   game: ScannedGame;
   onClaim: (g: ScannedGame) => void;
   onView: (g: ScannedGame) => void;
+  downloading?: boolean;
 }) {
   const SrcIcon = sourceIcons[game.source] || Gamepad2;
   const isExpiring = game.status === 'expiring';
@@ -123,8 +125,17 @@ function FreeProductCard({
             {originalPrice > 0 && <span className="text-xs text-gray-400 line-through">${originalPrice.toFixed(2)}</span>}
           </div>
           <button onClick={() => onClaim(game)}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all hover:scale-105 shadow-md shadow-emerald-500/20 flex items-center gap-1">
-            <Gift className="w-3.5 h-3.5" /> Reclamar
+            disabled={downloading}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all hover:scale-105 shadow-md shadow-emerald-500/20 flex items-center gap-1.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100">
+            {downloading ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando…
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" /> Descargar
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -326,6 +337,8 @@ export default function JuegosGratisPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSource, setSelectedSource] = useState<GameSource | 'all'>('all');
   const [selectedGame, setSelectedGame] = useState<ScannedGame | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [summary, setSummary] = useState<any>(null);
   const [mainTab, setMainTab] = useState<'juegos' | 'libros' | 'apps' | 'all'>('all');
   const { setSelectedProduct, setProductDetailOpen } = useStore();
@@ -400,8 +413,40 @@ export default function JuegosGratisPage() {
       .slice(0, 4)
   , [currentTabGames]);
 
-  // Handle claim (mostrar modal con instrucciones)
-  const handleClaim = (game: ScannedGame) => setSelectedGame(game);
+  // Handle claim: descarga directa de la tarjeta de activación
+  const handleClaim = async (game: ScannedGame) => {
+    setDownloadingId(game.id);
+    setToast(null);
+    try {
+      const res = await fetch(`/api/cards/${encodeURIComponent(game.id)}`);
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || `HTTP ${res.status}`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `digi-store-${game.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setToast({
+        type: 'success',
+        message: `Tarjeta de "${game.title}" descargada. Ábrela y escanea el QR para obtener el producto.`,
+      });
+    } catch (err) {
+      setToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Error al descargar la tarjeta',
+      });
+    } finally {
+      setDownloadingId(null);
+      // Auto-hide toast after 5s
+      setTimeout(() => setToast(null), 5000);
+    }
+  };
   // Handle view (abrir ProductDetail completo del store)
   const handleView = (game: ScannedGame) => {
     setSelectedProduct({
@@ -552,7 +597,7 @@ export default function JuegosGratisPage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {featured.map(game => (
-              <FreeProductCard key={game.id} game={game} onClaim={handleClaim} onView={handleView} />
+              <FreeProductCard key={game.id} game={game} onClaim={handleClaim} onView={handleView} downloading={downloadingId === game.id} />
             ))}
           </div>
         </section>
@@ -620,7 +665,7 @@ export default function JuegosGratisPage() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredGames.map(game => (
-                <FreeProductCard key={game.id} game={game} onClaim={handleClaim} onView={handleView} />
+                <FreeProductCard key={game.id} game={game} onClaim={handleClaim} onView={handleView} downloading={downloadingId === game.id} />
               ))}
             </div>
           </>
@@ -689,8 +734,30 @@ export default function JuegosGratisPage() {
         </div>
       </footer>
 
-      {/* ═══ MODAL: Cómo reclamar ═══ */}
-      <ClaimModal game={selectedGame} onClose={() => setSelectedGame(null)} />
+      {/* ═══ TOAST: feedback de descarga ═══ */}
+      {toast && (
+        <div
+          className={`fixed bottom-6 right-6 z-[200] max-w-md px-4 py-3 rounded-xl shadow-2xl border flex items-start gap-3 ${
+            toast.type === 'success'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+              : 'bg-red-50 border-red-300 text-red-800'
+          }`}
+        >
+          {toast.type === 'success' ? (
+            <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600" />
+          ) : (
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-red-600" />
+          )}
+          <div className="flex-1 text-sm leading-snug">{toast.message}</div>
+          <button
+            onClick={() => setToast(null)}
+            className="text-gray-400 hover:text-gray-700 shrink-0"
+            aria-label="Cerrar"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* ═══ MODAL: ProductDetail completo (compartido con tienda) ═══ */}
       <ProductDetailModal />
