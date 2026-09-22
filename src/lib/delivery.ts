@@ -50,20 +50,138 @@ interface MemoryDelivery {
 declare global {
   // eslint-disable-next-line no-var
   var deliveryStore: Map<string, MemoryDelivery> | undefined;
+  // eslint-disable-next-line no-var
+  var deliveryDownloads: Map<string, number> | undefined;
 }
 
 if (!globalThis.deliveryStore) {
   globalThis.deliveryStore = new Map();
 }
+if (!globalThis.deliveryDownloads) {
+  globalThis.deliveryDownloads = new Map();
+}
 
 const memoryStore = globalThis.deliveryStore;
+const downloadCounts = globalThis.deliveryDownloads;
 
 /**
- * Genera un token criptográfico seguro de 64 chars hex (32 bytes).
- * NO usar IDs predecibles.
+ * En Vercel serverless, globalThis no persiste entre lambdas.
+ * Por eso, además de memoria, generamos tokens STATELESS firmados
+ * con HMAC-SHA256 que contienen todos los datos necesarios.
+ *
+ * El token stateless tiene formato:
+ *   <payload>.<signature>
+ *
+ * Payload (JSON base64url):
+ *   {
+ *     productId, productName, fileName, fileType, fileSize,
+ *     storageKey, sha256, version, userEmail, orderId,
+ *     exp (epoch ms), maxDownloads
+ *   }
+ *
+ * La firma es HMAC-SHA256 del payload con ADMIN_SECRET_KEY.
+ * Esto permite verificar el token sin DB ni memoria compartida.
+ *
+ * El contador de descargas SÍ requiere memoria compartida o DB.
+ * En Vercel sin DB, el contador puede ser inexacto entre cold starts
+ * pero el token sigue siendo válido hasta su expiración.
+ */
+
+const TOKEN_SECRET = process.env.ADMIN_SECRET_KEY || 'digistore-token-secret-change-me';
+
+function base64urlEncode(buf: Buffer | string): string {
+  const b = Buffer.isBuffer(buf) ? buf : Buffer.from(buf);
+  return b.toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+function base64urlDecode(s: string): Buffer {
+  const pad = '='.repeat((4 - (s.length % 4)) % 4);
+  return Buffer.from(s.replace(/-/g, '+').replace(/_/g, '/') + pad, 'base64');
+}
+
+function signPayload(payload: string): string {
+  return crypto.createHmac('sha256', TOKEN_SECRET).update(payload).digest('hex');
+}
+
+/**
+ * Genera un token criptográfico seguro.
+ * Si DB está disponible → token aleatorio de 64 chars hex (almacenado en DB)
+ * Si no → token stateless con payload + firma (no requiere DB)
  */
 function generateToken(): string {
   return crypto.randomBytes(32).toString('hex');
+}
+
+/**
+ * Genera un token stateless que contiene todos los datos del delivery.
+ * Útil para Vercel sin DB.
+ */
+function generateStatelessToken(data: Omit<MemoryDelivery, 'token' | 'createdAt' | 'downloadsCount' | 'invalidated' | 'invalidationReason'>): string {
+  const payload = {
+    productId: data.productId,
+    productName: data.productName,
+    fileName: data.fileName,
+    fileType: data.deliveryFormat,
+    fileSize: data.fileSize,
+    storageKey: data.storageKey,
+    sha256: data.sha256,
+    version: data.version,
+    userEmail: data.userEmail,
+    userId: data.userId,
+    orderId: data.orderId,
+    exp: data.expiresAt,
+    maxDownloads: data.maxDownloads,
+  };
+  const payloadStr = base64urlEncode(JSON.stringify(payload));
+  const signature = signPayload(payloadStr);
+  return `${payloadStr}.${signature}`;
+}
+
+/**
+ * Verifica y decodifica un token stateless.
+ * Devuelve los datos del delivery si el token es válido.
+ */
+function verifyStatelessToken(token: string): MemoryDelivery | null {
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+
+  const [payloadStr, signature] = parts;
+
+  // Verificar firma
+  const expectedSignature = signPayload(payloadStr);
+  if (!crypto.timingSafeEqual(
+    Buffer.from(signature, 'hex'),
+    Buffer.from(expectedSignature, 'hex'),
+  )) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(base64urlDecode(payloadStr).toString('utf-8'));
+    if (Date.now() > payload.exp) return null;
+
+    return {
+      token,
+      productId: payload.productId,
+      productName: payload.productName,
+      fileName: payload.fileName,
+      deliveryFormat: payload.fileType,
+      storageKey: payload.storageKey,
+      sha256: payload.sha256,
+      fileSize: payload.fileSize,
+      version: payload.version,
+      userEmail: payload.userEmail,
+      userId: payload.userId,
+      orderId: payload.orderId,
+      createdAt: Date.now(),
+      expiresAt: payload.exp,
+      downloadsCount: downloadCounts.get(token) || 0,
+      maxDownloads: payload.maxDownloads || 5,
+      invalidated: false,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export interface CreateDeliveryInput {
@@ -184,9 +302,9 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
       // Fallback a memoria
     }
   } else {
-    // Modo memoria (dev) - guardar con datos completos del producto
-    const memDelivery: MemoryDelivery = {
-      token,
+    // Modo memoria (Vercel sin DB) - usar token STATELESS firmado
+    // para que sobreviva entre cold starts de lambdas
+    const memDeliveryData = {
       productId: product.id,
       productName: product.name,
       fileName: product.file_name || '',
@@ -198,13 +316,27 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
       userEmail: input.userEmail,
       userId: input.userId,
       orderId: input.orderId,
-      createdAt: Date.now(),
       expiresAt: expiresAt.getTime(),
-      downloadsCount: 0,
       maxDownloads,
-      invalidated: false,
     };
-    memoryStore.set(token, memDelivery);
+    const statelessToken = generateStatelessToken(memDeliveryData);
+
+    // También guardar en memoria (best-effort, puede perderse entre cold starts)
+    memoryStore.set(statelessToken, {
+      ...memDeliveryData,
+      token: statelessToken,
+      createdAt: Date.now(),
+      downloadsCount: 0,
+      invalidated: false,
+    });
+
+    return {
+      success: true,
+      token: statelessToken,
+      downloadUrl: `${baseUrl}/download/${statelessToken}`,
+      expiresAt,
+      maxDownloads,
+    };
   }
 
   return {
@@ -243,14 +375,14 @@ export interface VerifyDeliveryResult {
  * Comprueba: existe, no expirado, no invalidado, no excedido, producto sigue cumpliendo reglas.
  */
 export async function verifyDelivery(token: string): Promise<VerifyDeliveryResult> {
-  if (!token || !/^[a-f0-9]{64}$/.test(token)) {
+  if (!token) {
     return { valid: false, error: 'invalid_token_format' };
   }
 
   const dbOk = isDbAvailable();
 
-  // Buscar en DB
-  if (dbOk) {
+  // Buscar en DB (token aleatorio de 64 hex chars)
+  if (dbOk && /^[a-f0-9]{64}$/.test(token)) {
     try {
       const delivery = await db.delivery.findUnique({
         where: { token },
@@ -302,40 +434,69 @@ export async function verifyDelivery(token: string): Promise<VerifyDeliveryResul
 
   // Buscar en memoria (fallback)
   const memDelivery = memoryStore.get(token);
-  if (!memDelivery) {
-    return { valid: false, error: 'token_not_found' };
-  }
-  if (memDelivery.invalidated) {
-    return { valid: false, error: 'token_invalidated' };
-  }
-  if (Date.now() > memDelivery.expiresAt) {
-    memoryStore.delete(token);
-    return { valid: false, error: 'token_expired' };
-  }
-  if (memDelivery.downloadsCount >= memDelivery.maxDownloads) {
-    return { valid: false, error: 'download_limit_reached' };
+  if (memDelivery) {
+    if (memDelivery.invalidated) {
+      return { valid: false, error: 'token_invalidated' };
+    }
+    if (Date.now() > memDelivery.expiresAt) {
+      memoryStore.delete(token);
+      return { valid: false, error: 'token_expired' };
+    }
+    if (memDelivery.downloadsCount >= memDelivery.maxDownloads) {
+      return { valid: false, error: 'download_limit_reached' };
+    }
+
+    return {
+      valid: true,
+      delivery: {
+        token: memDelivery.token,
+        productId: memDelivery.productId,
+        productName: memDelivery.productName,
+        fileName: memDelivery.fileName,
+        fileType: memDelivery.deliveryFormat,
+        fileSize: memDelivery.fileSize,
+        storageKey: memDelivery.storageKey,
+        sha256: memDelivery.sha256,
+        version: memDelivery.version,
+        userEmail: memDelivery.userEmail,
+        orderId: memDelivery.orderId,
+        expiresAt: new Date(memDelivery.expiresAt),
+        downloadsCount: memDelivery.downloadsCount,
+        maxDownloads: memDelivery.maxDownloads,
+        remaining: memDelivery.maxDownloads - memDelivery.downloadsCount,
+      },
+    };
   }
 
-  return {
-    valid: true,
-    delivery: {
-      token: memDelivery.token,
-      productId: memDelivery.productId,
-      productName: memDelivery.productName,
-      fileName: memDelivery.fileName,
-      fileType: memDelivery.deliveryFormat,
-      fileSize: memDelivery.fileSize,
-      storageKey: memDelivery.storageKey,
-      sha256: memDelivery.sha256,
-      version: memDelivery.version,
-      userEmail: memDelivery.userEmail,
-      orderId: memDelivery.orderId,
-      expiresAt: new Date(memDelivery.expiresAt),
-      downloadsCount: memDelivery.downloadsCount,
-      maxDownloads: memDelivery.maxDownloads,
-      remaining: memDelivery.maxDownloads - memDelivery.downloadsCount,
-    },
-  };
+  // Intentar verificar como token stateless (Vercel sin DB)
+  // Esto permite que el token funcione aunque se pierda la memoria
+  if (token.includes('.')) {
+    const statelessDelivery = verifyStatelessToken(token);
+    if (statelessDelivery) {
+      return {
+        valid: true,
+        delivery: {
+          token: statelessDelivery.token,
+          productId: statelessDelivery.productId,
+          productName: statelessDelivery.productName,
+          fileName: statelessDelivery.fileName,
+          fileType: statelessDelivery.deliveryFormat,
+          fileSize: statelessDelivery.fileSize,
+          storageKey: statelessDelivery.storageKey,
+          sha256: statelessDelivery.sha256,
+          version: statelessDelivery.version,
+          userEmail: statelessDelivery.userEmail,
+          orderId: statelessDelivery.orderId,
+          expiresAt: new Date(statelessDelivery.expiresAt),
+          downloadsCount: statelessDelivery.downloadsCount,
+          maxDownloads: statelessDelivery.maxDownloads,
+          remaining: statelessDelivery.maxDownloads - statelessDelivery.downloadsCount,
+        },
+      };
+    }
+  }
+
+  return { valid: false, error: 'token_not_found' };
 }
 
 /**
