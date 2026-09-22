@@ -72,6 +72,36 @@ async function generateQrPng(url: string): Promise<Uint8Array> {
 }
 
 /**
+ * Sanitiza texto para que sea válido en pdf-lib con StandardFonts (WinAnsi).
+ * Elimina emojis y caracteres no soportados, manteniendo acentos latinos.
+ */
+function sanitizeForPdf(text: string): string {
+  if (!text) return '';
+  return text
+    // Reemplazar emojis comunes con texto plano
+    .replace(/🎮/g, '[GAME]')
+    .replace(/📥/g, '[DL]')
+    .replace(/🔗/g, '[URL]')
+    .replace(/📋/g, '[INFO]')
+    .replace(/✅/g, '[OK]')
+    .replace(/⚠️/g, '[!]')
+    .replace(/🛠️?/g, '[TOOL]')
+    .replace(/⏰/g, '[TIME]')
+    .replace(/⏬/g, '[DOWN]')
+    .replace(/📝/g, '[NOTE]')
+    .replace(/🚀/g, '[GO]')
+    .replace(/⭐/g, '*')
+    .replace(/✨/g, '')
+    .replace(/🎨/g, '')
+    .replace(/🔴/g, '[!]')
+    .replace(/🟢/g, '[OK]')
+    .replace(/🟡/g, '[?]')
+    .replace(/●/g, '*')
+    // Eliminar cualquier caracter fuera de Latin-1 / WinAnsi
+    .replace(/[^\x00-\xFF\u20AC]/g, '?');
+}
+
+/**
  * Trunca texto a un máximo de caracteres, añadiendo "..." si se corta.
  */
 function truncate(text: string, max: number): string {
@@ -122,8 +152,10 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
   let y = height - 50;
 
   // ─── Header ───
-  page.drawText('🎮 DigiStore', {
-    x: width / 2 - 65,
+  // NOTE: No usamos emojis en el PDF porque StandardFonts (WinAnsi) no los soporta.
+  // Los acentos latinos (á, é, í, ó, ú, ñ) SÍ funcionan en WinAnsi.
+  page.drawText('DigiStore', {
+    x: width / 2 - fontBold.widthOfTextAtSize('DigiStore', 22) / 2,
     y,
     size: 22,
     font: fontBold,
@@ -131,7 +163,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
   });
   y -= 18;
   page.drawText('Tarjeta de Activación Digital', {
-    x: width / 2 - 75,
+    x: width / 2 - font.widthOfTextAtSize('Tarjeta de Activación Digital', 10) / 2,
     y,
     size: 10,
     font,
@@ -149,7 +181,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
   y -= 28;
 
   // ─── Título del producto ───
-  const titleLines = wrapText(data.title, 38);
+  const titleLines = wrapText(sanitizeForPdf(truncate(data.title, 76)), 38);
   for (const line of titleLines.slice(0, 2)) {
     page.drawText(line, {
       x: width / 2 - fontBold.widthOfTextAtSize(line, 18) / 2,
@@ -163,12 +195,12 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
 
   // Subtítulo: género + plataforma
   const subtitleParts: string[] = [];
-  if (data.genre) subtitleParts.push(data.genre);
+  if (data.genre) subtitleParts.push(sanitizeForPdf(data.genre));
   if (data.platform && data.platform.length > 0) {
-    subtitleParts.push(data.platform.join(', '));
+    subtitleParts.push(sanitizeForPdf(data.platform.join(', ')));
   }
   if (subtitleParts.length > 0) {
-    const subtitle = subtitleParts.join(' · ');
+    const subtitle = sanitizeForPdf(subtitleParts.join(' - '));
     page.drawText(subtitle, {
       x: width / 2 - font.widthOfTextAtSize(subtitle, 11) / 2,
       y,
@@ -202,8 +234,9 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
       color: BRAND.accent,
     });
   } else {
-    page.drawText('● 100% GRATIS', {
-      x: width / 2 - fontBold.widthOfTextAtSize('● 100% GRATIS', 11) / 2,
+    const gratisText = '* 100% GRATIS';
+    page.drawText(gratisText, {
+      x: width / 2 - fontBold.widthOfTextAtSize(gratisText, 11) / 2,
       y,
       size: 11,
       font: fontBold,
@@ -213,7 +246,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
   y -= 25;
 
   // ─── Descripción ───
-  const descLines = wrapText(truncate(data.description, 380), 75);
+  const descLines = wrapText(sanitizeForPdf(truncate(data.description, 380)), 75);
   for (const line of descLines) {
     page.drawText(line, {
       x: marginX,
@@ -235,7 +268,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
     color: BRAND.lightGray,
   });
   y -= 14;
-  page.drawText('📥 Cómo descargar', {
+  page.drawText('Cómo descargar', {
     x: marginX,
     y,
     size: 13,
@@ -299,7 +332,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
 
   // ─── Link directo clickable ───
   if (data.downloadUrl) {
-    page.drawText('🔗 Enlace directo:', {
+    page.drawText('Enlace directo:', {
       x: marginX,
       y,
       size: 8,
@@ -336,7 +369,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
 
   // ─── Instrucciones detalladas del producto ───
   if (data.claimInstructions) {
-    page.drawText('📋 Instrucciones detalladas:', {
+    page.drawText('Instrucciones detalladas:', {
       x: marginX,
       y,
       size: 8,
@@ -345,7 +378,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
     });
     y -= 14;
 
-    const cleanInstr = data.claimInstructions.replace(/\\n/g, '\n').trim();
+    const cleanInstr = sanitizeForPdf(data.claimInstructions.replace(/\\n/g, '\n').trim());
     const instrLinesArr = cleanInstr.split('\n').filter(l => l.trim());
     for (const line of instrLinesArr.slice(0, 8)) {
       const cleanLine = line.trim();
@@ -357,7 +390,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
           font: fontBold,
           color: BRAND.primary,
         });
-        page.drawText(truncate(cleanLine, 78), {
+        page.drawText(sanitizeForPdf(truncate(cleanLine, 78)), {
           x: marginX + 14,
           y,
           size: 9,
@@ -387,8 +420,8 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
   });
 
   const metadata: Array<[string, string]> = [
-    ['Producto ID', truncate(data.id, 35)],
-    ['Fuente', data.source || 'DigiStore'],
+    ['Producto ID', sanitizeForPdf(truncate(data.id, 35))],
+    ['Fuente', sanitizeForPdf(data.source || 'DigiStore')],
     ['Fecha de descarga', today],
     ['Licencia', 'Open Source / Free-to-Play'],
   ];
