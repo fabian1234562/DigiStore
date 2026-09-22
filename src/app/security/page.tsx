@@ -13,6 +13,11 @@ import { ProjectCard } from '@/components/security/ProjectCard';
 import { SearchBar, type SecuritySort } from '@/components/security/SearchBar';
 import type { SecurityProject } from '@/app/api/security/search/route';
 import { cn } from '@/lib/utils';
+import {
+  getCategoryImage,
+  getCategoryLabel,
+  getCategoryEmoji,
+} from '@/lib/security-images';
 
 const SharedHeader = dynamic(
   () => import('@/components/store/SharedHeader').then((m) => ({ default: m.SharedHeader })),
@@ -149,7 +154,12 @@ function EmptyState({ title = 'Sin resultados', message = 'Prueba con otra búsq
    ══════════════════════════════════════════════════════════════ */
 function CatalogCard({ project, onOpen }: { project: ImportedProject; onOpen: (p: ImportedProject) => void }) {
   const [downloading, setDownloading] = useState(false);
+  // Image fallback chain for imported projects:
+  //   1. imageUrl (GitHub OpenGraph snapshot, stored at import time)
+  //   2. Category-themed local image
+  //   3. Gradient placeholder with icon
   const [imgError, setImgError] = useState(false);
+  const [catError, setCatError] = useState(false);
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -167,6 +177,10 @@ function CatalogCard({ project, onOpen }: { project: ImportedProject; onOpen: (p
       : project.licenseStatus === 'review'
         ? 'bg-amber-950/70 text-amber-300 border-amber-800'
         : 'bg-red-950/70 text-red-300 border-red-800';
+
+  const categoryImage = getCategoryImage(project.category);
+  const categoryLabel = getCategoryLabel(project.category);
+  const categoryEmoji = getCategoryEmoji(project.category);
 
   return (
     <article
@@ -194,6 +208,17 @@ function CatalogCard({ project, onOpen }: { project: ImportedProject; onOpen: (p
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImgError(true)}
           />
+        ) : !catError ? (
+          <img
+            src={categoryImage}
+            alt={`${categoryLabel} — ${project.name}`}
+            width={600}
+            height={375}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setCatError(true)}
+          />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 to-gray-900 flex items-center justify-center">
             <Package className="w-12 h-12 text-emerald-500/40" />
@@ -203,9 +228,18 @@ function CatalogCard({ project, onOpen }: { project: ImportedProject; onOpen: (p
 
         {/* Top badges */}
         <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2 pointer-events-none">
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border bg-emerald-500/20 text-emerald-200 border-emerald-500/40 backdrop-blur-md">
-            <Package className="w-2.5 h-2.5" /> Importado
-          </span>
+          <div className="flex flex-col items-start gap-1">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border bg-emerald-500/20 text-emerald-200 border-emerald-500/40 backdrop-blur-md">
+              <Package className="w-2.5 h-2.5" /> Importado
+            </span>
+            <span
+              title={`Categoría: ${categoryLabel}`}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-violet-500/20 text-violet-200 border-violet-400/50 backdrop-blur-md"
+            >
+              <span aria-hidden="true">{categoryEmoji}</span>
+              <span className="hidden sm:inline">{categoryLabel}</span>
+            </span>
+          </div>
           <span className={cn('inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md', licenseClass)}>
             <span aria-hidden="true">{project.licenseEmoji}</span>
             <span className="hidden sm:inline">{project.licenseLabel}</span>

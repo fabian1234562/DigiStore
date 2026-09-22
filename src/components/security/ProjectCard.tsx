@@ -7,6 +7,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SecurityProject } from '@/app/api/security/search/route';
+import {
+  getCategoryImage,
+  getCategoryLabel,
+  getCategoryEmoji,
+} from '@/lib/security-images';
 
 /**
  * Mapa de colores por lenguaje de programación (subconjunto de GitHub colors).
@@ -250,8 +255,13 @@ interface ProjectCardProps {
 type ImportState = 'idle' | 'loading' | 'success' | 'error';
 
 export function ProjectCard({ project, onOpen, imported = false, onImportedChange }: ProjectCardProps) {
-  const [imgError, setImgError] = useState(false);
+  // Image fallback chain:
+  //   1. GitHub OpenGraph (best — shows repo README banner)
+  //   2. Category-themed local image (real photo, eye-catching)
+  //   3. Owner avatar (zoomed-in)
+  //   4. Generated SVG (last resort)
   const [ogError, setOgError] = useState(false);
+  const [catError, setCatError] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
 
   const [importState, setImportState] = useState<ImportState>('idle');
@@ -268,11 +278,16 @@ export function ProjectCard({ project, onOpen, imported = false, onImportedChang
 
   const ogUrl = project.ogImage || `https://opengraph.githubassets.com/1/${project.fullName}`;
   const avatarUrl = `${project.ownerAvatar}&s=600`;
+  const categoryImageUrl = getCategoryImage(project.category);
+  const categoryLabel = getCategoryLabel(project.category);
+  const categoryEmoji = getCategoryEmoji(project.category);
   const fallbackSvg = useMemo(() => generateFallbackSvg(project), [project]);
 
-  const showOg = !ogError && !imgError;
-  const showAvatar = ogError && !avatarError && !imgError;
-  const showFallback = (ogError && avatarError) || imgError;
+  // Show in priority order
+  const showOg      = !ogError;
+  const showCat     = ogError && !catError;
+  const showAvatar  = ogError && catError && !avatarError;
+  const showFallback = ogError && catError && avatarError;
 
   const isImported = localImported;
 
@@ -376,6 +391,18 @@ export function ProjectCard({ project, onOpen, imported = false, onImportedChang
             onError={() => setOgError(true)}
           />
         )}
+        {showCat && (
+          <img
+            src={categoryImageUrl}
+            alt={`${categoryLabel} — ${project.name}`}
+            width={600}
+            height={375}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setCatError(true)}
+          />
+        )}
         {showAvatar && (
           <img
             src={avatarUrl}
@@ -403,15 +430,24 @@ export function ProjectCard({ project, onOpen, imported = false, onImportedChang
 
         {/* Top badges: activity + license */}
         <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-2 pointer-events-none">
-          <span
-            className={cn(
-              'inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md',
-              activity.className,
-            )}
-          >
-            <span className={cn('w-1.5 h-1.5 rounded-full', activity.dot)} />
-            {activity.label}
-          </span>
+          <div className="flex flex-col items-start gap-1">
+            <span
+              className={cn(
+                'inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md',
+                activity.className,
+              )}
+            >
+              <span className={cn('w-1.5 h-1.5 rounded-full', activity.dot)} />
+              {activity.label}
+            </span>
+            <span
+              title={`Categoría: ${categoryLabel}`}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-violet-500/20 text-violet-200 border-violet-400/50 backdrop-blur-md"
+            >
+              <span aria-hidden="true">{categoryEmoji}</span>
+              <span className="hidden sm:inline">{categoryLabel}</span>
+            </span>
+          </div>
           <div className="flex flex-col items-end gap-1">
             {project.stars >= 10000 && (
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border bg-amber-500/20 text-amber-300 border-amber-500/40 backdrop-blur-md">
