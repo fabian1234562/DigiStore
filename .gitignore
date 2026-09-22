@@ -92,3 +92,7 @@ vercel-check.json
 # ===== archivos sueltos accidentales =====
 cd
 --timeout
+# SQLite dev DB - INCLUIDO en git para que Vercel tenga los productos seedeados
+# En producción se debe migrar a Postgres (ver .env.example)
+# dev.db
+# public/downloads/private/

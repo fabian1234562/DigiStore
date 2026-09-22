@@ -3,6 +3,11 @@ generator client {
 }
 
 datasource db {
+  // SQLite para desarrollo. Para producción (Vercel), migrar a Postgres:
+  //   1. Crear Postgres en Vercel/Supabase/Neon
+  //   2. Cambiar provider a "postgresql"
+  //   3. Set DATABASE_URL en Vercel env vars
+  //   4. bunx prisma migrate deploy
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
@@ -17,15 +22,133 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   orders        Order[]
+  deliveries    Delivery[]
 }
 
 model Order {
   id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  items         String
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  items         String   // JSON stringified
   total         Float
-  status        String   @default("completed")
+  status        String   @default("completed") // pending, paid, completed, failed
   email         String
+  paymentMethod String?
+  paymentId     String?
   createdAt     DateTime @default(now())
+  deliveries    Delivery[]
+}
+
+/// Producto digital distribuible por DigiStore.
+/// Solo se puede descargar si: verified=true AND download_enabled=true AND distribution_allowed=true
+model Product {
+  id                    String   @id @default(cuid())
+  /// Slug único legible: "manual-pentesting-web"
+  slug                  String   @unique
+  name                  String
+  description           String
+  longDescription       String?
+  category              String   // "hacking", "games", "apps", "test"
+  subcategory           String?
+  price                 Float    @default(0)
+  originalPrice         Float?
+  currency              String   @default("USD")
+  is_free               Boolean  @default(false)
+  image                 String?
+  iconEmoji             String?
+  rating                Float    @default(5)
+  reviews               Int      @default(0)
+  sold                  Int      @default(0)
+
+  // ─── Archivo asociado ───
+  /// Nombre original del archivo subido: "manual-pentesting-web.pdf"
+  file_name             String?
+  /// Tamaño en bytes
+  file_size             Int      @default(0)
+  /// MIME type: "application/pdf", "application/zip"
+  file_type             String?
+  /// Versión semántica: "1.0.0"
+  version               String   @default("1.0.0")
+  /// Clave de almacenamiento interna (path ofuscado o storage key)
+  /// NUNCA exponer al frontend
+  storage_key           String?
+  /// Hash SHA-256 del archivo para verificar integridad
+  sha256                String?
+
+  // ─── Flags de control de descarga ───
+  /// Si el producto puede ser descargado
+  download_enabled      Boolean  @default(false)
+  /// Si la distribución está autorizada (licencia, permiso, open source)
+  distribution_allowed  Boolean  @default(false)
+  /// Si el producto está verificado (archivo subido + SHA calculado)
+  verified              Boolean  @default(false)
+
+  // ─── Metadata ───
+  tags                  String   @default("[]") // JSON array
+  featured              Boolean  @default(false)
+  badge                 String?
+  source                String?  // "github", "steam", "manual", etc.
+  claimUrl              String?  // URL externa (legacy, no se usa en flujo nuevo)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  deliveries            Delivery[]
+
+  @@index([category])
+  @@index([is_free])
+  @@index([verified, download_enabled, distribution_allowed])
+}
+
+/// Entrega digital: un token que permite descargar un producto.
+model Delivery {
+  id                String   @id @default(cuid())
+  /// Token criptográfico aleatorio (64 chars hex)
+  /// NUNCA usar IDs predecibles
+  token             String   @unique
+  product           Product  @relation(fields: [product_id], references: [id])
+  product_id        String
+  user              User?    @relation(fields: [user_id], references: [id])
+  user_id           String?
+  /// Email del receptor (para guests sin cuenta)
+  user_email        String
+  /// Orden asociada (si fue compra)
+  order             Order?   @relation(fields: [order_id], references: [id])
+  order_id          String?
+
+  created_at        DateTime @default(now())
+  expires_at        DateTime
+  /// Cuántas veces se ha descargado
+  downloads_count   Int      @default(0)
+  /// Límite máximo de descargas permitidas
+  max_downloads     Int      @default(5)
+
+  /// Para auditoría (legal cuando se aplica política de privacidad)
+  ip_address        String?
+  user_agent        String?
+
+  /// Invalidación manual (admin puede invalidar)
+  invalidated       Boolean  @default(false)
+  /// Motivo de invalidación si aplica
+  invalidation_reason String?
+
+  download_logs     DownloadLog[]
+
+  @@index([product_id])
+  @@index([user_email])
+  @@index([order_id])
+  @@index([expires_at])
+}
+
+/// Log de cada descarga realizada (auditoría)
+model DownloadLog {
+  id              String   @id @default(cuid())
+  delivery        Delivery @relation(fields: [delivery_id], references: [id], onDelete: Cascade)
+  delivery_id     String
+  downloaded_at   DateTime @default(now())
+  ip_address      String?
+  user_agent      String?
+  bytes_served    Int      @default(0)
+
+  @@index([delivery_id])
+  @@index([downloaded_at])
 }
