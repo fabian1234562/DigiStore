@@ -330,7 +330,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
 
   y = Math.min(qrY, instrY) - 18;
 
-  // ─── Link directo clickable ───
+  // ─── Link directo (texto, no clickeable porque pdf-lib requiere más setup) ───
   if (data.downloadUrl) {
     page.drawText('Enlace directo:', {
       x: marginX,
@@ -342,19 +342,7 @@ export async function generateActivationCardPdf(data: CardData): Promise<Uint8Ar
     y -= 14;
 
     // Truncar URL si es muy larga
-    const urlText = truncate(data.downloadUrl, 70);
-    const linkWidth = fontMono.widthOfTextAtSize(urlText, 9);
-
-    // Link annotation (clickeable)
-    const linkAnnotation = pdfDoc.context.obj({
-      Type: 'Annot',
-      Subtype: 'Link',
-      Rect: [marginX, y - 2, marginX + linkWidth, y + 12],
-      Border: [0, 0, 0],
-      A: { Type: 'Action', S: 'URI', URI: data.downloadUrl },
-    });
-    const linkAnnotationRef = pdfDoc.context.register(linkAnnotation);
-    page.node.addAnnotation(linkAnnotationRef);
+    const urlText = sanitizeForPdf(truncate(data.downloadUrl, 70));
 
     page.drawText(urlText, {
       x: marginX,
