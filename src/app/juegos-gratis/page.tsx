@@ -413,37 +413,92 @@ export default function JuegosGratisPage() {
       .slice(0, 4)
   , [currentTabGames]);
 
-  // Handle claim: descarga directa de la tarjeta de activación
+  // Handle claim: descarga directa del producto
+  // - Apps open source (Lapce, OBS, VSCodium...): descarga el instalador real (.exe/.dmg) hosteado en DigiStore
+  // - Juegos Steam: redirige a steam://run/APPID (abre Steam app directo)
+  // - Juegos Epic/HoYoverse: redirige a la URL de reclamo directo
   const handleClaim = async (game: ScannedGame) => {
     setDownloadingId(game.id);
     setToast(null);
+
     try {
-      const res = await fetch(`/api/cards/${encodeURIComponent(game.id)}`);
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || `HTTP ${res.status}`);
+      // ─── Detectar tipo de descarga ───
+      const claimUrl = game.claimUrl || '';
+      const isGithubRelease = claimUrl.includes('github.com/') && claimUrl.includes('/releases');
+      const isSteamGame = claimUrl.includes('store.steampowered.com/app/');
+      const isEpicGame = claimUrl.includes('store.epicgames.com') || claimUrl.includes('epicgames.com');
+      const isHoyoverse = claimUrl.includes('hoyoverse.com');
+
+      if (isGithubRelease) {
+        // ─── App open source: descargar instalador real hosteado en DigiStore ───
+        const res = await fetch(`/api/installers/${encodeURIComponent(game.id)}`);
+        if (!res.ok) {
+          // Fallback: si no tenemos el instalador cacheado, abrir GitHub releases
+          if (res.status === 404) {
+            window.open(claimUrl, '_blank', 'noopener,noreferrer');
+            setToast({
+              type: 'success',
+              message: `Abriendo descargas oficiales de ${game.title} en GitHub...`,
+            });
+            return;
+          }
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || `HTTP ${res.status}`);
+        }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        // Determinar extensión según el content-type o usar .bin
+        const contentType = res.headers.get('content-type') || '';
+        const ext = contentType.includes('zip') ? 'zip'
+                  : contentType.includes('executable') || contentType.includes('octet-stream') ? 'exe'
+                  : contentType.includes('mac') || contentType.includes('apple') ? 'dmg'
+                  : 'bin';
+        a.download = `${game.id}-${game.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30)}.${ext}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        setToast({
+          type: 'success',
+          message: `Descargando instalador de ${game.title}...`,
+        });
+      } else if (isSteamGame) {
+        // ─── Juego Steam: abrir steam:// para abrir Steam app directo ───
+        // Extract app ID from URL like https://store.steampowered.com/app/1085660
+        const appIdMatch = claimUrl.match(/app\/(\d+)/);
+        if (appIdMatch) {
+          const appId = appIdMatch[1];
+          // steam://run/<appid> abre el juego directamente si está instalado,
+          // o la página de la tienda si no lo está
+          window.location.href = `steam://run/${appId}`;
+          setToast({
+            type: 'success',
+            message: `Abriendo ${game.title} en Steam...`,
+          });
+        } else {
+          window.open(claimUrl, '_blank', 'noopener,noreferrer');
+          setToast({
+            type: 'success',
+            message: `Abriendo ${game.title} en Steam...`,
+          });
+        }
+      } else {
+        // ─── Epic, HoYoverse, etc.: redirigir directo a la URL ───
+        window.open(claimUrl, '_blank', 'noopener,noreferrer');
+        setToast({
+          type: 'success',
+          message: `Abriendo ${game.title}...`,
+        });
       }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `digi-store-${game.id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      setToast({
-        type: 'success',
-        message: `Tarjeta de "${game.title}" descargada. Ábrela y escanea el QR para obtener el producto.`,
-      });
     } catch (err) {
       setToast({
         type: 'error',
-        message: err instanceof Error ? err.message : 'Error al descargar la tarjeta',
+        message: err instanceof Error ? err.message : 'Error al descargar',
       });
     } finally {
       setDownloadingId(null);
-      // Auto-hide toast after 5s
       setTimeout(() => setToast(null), 5000);
     }
   };
