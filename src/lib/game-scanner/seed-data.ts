@@ -1957,6 +1957,115 @@ export const SEED_GAMES: ScannedGame[] = [
     tags: ['software', 'open-source', 'ai', 'github', 'pentesting', 'premium'],
     claimInstructions: 'Despues de completar tu pago, recibiras las instrucciones de descarga e instalacion por email. Nuestro equipo verifica y configura cada producto para garantizar que funcione correctamente. Incluye soporte tecnico por 30 dias.' }),
 
+  /* ══════════════════════════════════════════════════════════════
+     JUEGOS OPEN SOURCE DESCARGABLES DIRECTAMENTE (GitHub releases)
+     Todos DRM-free, se pueden hostear y entregar con nuestro link
+     ══════════════════════════════════════════════════════════════ */
+  makeGame({ id: 'game-mindustry', title: 'Mindustry', source: 'software', originalPrice: 8.99, genre: 'Strategy',
+    description: 'Juego de estrategia y construccion de fabricas. Crea cadenas de produccion, defiende tu nucleo de oleadas de enemigos. Multijugador cooperativo. Cross-platform.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1127400/capsule_616x353.jpg',
+    steamUrl: 'https://github.com/Anuken/Mindustry/releases',
+    platform: ['PC', 'Mac', 'Linux', 'Android'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'strategy', 'open-source', 'github', 'factory', 'multiplayer'] }),
+
+  makeGame({ id: 'game-minetest', title: 'Minetest', source: 'software', originalPrice: 0, genre: 'Sandbox',
+    description: 'Juego sandbox voxel open source, alternativa libre a Minecraft. Miles de mods disponibles. Multijugador. Crea tu mundo, explora, sobrevive.',
+    imageUrl: 'https://www.minetest.net/media/gallery/1.jpg',
+    steamUrl: 'https://github.com/minetest/minetest/releases',
+    platform: ['PC', 'Mac', 'Linux', 'Android'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'sandbox', 'open-source', 'github', 'voxel', 'minecraft-alternative'] }),
+
+  makeGame({ id: 'game-supertuxkart', title: 'SuperTuxKart', source: 'software', originalPrice: 0, genre: 'Racing',
+    description: 'Juego de carreras de karts open source con personajes del software libre. Multijugador hasta 8. Pistolas, escudos, boost. Diversión asegurada.',
+    imageUrl: 'https://supertuxkart.net/images/wiki/main_screen.png',
+    steamUrl: 'https://github.com/supertuxkart/stk-code/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'racing', 'open-source', 'github', 'karts', 'multiplayer'] }),
+
+  makeGame({ id: 'game-supertux', title: 'SuperTux', source: 'software', originalPrice: 0, genre: 'Platformer',
+    description: 'Juego de plataformas estilo Super Mario protagonizado por Tux, la mascota de Linux. Saltos, enemigos, power-ups, mundos extensos.',
+    imageUrl: 'https://supertux.org/images/screenshots/world1-1.jpg',
+    steamUrl: 'https://github.com/SuperTux/supertux/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 4,
+    tags: ['game', 'platformer', 'open-source', 'github', 'mario-style'] }),
+
+  makeGame({ id: 'game-0ad', title: '0 A.D.', source: 'software', originalPrice: 0, genre: 'RTS',
+    description: 'Juego de estrategia en tiempo real (RTS) historico. Civilizaciones antiguas, batallas epicas. Wildfire Games. Alternativa libre a Age of Empires.',
+    imageUrl: 'https://play0ad.com/wp-content/uploads/2014/08/screenshot001.jpg',
+    steamUrl: 'https://github.com/0ad/0ad/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'rts', 'open-source', 'github', 'historical', 'strategy'] }),
+
+  makeGame({ id: 'game-openttd', title: 'OpenTTD', source: 'software', originalPrice: 0, genre: 'Simulation',
+    description: 'Simulador de transporte open source. Trenes, autobuses, camiones, barcos, aviones. Construye tu imperio del transporte. Multijugador.',
+    imageUrl: 'https://www.openttd.org/screenshots/openttd-1.11.0-main.png',
+    steamUrl: 'https://github.com/OpenTTD/openttd/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'simulation', 'open-source', 'github', 'transport', 'tycoon'] }),
+
+  makeGame({ id: 'game-wesnoth', title: 'Battle for Wesnoth', source: 'software', originalPrice: 0, genre: 'Turn-based Strategy',
+    description: 'Juego de estrategia por turnos fantasy open source. Mas de 200 escenarios, multijugador online, editor de mapas. Comunidad activa.',
+    imageUrl: 'https://www.wesnoth.org/images/wesnoth-1.16-screenshot.png',
+    steamUrl: 'https://github.com/wesnoth/wesnoth/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'turn-based', 'strategy', 'open-source', 'github', 'fantasy'] }),
+
+  makeGame({ id: 'game-freedoom', title: 'Freedoom', source: 'software', originalPrice: 0, genre: 'FPS',
+    description: 'FPS clasico open source, equivalente libre a Doom. Compatible con mods de Doom. Accion pura y sangrienta al estilo retro.',
+    imageUrl: 'https://freedoom.github.io/img/screenshots/phase1-1.png',
+    steamUrl: 'https://github.com/freedoom/freedoom/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 4,
+    tags: ['game', 'fps', 'open-source', 'github', 'doom-clone', 'retro'] }),
+
+  makeGame({ id: 'game-openra', title: 'OpenRA', source: 'software', originalPrice: 0, genre: 'RTS',
+    description: 'Reimplementacion open source de Command & Conquer: Red Alert, Tiberian Dawn, Dune 2000. Multijugador online, mods, mejoras modernas.',
+    imageUrl: 'https://www.openra.net/images/screenshots/red-alert.jpg',
+    steamUrl: 'https://github.com/OpenRA/OpenRA/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'rts', 'open-source', 'github', 'command-conquer', 'red-alert'] }),
+
+  makeGame({ id: 'game-devilutionx', title: 'DevilutionX', source: 'software', originalPrice: 0, genre: 'Action RPG',
+    description: 'Engine open source de Diablo 1. Requiere archivos del juego original, pero el engine es libre. Mejoras: resolucion, mods, cross-platform.',
+    imageUrl: 'https://github.com/diasurgical/devilutionX/raw/master/Packaging/resources/icon.png',
+    steamUrl: 'https://github.com/diasurgical/devilutionX/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'arpg', 'open-source', 'github', 'diablo', 'engine'] }),
+
+  makeGame({ id: 'game-corsixth', title: 'CorsixTH', source: 'software', originalPrice: 0, genre: 'Simulation',
+    description: 'Reimplementacion open source de Theme Hospital. Gestiona tu hospital, cura enfermedades raras. Humor britanico. Multijugador.',
+    imageUrl: 'https://corsixth.com/media/screenshots/corsixth-0.65-main.png',
+    steamUrl: 'https://github.com/CorsixTH/CorsixTH/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'simulation', 'open-source', 'github', 'theme-hospital', 'management'] }),
+
+  makeGame({ id: 'game-godot', title: 'Godot Engine', source: 'software', originalPrice: 0, genre: 'Game Engine',
+    description: 'Motor de videojuegos open source. 2D y 3D. Crea juegos para PC, movil, web. Sin royalties. La alternativa libre a Unity.',
+    imageUrl: 'https://godotengine.org/storage/app/uploads/public/5e9/166/797/5e91667970188009657296.png',
+    steamUrl: 'https://github.com/godotengine/godot/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['software', 'game-engine', 'open-source', 'github', 'development', 'unity-alternative'] }),
+
+  makeGame({ id: 'game-veloren', title: 'Veloren', source: 'software', originalPrice: 0, genre: 'RPG',
+    description: 'RPG voxel open source escrito en Rust. Mundo abierto, combate, exploracion, crafting. Inspirado en Cube World y Zelda.',
+    imageUrl: 'https://veloren.net/processed_images/2qNY7EJz1e8zDHbF.jpg',
+    steamUrl: 'https://github.com/veloren/veloren/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 4,
+    tags: ['game', 'rpg', 'open-source', 'github', 'voxel', 'rust'] }),
+
+  makeGame({ id: 'game-shatteredpd', title: 'Shattered Pixel Dungeon', source: 'software', originalPrice: 0, genre: 'Roguelike',
+    description: 'Roguelike dungeon crawler open source. Recorre mazmorras, lucha, recolecta loot. Muerte permanente. Android y PC.',
+    imageUrl: 'https://shatteredpixel.com/assets/images/shattered-pixel-dungeon-banner.png',
+    steamUrl: 'https://github.com/00-Evan/shattered-pixel-dungeon-gdx/releases',
+    platform: ['PC', 'Android'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'roguelike', 'open-source', 'github', 'dungeon-crawler'] }),
+
+  makeGame({ id: 'game-librepcb', title: 'LibrePCB', source: 'software', originalPrice: 0, genre: 'CAD',
+    description: 'Software open source de diseño de PCBs (circuitos impresos). Alternativa libre a EAGLE/KiCad. Esquematicos, footprint, routing.',
+    imageUrl: 'https://librepcb.org/img/screenshot.png',
+    steamUrl: 'https://github.com/LibrePCB/LibrePCB/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 4,
+    tags: ['software', 'cad', 'open-source', 'github', 'pcb', 'electronics'] }),
+
 ];
 
 /** Estadisticas de la base de datos verificada */

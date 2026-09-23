@@ -112,6 +112,10 @@ function buildCatalogFromSeed(): FallbackProduct[] {
 
 /**
  * Construye el catálogo completo con metadata de archivos cargada async.
+ *
+ * REGLA CRÍTICA: Solo se incluyen productos que tienen metadata real
+ * (file_size > 0, download_url válida). Si un producto no tiene metadata,
+ * NO aparece en el catálogo. Punto.
  */
 async function buildCatalogWithMetadata(): Promise<FallbackProduct[]> {
   const metadata = await loadMetadata();
@@ -128,21 +132,17 @@ async function buildCatalogWithMetadata(): Promise<FallbackProduct[]> {
     // Buscar metadata del archivo
     const fileMeta = metadata[game.id];
 
-    let file_name: string | null = null;
-    let file_size = 0;
-    let file_type: string | null = null;
-    let storage_key: string | null = null;
-    let sha256: string | null = null;
-    let version = '1.0.0';
-
-    if (fileMeta) {
-      file_name = fileMeta.file_name;
-      file_size = fileMeta.file_size;
-      file_type = fileMeta.file_type;
-      storage_key = `remote:${fileMeta.download_url}`;
-      sha256 = fileMeta.sha256;
-      version = fileMeta.version || version;
+    // FILTRO CRÍTICO: si no hay metadata real (file_size > 0), NO se incluye
+    if (!fileMeta || fileMeta.file_size === 0 || !fileMeta.download_url) {
+      continue;
     }
+
+    const file_name = fileMeta.file_name;
+    const file_size = fileMeta.file_size;
+    const file_type = fileMeta.file_type;
+    const storage_key = `remote:${fileMeta.download_url}`;
+    const sha256 = fileMeta.sha256;
+    const version = fileMeta.version || '1.0.0';
 
     catalog.push({
       id: game.id,
@@ -167,10 +167,9 @@ async function buildCatalogWithMetadata(): Promise<FallbackProduct[]> {
       file_type,
       storage_key,
       sha256,
-      // Solo es "verified" si tiene archivo asociado
-      verified: !!fileMeta,
-      download_enabled: !!fileMeta,
-      distribution_allowed: !!fileMeta,
+      verified: true,
+      download_enabled: true,
+      distribution_allowed: true,
       source: isOpenSource ? 'github' : 'official',
       claimUrl,
       createdAt: new Date().toISOString(),

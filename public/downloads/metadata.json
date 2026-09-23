@@ -289,6 +289,22 @@
       "download_url": "https://github.com/gopasspw/gopass/releases/download/v1.17.3/gopass-1.17.3-windows-amd64.zip",
       "sha256": null,
       "version": "v1.17.3"
+    },
+    "game-minetest": {
+      "file_name": "luanti-5.17.0-win32.zip",
+      "file_size": 17861980,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/luanti-org/luanti/releases/download/5.17.0/luanti-5.17.0-win32.zip",
+      "sha256": null,
+      "version": "5.17.0"
+    },
+    "game-veloren": {
+      "file_name": "nightly-macos-x86_64-2024-08-21T17_04.zip",
+      "file_size": 354009656,
+      "file_type": "application/octet-stream",
+      "download_url": "https://github.com/veloren/veloren/releases/download/nightly/nightly-macos-x86_64-2024-08-21T17_04.zip",
+      "sha256": null,
+      "version": "nightly"
     }
   }
 }
