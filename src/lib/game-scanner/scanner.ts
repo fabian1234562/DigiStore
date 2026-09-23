@@ -45,25 +45,14 @@ class GameScannerStore {
     if (this.seedLoaded) return;
     this.seedLoaded = true;
 
-    // FILTRO CRÍTICO: solo productos que DigiStore puede entregar directamente.
-    // Si no podemos hostear/servir el archivo con nuestro propio link de descarga,
-    // el producto NO entra al catálogo.
+    // FILTRO CRÍTICO: solo productos con GitHub releases.
+    // Las URLs de GitHub releases son estables (asset URLs firmadas) y
+    // nos dan el instalador binario verificable.
+    // Los sitios oficiales (blender.org, gimp.org) no se incluyen porque
+    // sus URLs de descarga cambian con cada versión.
     const downloadableGames = SEED_GAMES.filter((game) => {
       const url = game.claimUrl || '';
-      if (!url) return false;
-
-      // Open source con GitHub releases → descargable
-      if (url.includes('github.com/') && url.includes('/releases')) return true;
-
-      // Sitios oficiales de apps open source conocidas
-      const officialSites = [
-        'blender.org', 'gimp.org', 'audacityteam.org', 'libreoffice.org',
-        'openoffice.org', 'mozilla.org', 'thunderbird.net', 'videolan.org',
-        '7-zip.org', 'obsproject.com', 'synfig.org', 'openshot.org',
-        'pencil2d.org', 'darktable.org', 'retroarch.com', 'prusa3d.com',
-        'clementine-player.org', 'strawberrymusicplayer.org',
-      ];
-      return officialSites.some((site) => url.includes(site));
+      return url.includes('github.com/') && url.includes('/releases');
     });
 
     console.log(`[GameScanner] Cargando ${downloadableGames.length} productos descargables directamente (de ${SEED_GAMES.length} totales en seed)`);

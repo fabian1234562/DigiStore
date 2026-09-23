@@ -250,6 +250,30 @@
       "sha256": null,
       "version": "latest",
       "note": "Clementine Music Player - Sitio oficial"
+    },
+    "app-helix": {
+      "file_name": "helix-25.07.1-x86_64-windows.zip",
+      "file_size": 28550028,
+      "file_type": "binary/octet-stream",
+      "download_url": "https://github.com/helix-editor/helix/releases/download/25.07.1/helix-25.07.1-x86_64-windows.zip",
+      "sha256": null,
+      "version": "25.07.1"
+    },
+    "app-lapce": {
+      "file_name": "Lapce-windows.msi",
+      "file_size": 20393984,
+      "file_type": "application/x-msi",
+      "download_url": "https://github.com/lapce/lapce/releases/download/v0.4.6/Lapce-windows.msi",
+      "sha256": null,
+      "version": "v0.4.6"
+    },
+    "app-alacritty": {
+      "file_name": "Alacritty-v0.17.0-portable.exe",
+      "file_size": 6003200,
+      "file_type": "application/octet-stream",
+      "download_url": "https://github.com/alacritty/alacritty/releases/download/v0.17.0/Alacritty-v0.17.0-portable.exe",
+      "sha256": null,
+      "version": "v0.17.0"
     }
   }
 }

@@ -72,18 +72,15 @@ function isDirectlyDownloadable(game: ScannedGame): boolean {
   const claimUrl = game.claimUrl || '';
   if (!claimUrl) return false;
 
+  // Solo productos con GitHub releases: esos SÍ tienen URL directa
+  // al instalador binario verificable (asset URL de GitHub).
+  // Los sitios oficiales (blender.org, gimp.org, etc.) NO se incluyen
+  // porque sus URLs de descarga cambian y requieren scraping del HTML.
   if (claimUrl.includes('github.com/') && claimUrl.includes('/releases')) {
     return true;
   }
 
-  const officialSites = [
-    'blender.org', 'gimp.org', 'audacityteam.org', 'libreoffice.org',
-    'openoffice.org', 'mozilla.org', 'thunderbird.net', 'videolan.org',
-    '7-zip.org', 'obsproject.com', 'synfig.org', 'openshot.org',
-    'pencil2d.org', 'darktable.org', 'retroarch.com', 'prusa3d.com',
-    'clementine-player.org', 'strawberrymusicplayer.org',
-  ];
-  return officialSites.some((site) => claimUrl.includes(site));
+  return false;
 }
 
 let catalogCache: FallbackProduct[] | null = null;
