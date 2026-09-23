@@ -153,6 +153,29 @@ export default function AdminProductsPage() {
     }
   };
 
+  // ─── DOWNLOAD DIRECTO (admin) ───
+  // Genera token temporal y descarga el archivo real
+  const handleDownload = async (product: Product) => {
+    try {
+      showToast('success', `Generando link de descarga para ${product.name}...`);
+      const res = await fetch(`/api/admin/products/${product.id}/download`, {
+        method: 'POST',
+        headers: { 'x-admin-key': adminKey },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.error);
+
+      // Abrir URL de descarga directa en nueva pestaña
+      // El navegador descargará el archivo automáticamente (Content-Disposition: attachment)
+      const downloadUrl = `/api/download/${data.token}/file`;
+      window.open(downloadUrl, '_blank');
+
+      showToast('success', `Descargando ${data.fileName} (${(data.fileSize / 1024 / 1024).toFixed(1)} MB)`);
+    } catch (err) {
+      handleApiResponse(false, err instanceof Error ? err.message : 'Error al descargar');
+    }
+  };
+
   // Eliminar producto
   const handleDelete = async (product: Product) => {
     if (!confirm(`¿Eliminar "${product.name}"? Esto también borra el archivo del storage.`)) return;
@@ -389,7 +412,18 @@ export default function AdminProductsPage() {
                       )}
                     </td>
                     <td className="p-3 text-right">
-                      <div className="flex gap-1 justify-end">
+                      <div className="flex gap-1 justify-end items-center">
+                        {/* BOTÓN DESCARGAR — siempre visible si el producto es descargable */}
+                        {canDownload && (
+                          <button
+                            onClick={() => handleDownload(product)}
+                            title={`Descargar ${product.name} (${(product.file_size / 1024 / 1024).toFixed(1)} MB)`}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors shadow-md shadow-emerald-500/20 mr-2"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            DESCARGAR
+                          </button>
+                        )}
                         <button
                           onClick={() => setSelectedProduct(product)}
                           title="Ver detalles / subir archivo"
