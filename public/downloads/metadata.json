@@ -305,6 +305,30 @@
       "download_url": "https://github.com/veloren/veloren/releases/download/nightly/nightly-macos-x86_64-2024-08-21T17_04.zip",
       "sha256": null,
       "version": "nightly"
+    },
+    "game-supertuxkart": {
+      "file_name": "SuperTuxKart-1.5-installer-aarch64.exe",
+      "file_size": 752427840,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/supertuxkart/stk-code/releases/download/1.5/SuperTuxKart-1.5-installer-aarch64.exe",
+      "sha256": null,
+      "version": "1.5"
+    },
+    "game-supertux": {
+      "file_name": "SuperTux-v0.7.0-win32-portable.zip",
+      "file_size": 307358208,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/SuperTux/supertux/releases/download/v0.7.0/SuperTux-v0.7.0-win32-portable.zip",
+      "sha256": null,
+      "version": "v0.7.0"
+    },
+    "game-freedoom": {
+      "file_name": "freedoom-0.13.0.zip",
+      "file_size": 24143781,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/freedoom/freedoom/releases/download/v0.13.0/freedoom-0.13.0.zip",
+      "sha256": null,
+      "version": "v0.13.0"
     }
   }
 }
