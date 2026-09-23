@@ -1,6 +1,7 @@
 /**
  * DELIVERY — Sistema de entrega digital segura.
  *
+<<<<<<< HEAD
  * Flujo:
  *   1. createDelivery() — genera token criptográfico, lo asocia a producto/usuario/orden
  *   2. verifyDelivery() — valida token (existe, no expirado, no invalidado, no excedido)
@@ -17,6 +18,10 @@
  *   - Máximo 5 descargas por token
  *   - Invalidación manual posible
  *   - Log de IP + user agent para auditoría
+=======
+ * Tokens STATELESS firmados con HMAC-SHA256 para funcionar en
+ * Vercel serverless sin DB ni memoria compartida.
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
  */
 
 import { db, isDbAvailable } from '@/lib/db';
@@ -25,6 +30,7 @@ import crypto from 'crypto';
 const DEFAULT_EXPIRY_HOURS = 24;
 const DEFAULT_MAX_DOWNLOADS = 5;
 
+<<<<<<< HEAD
 // ─── Fallback in-memory (cuando DB no está disponible) ───
 interface MemoryDelivery {
   token: string;
@@ -88,6 +94,20 @@ const downloadCounts = globalThis.deliveryDownloads;
  */
 
 const TOKEN_SECRET = process.env.ADMIN_SECRET_KEY || 'digistore-token-secret-change-me';
+=======
+const TOKEN_SECRET = process.env.ADMIN_SECRET_KEY || 'digistore-token-secret-change-me';
+
+declare global {
+  // eslint-disable-next-line no-var
+  var deliveryDownloads: Map<string, number> | undefined;
+}
+if (!globalThis.deliveryDownloads) {
+  globalThis.deliveryDownloads = new Map();
+}
+const downloadCounts = globalThis.deliveryDownloads;
+
+// ─── Token stateless helpers ───
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 
 function base64urlEncode(buf: Buffer | string): string {
   const b = Buffer.isBuffer(buf) ? buf : Buffer.from(buf);
@@ -103,6 +123,7 @@ function signPayload(payload: string): string {
   return crypto.createHmac('sha256', TOKEN_SECRET).update(payload).digest('hex');
 }
 
+<<<<<<< HEAD
 /**
  * Genera un token criptográfico seguro.
  * Si DB está disponible → token aleatorio de 64 chars hex (almacenado en DB)
@@ -133,19 +154,48 @@ function generateStatelessToken(data: Omit<MemoryDelivery, 'token' | 'createdAt'
     maxDownloads: data.maxDownloads,
   };
   const payloadStr = base64urlEncode(JSON.stringify(payload));
+=======
+interface TokenPayload {
+  productId: string;
+  productName: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  storageKey: string;
+  sha256: string;
+  version: string;
+  userEmail: string;
+  orderId?: string;
+  exp: number;
+  maxDownloads: number;
+}
+
+/**
+ * Genera un token stateless firmado con HMAC-SHA256.
+ * No requiere DB ni memoria compartida para verificar.
+ */
+function generateStatelessToken(data: TokenPayload): string {
+  const payloadStr = base64urlEncode(JSON.stringify(data));
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   const signature = signPayload(payloadStr);
   return `${payloadStr}.${signature}`;
 }
 
 /**
  * Verifica y decodifica un token stateless.
+<<<<<<< HEAD
  * Devuelve los datos del delivery si el token es válido.
  */
 function verifyStatelessToken(token: string): MemoryDelivery | null {
+=======
+ */
+function verifyStatelessToken(token: string): TokenPayload | null {
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   const parts = token.split('.');
   if (parts.length !== 2) return null;
 
   const [payloadStr, signature] = parts;
+<<<<<<< HEAD
 
   // Verificar firma
   const expectedSignature = signPayload(payloadStr);
@@ -153,12 +203,26 @@ function verifyStatelessToken(token: string): MemoryDelivery | null {
     Buffer.from(signature, 'hex'),
     Buffer.from(expectedSignature, 'hex'),
   )) {
+=======
+  const expectedSignature = signPayload(payloadStr);
+
+  // Verificar firma
+  try {
+    if (!crypto.timingSafeEqual(
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex'),
+    )) {
+      return null;
+    }
+  } catch {
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
     return null;
   }
 
   try {
     const payload = JSON.parse(base64urlDecode(payloadStr).toString('utf-8'));
     if (Date.now() > payload.exp) return null;
+<<<<<<< HEAD
 
     return {
       token,
@@ -179,11 +243,19 @@ function verifyStatelessToken(token: string): MemoryDelivery | null {
       maxDownloads: payload.maxDownloads || 5,
       invalidated: false,
     };
+=======
+    return payload;
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   } catch {
     return null;
   }
 }
 
+<<<<<<< HEAD
+=======
+// ─── Public API ───
+
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 export interface CreateDeliveryInput {
   productId: string;
   userEmail: string;
@@ -205,6 +277,7 @@ export interface DeliveryResult {
 }
 
 /**
+<<<<<<< HEAD
  * Crea una entrega digital: genera token, lo asocia al producto y usuario.
  *
  * REGLA CRÍTICA: Solo se puede crear entrega si el producto cumple:
@@ -214,6 +287,12 @@ export interface DeliveryResult {
  */
 export async function createDelivery(input: CreateDeliveryInput): Promise<DeliveryResult> {
   const token = generateToken();
+=======
+ * Crea una entrega digital.
+ * REGLA: Solo si el producto cumple verified + download_enabled + distribution_allowed.
+ */
+export async function createDelivery(input: CreateDeliveryInput): Promise<DeliveryResult> {
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   const expiresAt = new Date(
     Date.now() + (input.expiryHours ?? DEFAULT_EXPIRY_HOURS) * 60 * 60 * 1000,
   );
@@ -222,6 +301,7 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
+<<<<<<< HEAD
   // Buscar producto (DB o fallback catálogo)
   let product: any = null;
   const dbOk = isDbAvailable();
@@ -238,11 +318,27 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
 
   // Si no está en DB o no hay DB, intentar fallback catálogo
   if (!product) {
+=======
+  // Buscar producto (DB o fallback)
+  let product: any = null;
+
+  if (isDbAvailable()) {
+    try {
+      product = await db!.product.findUnique({ where: { id: input.productId } });
+    } catch (err) {
+      console.error('[delivery] DB error:', err);
+    }
+  }
+
+  if (!product) {
+    // Fallback: catálogo generado desde SEED_GAMES
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
     const { getFallbackProductById } = await import('@/lib/fallback-catalog');
     product = await getFallbackProductById(input.productId);
   }
 
   if (!product) {
+<<<<<<< HEAD
     return {
       success: false,
       token: '',
@@ -287,6 +383,31 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
       await db.delivery.create({
         data: {
           token,
+=======
+    return { success: false, token: '', downloadUrl: '', expiresAt: new Date(), error: 'product_not_found' };
+  }
+
+  // ─── Verificación de reglas ───
+  if (!product.verified) {
+    return { success: false, token: '', downloadUrl: '', expiresAt: new Date(), error: 'product_not_verified' };
+  }
+  if (!product.download_enabled) {
+    return { success: false, token: '', downloadUrl: '', expiresAt: new Date(), error: 'download_disabled' };
+  }
+  if (!product.distribution_allowed) {
+    return { success: false, token: '', downloadUrl: '', expiresAt: new Date(), error: 'distribution_not_allowed' };
+  }
+
+  // ─── Persistir en DB si está disponible ───
+  let token: string;
+
+  if (isDbAvailable()) {
+    try {
+      const randomToken = crypto.randomBytes(32).toString('hex');
+      await db!.delivery.create({
+        data: {
+          token: randomToken,
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
           product_id: product.id,
           user_id: input.userId || null,
           user_email: input.userEmail,
@@ -297,6 +418,7 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
           user_agent: input.userAgent || null,
         },
       });
+<<<<<<< HEAD
     } catch (err) {
       console.error('[delivery] DB error creating delivery:', err);
       // Fallback a memoria
@@ -337,6 +459,43 @@ export async function createDelivery(input: CreateDeliveryInput): Promise<Delive
       expiresAt,
       maxDownloads,
     };
+=======
+      token = randomToken;
+    } catch (err) {
+      console.error('[delivery] DB error creating:', err);
+      // Fallback a stateless token
+      token = generateStatelessToken({
+        productId: product.id,
+        productName: product.name,
+        fileName: product.file_name || '',
+        fileType: product.file_type || 'application/octet-stream',
+        fileSize: product.file_size || 0,
+        storageKey: product.storage_key || '',
+        sha256: product.sha256 || '',
+        version: product.version || '1.0.0',
+        userEmail: input.userEmail,
+        orderId: input.orderId,
+        exp: expiresAt.getTime(),
+        maxDownloads,
+      });
+    }
+  } else {
+    // Modo sin DB: token stateless firmado
+    token = generateStatelessToken({
+      productId: product.id,
+      productName: product.name,
+      fileName: product.file_name || '',
+      fileType: product.file_type || 'application/octet-stream',
+      fileSize: product.file_size || 0,
+      storageKey: product.storage_key || '',
+      sha256: product.sha256 || '',
+      version: product.version || '1.0.0',
+      userEmail: input.userEmail,
+      orderId: input.orderId,
+      exp: expiresAt.getTime(),
+      maxDownloads,
+    });
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   }
 
   return {
@@ -371,8 +530,12 @@ export interface VerifyDeliveryResult {
 }
 
 /**
+<<<<<<< HEAD
  * Verifica si un token es válido para descargar.
  * Comprueba: existe, no expirado, no invalidado, no excedido, producto sigue cumpliendo reglas.
+=======
+ * Verifica si un token es válido.
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
  */
 export async function verifyDelivery(token: string): Promise<VerifyDeliveryResult> {
   if (!token) {
@@ -381,21 +544,33 @@ export async function verifyDelivery(token: string): Promise<VerifyDeliveryResul
 
   const dbOk = isDbAvailable();
 
+<<<<<<< HEAD
   // Buscar en DB (token aleatorio de 64 hex chars)
   if (dbOk && /^[a-f0-9]{64}$/.test(token)) {
     try {
       const delivery = await db.delivery.findUnique({
+=======
+  // 1. Intentar DB (token aleatorio de 64 hex chars)
+  if (dbOk && /^[a-f0-9]{64}$/.test(token)) {
+    try {
+      const delivery = await db!.delivery.findUnique({
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
         where: { token },
         include: { product: true },
       });
 
       if (delivery) {
+<<<<<<< HEAD
         if (delivery.invalidated) {
           return { valid: false, error: 'token_invalidated' };
         }
         if (new Date() > delivery.expires_at) {
           return { valid: false, error: 'token_expired' };
         }
+=======
+        if (delivery.invalidated) return { valid: false, error: 'token_invalidated' };
+        if (new Date() > delivery.expires_at) return { valid: false, error: 'token_expired' };
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
         if (delivery.downloads_count >= delivery.max_downloads) {
           return { valid: false, error: 'download_limit_reached' };
         }
@@ -426,6 +601,7 @@ export async function verifyDelivery(token: string): Promise<VerifyDeliveryResul
           },
         };
       }
+<<<<<<< HEAD
       // Si no está en DB, continuar a memoria
     } catch (err) {
       console.error('[delivery] DB error verifying:', err);
@@ -491,6 +667,40 @@ export async function verifyDelivery(token: string): Promise<VerifyDeliveryResul
           downloadsCount: statelessDelivery.downloadsCount,
           maxDownloads: statelessDelivery.maxDownloads,
           remaining: statelessDelivery.maxDownloads - statelessDelivery.downloadsCount,
+=======
+    } catch (err) {
+      console.error('[delivery] DB verify error:', err);
+    }
+  }
+
+  // 2. Intentar token stateless (HMAC firmado)
+  if (token.includes('.')) {
+    const payload = verifyStatelessToken(token);
+    if (payload) {
+      const downloadsCount = downloadCounts.get(token) || 0;
+      if (downloadsCount >= payload.maxDownloads) {
+        return { valid: false, error: 'download_limit_reached' };
+      }
+
+      return {
+        valid: true,
+        delivery: {
+          token,
+          productId: payload.productId,
+          productName: payload.productName,
+          fileName: payload.fileName,
+          fileType: payload.fileType,
+          fileSize: payload.fileSize,
+          storageKey: payload.storageKey,
+          sha256: payload.sha256,
+          version: payload.version,
+          userEmail: payload.userEmail,
+          orderId: payload.orderId,
+          expiresAt: new Date(payload.exp),
+          downloadsCount,
+          maxDownloads: payload.maxDownloads,
+          remaining: payload.maxDownloads - downloadsCount,
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
         },
       };
     }
@@ -500,7 +710,11 @@ export async function verifyDelivery(token: string): Promise<VerifyDeliveryResul
 }
 
 /**
+<<<<<<< HEAD
  * Registra una descarga: incrementa el contador y hace log.
+=======
+ * Registra una descarga (incrementa contador).
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
  */
 export async function recordDownload(
   token: string,
@@ -508,6 +722,7 @@ export async function recordDownload(
 ): Promise<void> {
   const dbOk = isDbAvailable();
 
+<<<<<<< HEAD
   if (dbOk) {
     try {
       const delivery = await db.delivery.findUnique({
@@ -525,6 +740,19 @@ export async function recordDownload(
 
       // Crear log entry
       await db.downloadLog.create({
+=======
+  if (dbOk && /^[a-f0-9]{64}$/.test(token)) {
+    try {
+      const delivery = await db!.delivery.findUnique({ where: { token } });
+      if (!delivery) return;
+
+      await db!.delivery.update({
+        where: { token },
+        data: { downloads_count: { increment: 1 } },
+      });
+
+      await db!.downloadLog.create({
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
         data: {
           delivery_id: delivery.id,
           ip_address: metadata.ipAddress || null,
@@ -532,6 +760,7 @@ export async function recordDownload(
           bytes_served: metadata.bytesServed || 0,
         },
       });
+<<<<<<< HEAD
 
       return;
     } catch (err) {
@@ -548,11 +777,23 @@ export async function recordDownload(
       // (en DB se mantiene para auditoría, en memoria se borra)
     }
   }
+=======
+      return;
+    } catch (err) {
+      console.error('[delivery] DB record error:', err);
+    }
+  }
+
+  // Fallback: contador en memoria (puede perderse entre cold starts)
+  const current = downloadCounts.get(token) || 0;
+  downloadCounts.set(token, current + 1);
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 }
 
 /**
  * Invalida un token manualmente (admin).
  */
+<<<<<<< HEAD
 export async function invalidateDelivery(
   token: string,
   reason: string,
@@ -567,12 +808,21 @@ export async function invalidateDelivery(
           invalidated: true,
           invalidation_reason: reason,
         },
+=======
+export async function invalidateDelivery(token: string, reason: string): Promise<boolean> {
+  if (isDbAvailable() && /^[a-f0-9]{64}$/.test(token)) {
+    try {
+      await db!.delivery.update({
+        where: { token },
+        data: { invalidated: true, invalidation_reason: reason },
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
       });
       return true;
     } catch {
       return false;
     }
   }
+<<<<<<< HEAD
 
   const mem = memoryStore.get(token);
   if (mem) {
@@ -580,10 +830,14 @@ export async function invalidateDelivery(
     mem.invalidationReason = reason;
     return true;
   }
+=======
+  // Stateless tokens no se pueden invalidar sin DB
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   return false;
 }
 
 /**
+<<<<<<< HEAD
  * Limpieza de tokens expirados (para cron o llamada manual).
  */
 export async function cleanupExpiredDeliveries(): Promise<number> {
@@ -627,6 +881,18 @@ export function getClientIp(request: Request): string | undefined {
 
 /**
  * Obtiene el User-Agent del cliente.
+=======
+ * Obtiene IP del cliente.
+ */
+export function getClientIp(request: Request): string | undefined {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return request.headers.get('x-real-ip') || undefined;
+}
+
+/**
+ * Obtiene User-Agent.
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
  */
 export function getUserAgent(request: Request): string | undefined {
   return request.headers.get('user-agent') || undefined;

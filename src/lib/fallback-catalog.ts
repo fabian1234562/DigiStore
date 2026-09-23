@@ -2,6 +2,7 @@
  * CATÁLOGO FALLBACK — Productos disponibles sin DB.
  *
  * Cuando DATABASE_URL no está configurada (Vercel sin DB),
+<<<<<<< HEAD
  * este catálogo hardcodeado sirve los productos con sus
  * storage_keys reales (calculados en el seed local).
  *
@@ -12,6 +13,27 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { calculateSha256 } from './storage';
+=======
+ * este catálogo generado automáticamente desde SEED_GAMES
+ * sirve TODOS los productos del scanner en el panel admin.
+ *
+ * Reglas de generación:
+ *   - Productos open source (github.com/.../releases):
+ *     verified=true, download_enabled=true, distribution_allowed=true
+ *   - Productos Steam/Epic/HoYoverse/GOG:
+ *     verified=false (requieren auditoría manual)
+ *
+ * Precios:
+ *   - originalPrice >= 20 → $4.99
+ *   - originalPrice >= 10 → $3.99
+ *   - originalPrice >= 5  → $2.99
+ *   - originalPrice < 5   → $1.99
+ *   - originalPrice = 0   → $1.99 (curación)
+ */
+
+import { SEED_GAMES } from '@/lib/game-scanner/seed-data';
+import type { ScannedGame } from '@/lib/game-scanner';
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 
 export interface FallbackProduct {
   id: string;
@@ -32,19 +54,33 @@ export interface FallbackProduct {
   featured: boolean;
   badge: string;
   // Archivo
+<<<<<<< HEAD
   file_name: string;
   file_size: number;
   file_type: string;
   storage_key: string;
   sha256: string;
+=======
+  file_name: string | null;
+  file_size: number;
+  file_type: string | null;
+  storage_key: string | null;
+  sha256: string | null;
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   // Flags
   verified: boolean;
   download_enabled: boolean;
   distribution_allowed: boolean;
+<<<<<<< HEAD
+=======
+  source: string;
+  claimUrl: string | null;
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   createdAt: string;
   updatedAt: string;
 }
 
+<<<<<<< HEAD
 /**
  * Catálogo estático con productos precargados.
  * Los storage_keys y sha256 son los calculados en el seed.
@@ -256,6 +292,113 @@ export async function getFallbackCatalog(): Promise<FallbackProduct[]> {
 
 /**
  * Busca un producto por ID en el catálogo fallback.
+=======
+function calculateSellPrice(originalPrice: number): number {
+  if (originalPrice >= 20) return 4.99;
+  if (originalPrice >= 10) return 3.99;
+  if (originalPrice >= 5) return 2.99;
+  return 1.99;
+}
+
+function detectCategory(game: ScannedGame): string {
+  if (game.source === 'software') return 'apps';
+  if (['epic-games', 'steam', 'gog', 'prime-gaming', 'humble', 'indiegala', 'fanatical'].includes(game.source)) return 'games';
+  return 'other';
+}
+
+/**
+ * Genera el catálogo fallback desde SEED_GAMES.
+ * Se llama una sola vez y se cachea en memoria.
+ */
+function buildCatalogFromSeed(): FallbackProduct[] {
+  const catalog: FallbackProduct[] = [];
+
+  for (const game of SEED_GAMES) {
+    const claimUrl = game.claimUrl || '';
+    const isOpenSource = claimUrl.includes('github.com/') && claimUrl.includes('/releases');
+    const isSteam = claimUrl.includes('store.steampowered.com');
+    const isEpic = claimUrl.includes('epicgames.com');
+    const isHoyoverse = claimUrl.includes('hoyoverse.com');
+
+    const sellPrice = calculateSellPrice(game.originalPrice);
+    const category = detectCategory(game);
+
+    let verified = false;
+    let download_enabled = false;
+    let distribution_allowed = false;
+    let source = 'scanner';
+    let badge = '';
+
+    if (isOpenSource) {
+      verified = true;
+      download_enabled = true;
+      distribution_allowed = true;
+      source = 'github';
+      badge = 'OPEN SOURCE';
+    } else if (isSteam) {
+      source = 'steam';
+      badge = 'STEAM';
+    } else if (isEpic) {
+      source = 'epic';
+      badge = 'EPIC';
+    } else if (isHoyoverse) {
+      source = 'hoyoverse';
+      badge = 'HOYOVERSE';
+    } else {
+      source = game.source;
+      badge = game.source.toUpperCase();
+    }
+
+    catalog.push({
+      id: game.id,
+      slug: game.id.toLowerCase(),
+      name: game.title,
+      description: game.description,
+      longDescription: game.description,
+      category,
+      subcategory: (game.genre && game.genre[0]) || game.source,
+      price: sellPrice,
+      originalPrice: game.originalPrice,
+      currency: 'USD',
+      is_free: false, // Todos de pago en DigiStore ($1-$5)
+      image: game.imageUrl,
+      iconEmoji: '📦',
+      version: '1.0.0',
+      tags: game.tags || [],
+      featured: false,
+      badge,
+      file_name: null,
+      file_size: 0,
+      file_type: null,
+      storage_key: null,
+      sha256: null,
+      verified,
+      download_enabled,
+      distribution_allowed,
+      source,
+      claimUrl,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  return catalog;
+}
+
+let catalogCache: FallbackProduct[] | null = null;
+
+/**
+ * Devuelve el catálogo fallback completo (generado desde SEED_GAMES).
+ */
+export async function getFallbackCatalog(): Promise<FallbackProduct[]> {
+  if (catalogCache) return catalogCache;
+  catalogCache = buildCatalogFromSeed();
+  return catalogCache;
+}
+
+/**
+ * Busca un producto por ID o slug.
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
  */
 export async function getFallbackProductById(id: string): Promise<FallbackProduct | null> {
   const catalog = await getFallbackCatalog();

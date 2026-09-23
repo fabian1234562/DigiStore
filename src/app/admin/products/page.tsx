@@ -1,10 +1,18 @@
 'use client';
 
+<<<<<<< HEAD
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Package, Upload, Check, X, Loader2, ShieldCheck, AlertTriangle,
   Trash2, RefreshCw, FileArchive, Hash, HardDrive, Plus, Lock,
   Download, Eye, ToggleLeft, ToggleRight, Search,
+=======
+import { useState, useEffect, useCallback } from 'react';
+import {
+  Package, Lock, Loader2, ShieldCheck, AlertTriangle, Trash2, RefreshCw,
+  Check, X, ToggleRight, ToggleLeft, Eye, Plus, Search, ExternalLink,
+  Download, FileArchive,
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -14,7 +22,13 @@ interface Product {
   name: string;
   description: string;
   category: string;
+<<<<<<< HEAD
   price: number;
+=======
+  subcategory?: string;
+  price: number;
+  originalPrice?: number;
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   is_free: boolean;
   image?: string;
   iconEmoji?: string;
@@ -29,7 +43,13 @@ interface Product {
   verified: boolean;
   tags: string[];
   badge?: string;
+<<<<<<< HEAD
   createdAt: string;
+=======
+  source?: string;
+  claimUrl?: string;
+  canBeDownloaded?: boolean;
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 }
 
 const ADMIN_KEY_DEFAULT = 'digistore-admin-change-this-in-production';
@@ -42,11 +62,14 @@ function formatBytes(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
+<<<<<<< HEAD
 function shortHash(hash?: string): string {
   if (!hash || hash.length < 16) return hash || '—';
   return `${hash.substring(0, 8)}…${hash.substring(hash.length - 8)}`;
 }
 
+=======
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 export default function AdminProductsPage() {
   const [adminKey, setAdminKey] = useState('');
   const [authed, setAuthed] = useState(false);
@@ -54,24 +77,38 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+<<<<<<< HEAD
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Cargar products
+=======
+  const [filter, setFilter] = useState<'all' | 'downloadable' | 'pending' | 'open-source'>('all');
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   const loadProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+<<<<<<< HEAD
       const res = await fetch('/api/admin/products', {
         headers: { 'x-admin-key': adminKey },
       });
+=======
+      const res = await fetch('/api/admin/products', { headers: { 'x-admin-key': adminKey } });
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
       setProducts(data.products || []);
     } catch (e) {
+<<<<<<< HEAD
       setError(e instanceof Error ? e.message : 'Error desconocido');
+=======
+      setError(e instanceof Error ? e.message : 'Error');
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
     } finally {
       setLoading(false);
     }
@@ -81,13 +118,17 @@ export default function AdminProductsPage() {
     if (authed) loadProducts();
   }, [authed, loadProducts]);
 
+<<<<<<< HEAD
   // Verificar auth
+=======
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
     if (!adminKey.trim()) return;
     setAuthed(true);
   };
 
+<<<<<<< HEAD
   const handleApiResponse = (ok: boolean, message: string) => {
     setToast({ type: ok ? 'success' : 'error', message });
     setTimeout(() => setToast(null), 4000);
@@ -134,19 +175,31 @@ export default function AdminProductsPage() {
   };
 
   // Toggle flags
+=======
+  const showToast = (type: 'success' | 'error', message: string) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   const handleToggle = async (product: Product, field: 'download_enabled' | 'distribution_allowed') => {
     try {
       const newValue = !product[field];
       const res = await fetch(`/api/admin/products/${product.id}/toggle`, {
         method: 'POST',
+<<<<<<< HEAD
         headers: {
           'x-admin-key': adminKey,
           'content-type': 'application/json',
         },
+=======
+        headers: { 'x-admin-key': adminKey, 'content-type': 'application/json' },
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
         body: JSON.stringify({ [field]: newValue }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || data.error);
+<<<<<<< HEAD
       handleApiResponse(true, `${field === 'download_enabled' ? 'Descarga' : 'Distribución'} ${newValue ? 'activada' : 'desactivada'}`);
     } catch (err) {
       handleApiResponse(false, err instanceof Error ? err.message : 'Error');
@@ -156,11 +209,23 @@ export default function AdminProductsPage() {
   // Eliminar producto
   const handleDelete = async (product: Product) => {
     if (!confirm(`¿Eliminar "${product.name}"? Esto también borra el archivo del storage.`)) return;
+=======
+      showToast('success', `${field === 'download_enabled' ? 'Descarga' : 'Distribución'} ${newValue ? 'activada' : 'desactivada'}`);
+      loadProducts();
+    } catch (err) {
+      showToast('error', err instanceof Error ? err.message : 'Error');
+    }
+  };
+
+  const handleDelete = async (product: Product) => {
+    if (!confirm(`¿Eliminar "${product.name}"?`)) return;
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
     try {
       const res = await fetch(`/api/admin/products/${product.id}`, {
         method: 'DELETE',
         headers: { 'x-admin-key': adminKey },
       });
+<<<<<<< HEAD
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || data.error);
       handleApiResponse(true, 'Producto eliminado');
@@ -191,6 +256,32 @@ export default function AdminProductsPage() {
   };
 
   // ─── Pantalla login ───
+=======
+      if (!res.ok) throw new Error('Error eliminando');
+      showToast('success', 'Producto eliminado');
+      loadProducts();
+    } catch (err) {
+      showToast('error', err instanceof Error ? err.message : 'Error');
+    }
+  };
+
+  const handleVerify = async (product: Product) => {
+    try {
+      const res = await fetch(`/api/admin/products/${product.id}/verify`, {
+        method: 'POST',
+        headers: { 'x-admin-key': adminKey, 'content-type': 'application/json' },
+        body: JSON.stringify({ verified: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.error);
+      showToast('success', 'Verificado correctamente');
+      loadProducts();
+    } catch (err) {
+      showToast('error', err instanceof Error ? err.message : 'Error');
+    }
+  };
+
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   if (!authed) {
     return (
       <main className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-4">
@@ -200,12 +291,19 @@ export default function AdminProductsPage() {
               <Lock className="w-7 h-7 text-white" />
             </div>
             <h1 className="text-2xl font-extrabold">Panel Admin</h1>
+<<<<<<< HEAD
             <p className="text-xs text-gray-400 mt-1">Ingresa tu clave de administrador</p>
           </div>
           <form onSubmit={handleAuth}>
             <label className="block text-xs font-semibold text-gray-300 mb-1.5">
               Admin Secret Key
             </label>
+=======
+            <p className="text-xs text-gray-400 mt-1">Administrar productos digitales</p>
+          </div>
+          <form onSubmit={handleAuth}>
+            <label className="block text-xs font-semibold text-gray-300 mb-1.5">Admin Secret Key</label>
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
             <input
               type="password"
               value={adminKey}
@@ -214,38 +312,67 @@ export default function AdminProductsPage() {
               autoFocus
               className="w-full bg-gray-950 border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-gray-600 focus:border-violet-500 focus:outline-none font-mono"
             />
+<<<<<<< HEAD
             <button
               type="submit"
               className="w-full mt-4 bg-violet-600 hover:bg-violet-700 text-white font-bold py-2.5 rounded-lg transition-colors"
             >
+=======
+            <button type="submit" className="w-full mt-4 bg-violet-600 hover:bg-violet-700 text-white font-bold py-2.5 rounded-lg">
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
               Acceder
             </button>
           </form>
           <p className="text-[10px] text-gray-500 mt-4 text-center">
             Valor por defecto: <code className="text-amber-300">{ADMIN_KEY_DEFAULT}</code>
+<<<<<<< HEAD
             <br />
             <span className="text-red-400">Cámbialo en producción vía ADMIN_SECRET_KEY env var</span>
+=======
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
           </p>
         </div>
       </main>
     );
   }
 
+<<<<<<< HEAD
   // ─── Pantalla principal ───
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.slug.toLowerCase().includes(search.toLowerCase()) ||
     p.category.toLowerCase().includes(search.toLowerCase())
   );
+=======
+  const filtered = products.filter((p) => {
+    if (search && !p.name.toLowerCase().includes(search.toLowerCase()) &&
+        !p.slug.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filter === 'downloadable' && !p.canBeDownloaded) return false;
+    if (filter === 'pending' && p.verified) return false;
+    if (filter === 'open-source' && p.source !== 'github') return false;
+    return true;
+  });
+
+  const stats = {
+    total: products.length,
+    downloadable: products.filter(p => p.canBeDownloaded).length,
+    pending: products.filter(p => !p.verified).length,
+    openSource: products.filter(p => p.source === 'github').length,
+  };
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+<<<<<<< HEAD
         {/* Header */}
+=======
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-extrabold flex items-center gap-2">
               <Package className="w-6 h-6 text-violet-400" />
+<<<<<<< HEAD
               Administrar Productos
             </h1>
             <p className="text-xs text-gray-400 mt-1">
@@ -284,26 +411,84 @@ export default function AdminProductsPage() {
         {error && (
           <div className="bg-red-950/30 border border-red-900/50 rounded-xl p-3 mb-4 text-sm text-red-300 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4" />
+=======
+              Productos Digitales
+            </h1>
+            <p className="text-xs text-gray-400 mt-1">
+              {stats.total} productos · {stats.downloadable} descargables · {stats.pending} pendientes · {stats.openSource} open source
+            </p>
+          </div>
+          <button
+            onClick={loadProducts}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm"
+          >
+            <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
+            Refrescar
+          </button>
+        </div>
+
+        <div className="flex gap-2 mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar producto..."
+            className="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm focus:border-violet-500 focus:outline-none"
+          />
+          {(['all', 'downloadable', 'pending', 'open-source'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={cn(
+                'px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide',
+                filter === f
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-gray-900 text-gray-400 hover:text-white'
+              )}
+            >
+              {f === 'all' ? 'Todos' : f === 'open-source' ? 'Open Source' : f === 'pending' ? 'Pendientes' : 'Descargables'}
+            </button>
+          ))}
+        </div>
+
+        {error && (
+          <div className="bg-red-950/30 border border-red-900/50 rounded-xl p-3 mb-4 text-sm text-red-300">
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
             {error}
           </div>
         )}
 
+<<<<<<< HEAD
         {/* Products table */}
+=======
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
         <div className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-900 border-b border-gray-800">
               <tr className="text-left text-xs uppercase tracking-wider text-gray-400">
                 <th className="p-3">Producto</th>
+<<<<<<< HEAD
                 <th className="p-3">Archivo</th>
                 <th className="p-3">Verif.</th>
                 <th className="p-3">Descarga</th>
                 <th className="p-3">Distrib.</th>
                 <th className="p-3">Status</th>
+=======
+                <th className="p-3">Fuente</th>
+                <th className="p-3">Precio</th>
+                <th className="p-3">Archivo</th>
+                <th className="p-3 text-center">Verif.</th>
+                <th className="p-3 text-center">DL</th>
+                <th className="p-3 text-center">Dist.</th>
+                <th className="p-3">Estado</th>
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
                 <th className="p-3 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
               {loading && (
+<<<<<<< HEAD
                 <tr>
                   <td colSpan={7} className="p-8 text-center text-gray-400">
                     <Loader2 className="w-5 h-5 animate-spin inline mr-2" />
@@ -416,11 +601,125 @@ export default function AdminProductsPage() {
                   </tr>
                 );
               })}
+=======
+                <tr><td colSpan={9} className="p-8 text-center text-gray-400">
+                  <Loader2 className="w-5 h-5 animate-spin inline mr-2" /> Cargando...
+                </td></tr>
+              )}
+              {!loading && filtered.length === 0 && (
+                <tr><td colSpan={9} className="p-8 text-center text-gray-400">
+                  No hay productos que coincidan con el filtro.
+                </td></tr>
+              )}
+              {filtered.map((product) => (
+                <tr key={product.id} className="hover:bg-gray-900/60">
+                  <td className="p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center shrink-0 text-lg">
+                        {product.iconEmoji || '📦'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-white truncate max-w-[200px]" title={product.name}>
+                          {product.name}
+                        </p>
+                        <p className="text-[10px] text-gray-500 font-mono truncate max-w-[200px]">{product.slug}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-300 border border-gray-700">
+                      {product.badge || product.source || '—'}
+                    </span>
+                  </td>
+                  <td className="p-3">
+                    <p className="font-bold text-white">${product.price.toFixed(2)}</p>
+                    {product.originalPrice ? (
+                      <p className="text-[10px] text-gray-500 line-through">${product.originalPrice.toFixed(2)}</p>
+                    ) : null}
+                  </td>
+                  <td className="p-3">
+                    {product.file_name ? (
+                      <div>
+                        <p className="text-xs text-gray-300 truncate max-w-[120px]" title={product.file_name}>
+                          {product.file_name}
+                        </p>
+                        <p className="text-[10px] text-gray-500">{formatBytes(product.file_size)}</p>
+                      </div>
+                    ) : product.claimUrl ? (
+                      <a
+                        href={product.claimUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-violet-400 hover:underline inline-flex items-center gap-1"
+                      >
+                        Link <ExternalLink className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      <span className="text-[10px] text-gray-600">—</span>
+                    )}
+                  </td>
+                  <td className="p-3 text-center">
+                    {product.verified ? <Check className="w-4 h-4 text-emerald-400 inline" /> : <X className="w-4 h-4 text-gray-600 inline" />}
+                  </td>
+                  <td className="p-3 text-center">
+                    <button onClick={() => handleToggle(product, 'download_enabled')} title="Toggle descarga">
+                      {product.download_enabled ? <ToggleRight className="w-5 h-5 text-emerald-400 inline" /> : <ToggleLeft className="w-5 h-5 text-gray-600 inline" />}
+                    </button>
+                  </td>
+                  <td className="p-3 text-center">
+                    <button onClick={() => handleToggle(product, 'distribution_allowed')} title="Toggle distribución">
+                      {product.distribution_allowed ? <ToggleRight className="w-5 h-5 text-emerald-400 inline" /> : <ToggleLeft className="w-5 h-5 text-gray-600 inline" />}
+                    </button>
+                  </td>
+                  <td className="p-3">
+                    {product.canBeDownloaded ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                        <Check className="w-3 h-3" /> LISTO
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-400 border border-gray-700">
+                        PENDIENTE
+                      </span>
+                    )}
+                  </td>
+                  <td className="p-3 text-right">
+                    <div className="flex gap-1 justify-end">
+                      {product.source === 'github' && (
+                        <a
+                          href={`/api/installers/${product.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Probar descarga (open source)"
+                          className="p-1.5 rounded hover:bg-gray-800 text-gray-400 hover:text-emerald-400"
+                        >
+                          <Download className="w-4 h-4" />
+                        </a>
+                      )}
+                      <button
+                        onClick={() => handleVerify(product)}
+                        title="Verificar"
+                        className="p-1.5 rounded hover:bg-gray-800 text-gray-400 hover:text-emerald-400"
+                      >
+                        <ShieldCheck className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product)}
+                        title="Eliminar"
+                        className="p-1.5 rounded hover:bg-gray-800 text-gray-400 hover:text-red-400"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
             </tbody>
           </table>
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* Toast */}
       {toast && (
         <div className={cn(
@@ -737,3 +1036,18 @@ function CreateProductModal({ onClose, onCreate }: { onClose: () => void; onCrea
     </div>
   );
 }
+=======
+      {toast && (
+        <div className={cn(
+          'fixed bottom-6 right-6 z-[200] max-w-md px-4 py-3 rounded-xl shadow-2xl border flex items-start gap-3',
+          toast.type === 'success' ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-red-50 border-red-300 text-red-800'
+        )}>
+          {toast.type === 'success' ? <Check className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600" /> : <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-red-600" />}
+          <div className="flex-1 text-sm">{toast.message}</div>
+          <button onClick={() => setToast(null)} className="text-gray-400 hover:text-gray-700 shrink-0"><X className="w-4 h-4" /></button>
+        </div>
+      )}
+    </main>
+  );
+}
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getProductById, setDownloadEnabled, setDistributionAllowed } from '@/lib/products';
 
+<<<<<<< HEAD
 /**
  * POST /api/admin/products/[id]/toggle
  *
@@ -10,6 +11,8 @@ import { getProductById, setDownloadEnabled, setDistributionAllowed } from '@/li
  *   { "download_enabled": true/false, "distribution_allowed": true/false }
  */
 
+=======
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 const ADMIN_KEY = process.env.ADMIN_SECRET_KEY || 'digistore-admin-change-this-in-production';
 
 export async function POST(
@@ -25,9 +28,13 @@ export async function POST(
   const body = await request.json();
 
   const product = await getProductById(id);
+<<<<<<< HEAD
   if (!product) {
     return NextResponse.json({ error: 'product_not_found' }, { status: 404 });
   }
+=======
+  if (!product) return NextResponse.json({ error: 'product_not_found' }, { status: 404 });
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 
   if (typeof body.download_enabled === 'boolean') {
     await setDownloadEnabled(id, body.download_enabled);
@@ -43,11 +50,18 @@ export async function POST(
     product: {
       id: updated?.id,
       name: updated?.name,
+<<<<<<< HEAD
       verified: updated?.verified,
       download_enabled: updated?.download_enabled,
       distribution_allowed: updated?.distribution_allowed,
       canBeDownloaded:
         updated?.verified && updated?.download_enabled && updated?.distribution_allowed,
+=======
+      verified: (updated as any)?.verified,
+      download_enabled: (updated as any)?.download_enabled,
+      distribution_allowed: (updated as any)?.distribution_allowed,
+      canBeDownloaded: !!((updated as any)?.verified && (updated as any)?.download_enabled && (updated as any)?.distribution_allowed),
+>>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
     },
   });
 }

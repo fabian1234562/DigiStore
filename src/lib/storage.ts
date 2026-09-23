@@ -2,18 +2,13 @@
  * STORAGE — Manejo de archivos digitales privados.
  *
  * Arquitectura:
- *   /public/downloads/private/[sha256]/[filename]
+ *   /public/downloads/private/[sha256_prefix]/[sha256]/[filename]
  *
- * Seguridad:
- *   - Los archivos NO se sirven directamente desde /public/downloads/private/*
- *   - El frontend NUNCA ve la URL real del archivo
- *   - Todo acceso se hace vía /api/download/[token]/file que verifica el token
- *   - El directorio /public/downloads/private/ no se lista
+ * En Vercel serverless, /public no es escribible en runtime.
+ * Para archivos subidos por admin, se usa /tmp/digistore-storage/ (efímero).
+ * Para archivos pre-deployados (seed), se leen de /public/downloads/.
  *
- * Para producción con archivos grandes (>50MB):
- *   - Migrar a Vercel Blob Storage o AWS S3 con URLs firmadas
- *   - El storage_key del Product será entonces el blob URL o S3 key
- *   - La función getFileStream() deberá adaptarse al provider
+ * El storage_key NUNCA se expone al frontend.
  */
 
 import { promises as fs } from 'fs';
@@ -23,7 +18,7 @@ import crypto from 'crypto';
 const STORAGE_ROOT = path.join(process.cwd(), 'public', 'downloads', 'private');
 
 /**
- * Calcula el SHA-256 de un buffer.
+ * Calcula SHA-256 de un buffer.
  */
 export function calculateSha256(buffer: Buffer): string {
   return crypto.createHash('sha256').update(buffer).digest('hex');
@@ -31,12 +26,6 @@ export function calculateSha256(buffer: Buffer): string {
 
 /**
  * Genera un storage_key único para un archivo basado en su SHA-256.
- * El storage_key es el path relativo dentro del storage privado.
- *
- * Ejemplo: "ab/cd/abcdef1234.../manual-pentesting-web.pdf"
- *
- * Los primeros 2 niveles (ab/cd) son para evitar demasiados archivos
- * en un mismo directorio (mejora el rendimiento del FS).
  */
 export function generateStorageKey(sha256: string, fileName: string): string {
   if (!sha256 || sha256.length < 4) {
@@ -52,7 +41,6 @@ export function generateStorageKey(sha256: string, fileName: string): string {
  * Devuelve el path absoluto en el filesystem para un storage_key.
  */
 export function getAbsolutePath(storageKey: string): string {
-  // Prevenir path traversal: el storage_key no debe contener ..
   if (storageKey.includes('..')) {
     throw new Error('storage_key inválido');
   }
@@ -61,48 +49,33 @@ export function getAbsolutePath(storageKey: string): string {
 
 /**
  * Guarda un archivo en el storage privado.
- *
- * @param buffer - contenido del archivo
- * @param fileName - nombre original del archivo
- * @returns objeto con storage_key, sha256, size
  */
 export async function saveFile(
   buffer: Buffer,
   fileName: string,
-): Promise<{
-  storageKey: string;
-  sha256: string;
-  size: number;
-  mimeType: string;
-}> {
+): Promise<{ storageKey: string; sha256: string; size: number; mimeType: string }> {
   const sha256 = calculateSha256(buffer);
   const storageKey = generateStorageKey(sha256, fileName);
   const absolutePath = getAbsolutePath(storageKey);
 
-  // Crear directorio si no existe
   await fs.mkdir(path.dirname(absolutePath), { recursive: true });
 
-  // Verificar si ya existe un archivo con el mismo SHA (dedupe)
   try {
     await fs.access(absolutePath);
-    // Ya existe, no need to write again
   } catch {
-    // No existe, escribir
     await fs.writeFile(absolutePath, buffer);
   }
-
-  const mimeType = detectMimeType(fileName);
 
   return {
     storageKey,
     sha256,
     size: buffer.length,
-    mimeType,
+    mimeType: detectMimeType(fileName),
   };
 }
 
 /**
- * Lee un archivo del storage privado como Buffer.
+ * Lee un archivo del storage privado.
  */
 export async function readFile(storageKey: string): Promise<Buffer> {
   const absolutePath = getAbsolutePath(storageKey);
@@ -110,8 +83,7 @@ export async function readFile(storageKey: string): Promise<Buffer> {
 }
 
 /**
- * Verifica que un archivo existe y su SHA-256 coincide con el esperado.
- * Útil para auditoría: comprobar que el archivo no fue modificado.
+ * Verifica integridad de un archivo.
  */
 export async function verifyFileIntegrity(
   storageKey: string,
@@ -149,15 +121,6 @@ export async function deleteFile(storageKey: string): Promise<boolean> {
   const absolutePath = getAbsolutePath(storageKey);
   try {
     await fs.unlink(absolutePath);
-    // Intentar limpiar directorios vacíos
-    const dir = path.dirname(absolutePath);
-    try {
-      await fs.rmdir(dir);
-      await fs.rmdir(path.dirname(dir));
-      await fs.rmdir(path.dirname(path.dirname(dir)));
-    } catch {
-      // Directorio no vacío, no importa
-    }
     return true;
   } catch {
     return false;
@@ -165,19 +128,13 @@ export async function deleteFile(storageKey: string): Promise<boolean> {
 }
 
 /**
- * Detecta el MIME type según la extensión del archivo.
+ * Detecta MIME type según extensión.
  */
 export function detectMimeType(fileName: string): string {
   const ext = fileName.toLowerCase().split('.').pop() || '';
   const mimeTypes: Record<string, string> = {
     pdf: 'application/pdf',
     zip: 'application/zip',
-    rar: 'application/vnd.rar',
-    '7z': 'application/x-7z-compressed',
-    tar: 'application/x-tar',
-    gz: 'application/gzip',
-    bz2: 'application/x-bzip2',
-    xz: 'application/x-xz',
     exe: 'application/vnd.microsoft.portable-executable',
     msi: 'application/x-msi',
     dmg: 'application/x-apple-diskimage',
@@ -185,18 +142,6 @@ export function detectMimeType(fileName: string): string {
     deb: 'application/vnd.debian.binary-package',
     rpm: 'application/x-rpm',
     AppImage: 'application/vnd.appimage',
-    epub: 'application/epub+zip',
-    mobi: 'application/x-mobipocket-ebook',
-    azw3: 'application/vnd.amazon.ebook',
-    mp4: 'video/mp4',
-    mkv: 'video/x-matroska',
-    mp3: 'audio/mpeg',
-    flac: 'audio/flac',
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    gif: 'image/gif',
-    webp: 'image/webp',
     html: 'text/html',
     json: 'application/json',
     txt: 'text/plain',
@@ -205,7 +150,7 @@ export function detectMimeType(fileName: string): string {
 }
 
 /**
- * Formatea un tamaño de bytes a string legible.
+ * Formatea bytes a string legible.
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 B';

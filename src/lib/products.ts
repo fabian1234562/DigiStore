@@ -1,17 +1,12 @@
 /**
  * PRODUCTS — CRUD de productos digitales con verificación.
  *
- * Reglas de descarga (para mostrar botón [DESCARGAR]):
- *   verified = true
- *   download_enabled = true
- *   distribution_allowed = true
- *
- * Las 3 condiciones deben cumplirse simultáneamente.
- *
  * MODO DUAL:
- *   - Si DATABASE_URL está configurada → usa Prisma (DB)
- *   - Si NO está configurada → usa fallback catalog (in-memory + filesystem)
- *     Esto permite que funcione en Vercel sin DB configurada.
+ *   - Si DATABASE_URL configurada → usa Prisma (DB)
+ *   - Si NO → usa fallback catalog (generado desde SEED_GAMES)
+ *
+ * Reglas de descarga:
+ *   verified + download_enabled + distribution_allowed = true
  */
 
 import { db, isDbAvailable } from '@/lib/db';
@@ -58,27 +53,24 @@ export interface ProductUpdate {
   tags?: string[];
   featured?: boolean;
   badge?: string;
-  // Archivo
   file_name?: string;
   file_size?: number;
   file_type?: string;
   storage_key?: string;
   sha256?: string;
-  // Flags
   download_enabled?: boolean;
   distribution_allowed?: boolean;
   verified?: boolean;
 }
 
 /**
- * Crea un producto nuevo. Solo funciona con DB.
+ * Crea un producto. Solo funciona con DB.
  */
 export async function createProduct(input: ProductInput) {
   if (!isDbAvailable()) {
-    throw new Error('Database not available. Set DATABASE_URL env var to create products.');
+    throw new Error('Database not available. Set DATABASE_URL to create products.');
   }
-
-  return await db.product.create({
+  return await db!.product.create({
     data: {
       slug: input.slug,
       name: input.name,
@@ -98,7 +90,6 @@ export async function createProduct(input: ProductInput) {
       badge: input.badge || null,
       source: input.source || null,
       claimUrl: input.claimUrl || null,
-      // Por defecto, sin archivo ni verificación
       download_enabled: false,
       distribution_allowed: false,
       verified: false,
@@ -116,7 +107,6 @@ export async function listProducts(filter?: {
   download_enabled?: boolean;
 }) {
   if (!isDbAvailable()) {
-    // Fallback: usar catálogo estático
     const catalog = await getFallbackCatalog();
     return catalog.filter((p) => {
       if (filter?.category && p.category !== filter.category) return false;
@@ -133,10 +123,7 @@ export async function listProducts(filter?: {
   if (filter?.verified !== undefined) where.verified = filter.verified;
   if (filter?.download_enabled !== undefined) where.download_enabled = filter.download_enabled;
 
-  return await db.product.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-  });
+  return await db!.product.findMany({ where, orderBy: { createdAt: 'desc' } });
 }
 
 /**
@@ -146,7 +133,7 @@ export async function getProductById(id: string) {
   if (!isDbAvailable()) {
     return await getFallbackProductById(id);
   }
-  return await db.product.findUnique({ where: { id } });
+  return await db!.product.findUnique({ where: { id } });
 }
 
 /**
@@ -156,11 +143,11 @@ export async function getProductBySlug(slug: string) {
   if (!isDbAvailable()) {
     return await getFallbackProductBySlug(slug);
   }
-  return await db.product.findUnique({ where: { slug } });
+  return await db!.product.findUnique({ where: { slug } });
 }
 
 /**
- * Lista productos disponibles para descarga (cumplen las 3 condiciones).
+ * Lista productos descargables.
  */
 export async function listDownloadableProducts(filter?: {
   category?: string;
@@ -178,10 +165,7 @@ export async function listDownloadableProducts(filter?: {
   if (filter?.category) where.category = filter.category;
   if (filter?.is_free !== undefined) where.is_free = filter.is_free;
 
-  return await db.product.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-  });
+  return await db!.product.findMany({ where, orderBy: { createdAt: 'desc' } });
 }
 
 /**
@@ -197,20 +181,17 @@ export async function updateProduct(id: string, update: ProductUpdate) {
     data.tags = JSON.stringify(update.tags);
   }
 
-  return await db.product.update({
-    where: { id },
-    data,
-  });
+  return await db!.product.update({ where: { id }, data });
 }
 
 /**
- * Elimina un producto. Solo funciona con DB.
+ * Elimina un producto.
  */
 export async function deleteProduct(id: string): Promise<boolean> {
   if (!isDbAvailable()) return false;
 
   try {
-    await db.product.delete({ where: { id } });
+    await db!.product.delete({ where: { id } });
     return true;
   } catch {
     return false;
@@ -219,7 +200,6 @@ export async function deleteProduct(id: string): Promise<boolean> {
 
 /**
  * Verifica si un producto puede ser descargado.
- * Las 3 condiciones deben cumplirse simultáneamente.
  */
 export function canBeDownloaded(product: any): boolean {
   return !!(
@@ -231,50 +211,31 @@ export function canBeDownloaded(product: any): boolean {
 }
 
 /**
- * Marca un producto como verificado (después de calcular SHA-256, etc).
- * Solo funciona con DB.
+ * Marca producto como verificado. Solo DB.
  */
 export async function markProductVerified(id: string, sha256: string) {
   if (!isDbAvailable()) return null;
-
-  return await db.product.update({
-    where: { id },
-    data: {
-      verified: true,
-      sha256,
-    },
-  });
+  return await db!.product.update({ where: { id }, data: { verified: true, sha256 } });
 }
 
 /**
- * Activa o desactiva la descarga de un producto.
- * Solo funciona con DB.
+ * Activa/desactiva descarga.
  */
 export async function setDownloadEnabled(id: string, enabled: boolean) {
   if (!isDbAvailable()) return null;
-
-  return await db.product.update({
-    where: { id },
-    data: { download_enabled: enabled },
-  });
+  return await db!.product.update({ where: { id }, data: { download_enabled: enabled } });
 }
 
 /**
- * Marca o desmarca la autorización de distribución.
- * Solo funciona con DB.
+ * Marca/desmarca distribución.
  */
 export async function setDistributionAllowed(id: string, allowed: boolean) {
   if (!isDbAvailable()) return null;
-
-  return await db.product.update({
-    where: { id },
-    data: { distribution_allowed: allowed },
-  });
+  return await db!.product.update({ where: { id }, data: { distribution_allowed: allowed } });
 }
 
 /**
- * Asocia un archivo a un producto (después de subirlo al storage).
- * Solo funciona con DB.
+ * Asocia archivo a producto.
  */
 export async function attachFileToProduct(
   id: string,
@@ -288,8 +249,7 @@ export async function attachFileToProduct(
   },
 ) {
   if (!isDbAvailable()) return null;
-
-  return await db.product.update({
+  return await db!.product.update({
     where: { id },
     data: {
       file_name: fileInfo.fileName,
@@ -298,36 +258,28 @@ export async function attachFileToProduct(
       storage_key: fileInfo.storageKey,
       sha256: fileInfo.sha256,
       version: fileInfo.version || '1.0.0',
-      verified: true, // Auto-verificar al tener SHA-256
+      verified: true,
     },
   });
 }
 
 /**
- * Obtiene estadísticas de descargas de un producto.
+ * Stats de descargas.
  */
 export async function getProductStats(id: string) {
   if (!isDbAvailable()) return null;
 
-  const deliveries = await db.delivery.findMany({
+  const deliveries = await db!.delivery.findMany({
     where: { product_id: id },
-    include: {
-      download_logs: true,
-    },
+    include: { download_logs: true },
   });
 
-  const totalDeliveries = deliveries.length;
-  const totalDownloads = deliveries.reduce((sum, d) => sum + d.downloads_count, 0);
-  const lastDownload = deliveries
-    .flatMap((d) => d.download_logs)
-    .sort((a, b) => b.downloaded_at.getTime() - a.downloaded_at.getTime())[0];
-
   return {
-    totalDeliveries,
-    totalDownloads,
-    lastDownload: lastDownload?.downloaded_at || null,
-    activeTokens: deliveries.filter(
-      (d) => !d.invalidated && d.expires_at > new Date(),
-    ).length,
+    totalDeliveries: deliveries.length,
+    totalDownloads: deliveries.reduce((sum, d) => sum + d.downloads_count, 0),
+    lastDownload: deliveries
+      .flatMap((d) => d.download_logs)
+      .sort((a, b) => b.downloaded_at.getTime() - a.downloaded_at.getTime())[0]?.downloaded_at || null,
+    activeTokens: deliveries.filter((d) => !d.invalidated && d.expires_at > new Date()).length,
   };
 }
