@@ -34,15 +34,16 @@ export async function GET(request: Request) {
     verified: verified === 'true' ? true : verified === 'false' ? false : undefined,
   });
 
-  // Parsear tags JSON
+  // Parsear tags JSON y calcular canBeDownloaded
   const formatted = products.map((p: any) => ({
     ...p,
     tags: (() => {
-      try { return JSON.parse(p.tags); } catch { return []; }
+      try { return typeof p.tags === 'string' ? JSON.parse(p.tags) : (p.tags || []); } catch { return []; }
     })(),
+    canBeDownloaded: !!(p.verified && p.download_enabled && p.distribution_allowed),
   }));
 
-  return NextResponse.json({ success: true, products: formatted });
+  return NextResponse.json({ success: true, products: formatted, total: formatted.length });
 }
 
 export async function POST(request: Request) {
