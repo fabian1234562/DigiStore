@@ -274,6 +274,14 @@
       "download_url": "https://github.com/alacritty/alacritty/releases/download/v0.17.0/Alacritty-v0.17.0-portable.exe",
       "sha256": null,
       "version": "v0.17.0"
+    },
+    "app-kap": {
+      "file_name": "Kap-3.6.0-arm64.dmg",
+      "file_size": 124651995,
+      "file_type": "application/octet-stream",
+      "download_url": "https://github.com/wulkano/Kap/releases/download/v3.6.0/Kap-3.6.0-arm64.dmg",
+      "sha256": null,
+      "version": "v3.6.0"
     }
   }
 }
