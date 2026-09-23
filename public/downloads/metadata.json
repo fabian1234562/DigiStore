@@ -200,13 +200,12 @@
       "version": "v0.7.2"
     },
     "app-synfig": {
-      "file_name": "synfigstudio-windows-installer.exe",
-      "file_size": 0,
-      "file_type": "application/vnd.microsoft.portable-executable",
-      "download_url": "https://www.synfig.org/download/",
+      "file_name": "SynfigStudio-1.5.5-2026.03.15-win32-79bf7.exe",
+      "file_size": 107720195,
+      "file_type": "application/octet-stream",
+      "download_url": "https://github.com/synfig/synfig/releases/download/v1.5.5/SynfigStudio-1.5.5-2026.03.15-win32-79bf7.exe",
       "sha256": null,
-      "version": "latest",
-      "note": "Synfig Studio - Sitio oficial"
+      "version": "v1.5.5"
     },
     "app-obs-studio-desktop": {
       "file_name": "OBS-Studio-32.2.2-Windows-arm64-PDBs.zip",
@@ -282,6 +281,14 @@
       "download_url": "https://github.com/wulkano/Kap/releases/download/v3.6.0/Kap-3.6.0-arm64.dmg",
       "sha256": null,
       "version": "v3.6.0"
+    },
+    "app-gopass": {
+      "file_name": "gopass-1.17.3-windows-amd64.zip",
+      "file_size": 8195340,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/gopasspw/gopass/releases/download/v1.17.3/gopass-1.17.3-windows-amd64.zip",
+      "sha256": null,
+      "version": "v1.17.3"
     }
   }
 }
