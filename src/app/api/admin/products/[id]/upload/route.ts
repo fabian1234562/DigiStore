@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { saveFile, calculateSha256 } from '@/lib/storage';
 import { getProductById, attachFileToProduct } from '@/lib/products';
 
-<<<<<<< HEAD
 /**
  * POST /api/admin/products/[id]/upload
  *
@@ -24,8 +23,6 @@ import { getProductById, attachFileToProduct } from '@/lib/products';
  * Requiere header: x-admin-key
  */
 
-=======
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
 const ADMIN_KEY = process.env.ADMIN_SECRET_KEY || 'digistore-admin-change-this-in-production';
 
 export async function POST(
@@ -38,7 +35,6 @@ export async function POST(
   }
 
   const { id } = await params;
-<<<<<<< HEAD
 
   // Verificar producto existe
   const product = await getProductById(id);
@@ -50,30 +46,18 @@ export async function POST(
   }
 
   // Parsear multipart
-=======
-  const product = await getProductById(id);
-  if (!product) {
-    return NextResponse.json({ error: 'product_not_found' }, { status: 404 });
-  }
-
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   let formData: FormData;
   try {
     formData = await request.formData();
   } catch {
-<<<<<<< HEAD
     return NextResponse.json(
       { error: 'invalid_form_data', message: 'Se espera multipart/form-data con campo file' },
       { status: 400 },
     );
-=======
-    return NextResponse.json({ error: 'invalid_form_data' }, { status: 400 });
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   }
 
   const file = formData.get('file');
   if (!file || !(file instanceof File)) {
-<<<<<<< HEAD
     return NextResponse.json(
       { error: 'no_file_provided', message: 'Campo "file" requerido' },
       { status: 400 },
@@ -90,20 +74,11 @@ export async function POST(
       },
       { status: 413 },
     );
-=======
-    return NextResponse.json({ error: 'no_file_provided' }, { status: 400 });
-  }
-
-  const MAX_SIZE = 50 * 1024 * 1024;
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: 'file_too_large', message: 'Máximo 50MB' }, { status: 413 });
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   }
 
   const version = (formData.get('version') as string) || '1.0.0';
 
   try {
-<<<<<<< HEAD
     // Leer el archivo a buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -115,13 +90,6 @@ export async function POST(
     const fileInfo = await saveFile(buffer, file.name);
 
     // Asociar al producto
-=======
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const sha256 = calculateSha256(buffer);
-    const fileInfo = await saveFile(buffer, file.name);
-
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
     await attachFileToProduct(id, {
       fileName: file.name,
       fileSize: fileInfo.size,
@@ -141,7 +109,6 @@ export async function POST(
         sha256: fileInfo.sha256,
         version,
       },
-<<<<<<< HEAD
       message: `Archivo subido. SHA-256: ${sha256.substring(0, 16)}…`,
     });
   } catch (error: any) {
@@ -150,10 +117,5 @@ export async function POST(
       { success: false, error: 'upload_failed', message: error.message },
       { status: 500 },
     );
-=======
-    });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: 'upload_failed', message: error.message }, { status: 500 });
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   }
 }
