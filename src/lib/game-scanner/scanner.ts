@@ -40,26 +40,48 @@ class GameScannerStore {
   private isScanning: boolean = false;
   private seedLoaded: boolean = false;
 
-  /** Cargar los 72 juegos verificados como base */
+  /** Cargar los productos verificados como base — SOLO descargables directamente */
   private loadSeedData() {
     if (this.seedLoaded) return;
     this.seedLoaded = true;
-    console.log(`[GameScanner] Cargando ${SEED_STATS.totalGames} juegos verificados como base...`);
-    for (const game of SEED_GAMES) {
+
+    // FILTRO CRÍTICO: solo productos que DigiStore puede entregar directamente.
+    // Si no podemos hostear/servir el archivo con nuestro propio link de descarga,
+    // el producto NO entra al catálogo.
+    const downloadableGames = SEED_GAMES.filter((game) => {
+      const url = game.claimUrl || '';
+      if (!url) return false;
+
+      // Open source con GitHub releases → descargable
+      if (url.includes('github.com/') && url.includes('/releases')) return true;
+
+      // Sitios oficiales de apps open source conocidas
+      const officialSites = [
+        'blender.org', 'gimp.org', 'audacityteam.org', 'libreoffice.org',
+        'openoffice.org', 'mozilla.org', 'thunderbird.net', 'videolan.org',
+        '7-zip.org', 'obsproject.com', 'synfig.org', 'openshot.org',
+        'pencil2d.org', 'darktable.org', 'retroarch.com', 'prusa3d.com',
+        'clementine-player.org', 'strawberrymusicplayer.org',
+      ];
+      return officialSites.some((site) => url.includes(site));
+    });
+
+    console.log(`[GameScanner] Cargando ${downloadableGames.length} productos descargables directamente (de ${SEED_GAMES.length} totales en seed)`);
+
+    for (const game of downloadableGames) {
       this.games.set(game.id, { ...game });
     }
-    // Registrar la carga como un "escaneo" de semillas
+
     const seedResult: ScanResult = {
       source: 'epic-games',
-      sourceName: `Base de datos (${SEED_STATS.totalGames} juegos verificados)`,
+      sourceName: `Base de datos (${downloadableGames.length} productos descargables)`,
       success: true,
-      gamesFound: SEED_GAMES,
-      scannedAt: SEED_STATS.lastUpdated,
+      gamesFound: downloadableGames,
+      scannedAt: new Date().toISOString(),
       duration: 0,
     };
     this.scanHistory.push(seedResult);
-    this.lastScanAt = SEED_STATS.lastUpdated;
-    console.log(`[GameScanner] Base cargada: $${SEED_STATS.estimatedTotalValue.toFixed(2)} en valor original, $${SEED_STATS.estimatedProfit.toFixed(2)} en ganancia potencial`);
+    this.lastScanAt = new Date().toISOString();
   }
 
   constructor() {

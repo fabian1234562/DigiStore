@@ -1,13 +1,26 @@
 /**
- * CATÁLOGO FALLBACK — Productos disponibles sin DB.
+ * CATÁLOGO FALLBACK — Solo productos descargables DIRECTAMENTE desde DigiStore.
  *
- * Cuando DATABASE_URL no está configurada (Vercel sin DB),
- * este catálogo generado desde SEED_GAMES sirve TODOS los
- * productos del scanner en el panel admin.
+ * REGLA CRÍTICA: Si DigiStore no puede entregar el archivo directamente
+ * (generar link de descarga propio, hostear/servir el archivo),
+ * el producto NO debe existir en el catálogo.
  *
- * Reglas:
- *   - Open source (github.com/.../releases): verified + descargable
- *   - Steam/Epic/HoYoverse: pendientes de auditoría
+ * Productos eliminados del catálogo:
+ *   - Steam games (DRM, piratería)
+ *   - Epic games (DRM, piratería)
+ *   - HoYoverse (DRM, piratería)
+ *   - Prime Gaming (requiere suscripción Amazon)
+ *   - IndieGala/Fanatical/Humble (requieren cuenta en su plataforma)
+ *
+ * Productos que se mantienen:
+ *   - Open source con GitHub releases (Lapce, VSCodium, OBS, etc.)
+ *     DigiStore descarga el instalador de GitHub y lo sirve con su propio link.
+ *   - Apps open source con sitio web oficial (Blender, GIMP, etc.)
+ *     DigiStore descarga el instalador oficial y lo sirve.
+ *   - Productos propios creados por DigiStore (Manual de Pentesting, etc.)
+ *
+ * Si un producto NO se puede descargar directamente desde DigiStore,
+ * NO aparece en el catálogo. Punto.
  */
 
 import { SEED_GAMES } from '@/lib/game-scanner/seed-data';
@@ -54,48 +67,72 @@ function calculateSellPrice(originalPrice: number): number {
 
 function detectCategory(game: ScannedGame): string {
   if (game.source === 'software') return 'apps';
-  if (['epic-games', 'steam', 'gog', 'prime-gaming', 'humble', 'indiegala', 'fanatical'].includes(game.source)) return 'games';
   return 'other';
+}
+
+/**
+ * Determina si un producto es DESCARGABLE DIRECTAMENTE desde DigiStore.
+ *
+ * SÍ descargable:
+ *   - claimUrl contiene github.com/.../releases (descargar de GitHub)
+ *   - claimUrl es sitio oficial de app open source conocida
+ *
+ * NO descargable:
+ *   - Steam, Epic, HoYoverse, Prime Gaming, GOG (DRM)
+ *   - URL genérica de store.steampowered.com/genre/Free%20to%20Play/
+ *   - Sin URL clara
+ */
+function isDirectlyDownloadable(game: ScannedGame): boolean {
+  const claimUrl = game.claimUrl || '';
+  if (!claimUrl) return false;
+
+  // Open source con GitHub releases → descargable
+  if (claimUrl.includes('github.com/') && claimUrl.includes('/releases')) {
+    return true;
+  }
+
+  // Sitios oficiales de apps open source conocidas (descarga directa del instalador)
+  const officialSites = [
+    'blender.org',
+    'gimp.org',
+    'audacityteam.org',
+    'libreoffice.org',
+    'openoffice.org',
+    'mozilla.org',          // Firefox, Thunderbird
+    'thunderbird.net',
+    'videolan.org',         // VLC
+    '7-zip.org',
+    'obsproject.com',       // OBS Studio
+    'synfig.org',
+    'openshot.org',
+    'pencil2d.org',
+    'darktable.org',
+    'retroarch.com',
+    'prusa3d.com',          // PrusaSlicer
+    'clementine-player.org',
+    'strawberrymusicplayer.org',
+  ];
+  for (const site of officialSites) {
+    if (claimUrl.includes(site)) return true;
+  }
+
+  // NO descargable: Steam, Epic, HoYoverse, Prime, GOG, etc.
+  return false;
 }
 
 function buildCatalogFromSeed(): FallbackProduct[] {
   const catalog: FallbackProduct[] = [];
 
   for (const game of SEED_GAMES) {
+    // FILTRO CRÍTICO: solo productos descargables directamente
+    if (!isDirectlyDownloadable(game)) {
+      continue;
+    }
+
     const claimUrl = game.claimUrl || '';
     const isOpenSource = claimUrl.includes('github.com/') && claimUrl.includes('/releases');
-    const isSteam = claimUrl.includes('store.steampowered.com');
-    const isEpic = claimUrl.includes('epicgames.com');
-    const isHoyoverse = claimUrl.includes('hoyoverse.com');
-
     const sellPrice = calculateSellPrice(game.originalPrice);
     const category = detectCategory(game);
-
-    let verified = false;
-    let download_enabled = false;
-    let distribution_allowed = false;
-    let source = 'scanner';
-    let badge = '';
-
-    if (isOpenSource) {
-      verified = true;
-      download_enabled = true;
-      distribution_allowed = true;
-      source = 'github';
-      badge = 'OPEN SOURCE';
-    } else if (isSteam) {
-      source = 'steam';
-      badge = 'STEAM';
-    } else if (isEpic) {
-      source = 'epic';
-      badge = 'EPIC';
-    } else if (isHoyoverse) {
-      source = 'hoyoverse';
-      badge = 'HOYOVERSE';
-    } else {
-      source = game.source;
-      badge = game.source.toUpperCase();
-    }
 
     catalog.push({
       id: game.id,
@@ -114,16 +151,16 @@ function buildCatalogFromSeed(): FallbackProduct[] {
       version: '1.0.0',
       tags: game.tags || [],
       featured: false,
-      badge,
+      badge: isOpenSource ? 'OPEN SOURCE' : 'OFFICIAL',
       file_name: null,
       file_size: 0,
       file_type: null,
       storage_key: null,
       sha256: null,
-      verified,
-      download_enabled,
-      distribution_allowed,
-      source,
+      verified: true,            // auto-verificados: son open source, archivo verificable
+      download_enabled: true,    // se pueden descargar
+      distribution_allowed: true, // licencia open source permite redistribución
+      source: isOpenSource ? 'github' : 'official',
       claimUrl,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -163,4 +200,3 @@ export async function listFallbackDownloadableProducts(filter?: {
     return true;
   });
 }
-// trigger redeploy Wed Sep 23 16:04:04 UTC 2026
