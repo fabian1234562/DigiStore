@@ -1,28 +1,16 @@
 /**
  * CATÁLOGO FALLBACK — Solo productos descargables DIRECTAMENTE desde DigiStore.
  *
- * REGLA CRÍTICA: Si DigiStore no puede entregar el archivo directamente
- * (generar link de descarga propio, hostear/servir el archivo),
- * el producto NO debe existir en el catálogo.
+ * Cada producto en el catálogo tiene un archivo asociado:
+ *   - storage_key local: si el archivo está en /public/downloads/private/
+ *   - storage_key remoto: "remote:https://..." → fetch on-demand al servir
  *
- * Productos eliminados del catálogo:
- *   - Steam games (DRM, piratería)
- *   - Epic games (DRM, piratería)
- *   - HoYoverse (DRM, piratería)
- *   - Prime Gaming (requiere suscripción Amazon)
- *   - IndieGala/Fanatical/Humble (requieren cuenta en su plataforma)
- *
- * Productos que se mantienen:
- *   - Open source con GitHub releases (Lapce, VSCodium, OBS, etc.)
- *     DigiStore descarga el instalador de GitHub y lo sirve con su propio link.
- *   - Apps open source con sitio web oficial (Blender, GIMP, etc.)
- *     DigiStore descarga el instalador oficial y lo sirve.
- *   - Productos propios creados por DigiStore (Manual de Pentesting, etc.)
- *
- * Si un producto NO se puede descargar directamente desde DigiStore,
- * NO aparece en el catálogo. Punto.
+ * La metadata (filename, size, type, download_url) se carga desde
+ * /public/downloads/metadata.json al primer request.
  */
 
+import { promises as fs } from 'fs';
+import path from 'path';
 import { SEED_GAMES } from '@/lib/game-scanner/seed-data';
 import type { ScannedGame } from '@/lib/game-scanner';
 
@@ -58,6 +46,16 @@ export interface FallbackProduct {
   updatedAt: string;
 }
 
+interface ProductMetadata {
+  file_name: string;
+  file_size: number;
+  file_type: string;
+  download_url: string;
+  sha256: string | null;
+  version: string;
+  note?: string;
+}
+
 function calculateSellPrice(originalPrice: number): number {
   if (originalPrice >= 20) return 4.99;
   if (originalPrice >= 10) return 3.99;
@@ -70,69 +68,84 @@ function detectCategory(game: ScannedGame): string {
   return 'other';
 }
 
-/**
- * Determina si un producto es DESCARGABLE DIRECTAMENTE desde DigiStore.
- *
- * SÍ descargable:
- *   - claimUrl contiene github.com/.../releases (descargar de GitHub)
- *   - claimUrl es sitio oficial de app open source conocida
- *
- * NO descargable:
- *   - Steam, Epic, HoYoverse, Prime Gaming, GOG (DRM)
- *   - URL genérica de store.steampowered.com/genre/Free%20to%20Play/
- *   - Sin URL clara
- */
 function isDirectlyDownloadable(game: ScannedGame): boolean {
   const claimUrl = game.claimUrl || '';
   if (!claimUrl) return false;
 
-  // Open source con GitHub releases → descargable
   if (claimUrl.includes('github.com/') && claimUrl.includes('/releases')) {
     return true;
   }
 
-  // Sitios oficiales de apps open source conocidas (descarga directa del instalador)
   const officialSites = [
-    'blender.org',
-    'gimp.org',
-    'audacityteam.org',
-    'libreoffice.org',
-    'openoffice.org',
-    'mozilla.org',          // Firefox, Thunderbird
-    'thunderbird.net',
-    'videolan.org',         // VLC
-    '7-zip.org',
-    'obsproject.com',       // OBS Studio
-    'synfig.org',
-    'openshot.org',
-    'pencil2d.org',
-    'darktable.org',
-    'retroarch.com',
-    'prusa3d.com',          // PrusaSlicer
-    'clementine-player.org',
-    'strawberrymusicplayer.org',
+    'blender.org', 'gimp.org', 'audacityteam.org', 'libreoffice.org',
+    'openoffice.org', 'mozilla.org', 'thunderbird.net', 'videolan.org',
+    '7-zip.org', 'obsproject.com', 'synfig.org', 'openshot.org',
+    'pencil2d.org', 'darktable.org', 'retroarch.com', 'prusa3d.com',
+    'clementine-player.org', 'strawberrymusicplayer.org',
   ];
-  for (const site of officialSites) {
-    if (claimUrl.includes(site)) return true;
-  }
+  return officialSites.some((site) => claimUrl.includes(site));
+}
 
-  // NO descargable: Steam, Epic, HoYoverse, Prime, GOG, etc.
-  return false;
+let catalogCache: FallbackProduct[] | null = null;
+let metadataCache: Record<string, ProductMetadata> | null = null;
+
+/**
+ * Carga el archivo metadata.json desde /public/downloads/.
+ * Si no existe, retorna objeto vacío.
+ */
+async function loadMetadata(): Promise<Record<string, ProductMetadata>> {
+  if (metadataCache) return metadataCache;
+
+  const metadataPath = path.join(process.cwd(), 'public', 'downloads', 'metadata.json');
+  try {
+    const raw = await fs.readFile(metadataPath, 'utf-8');
+    const data = JSON.parse(raw);
+    metadataCache = (data.products || {}) as Record<string, ProductMetadata>;
+  } catch {
+    metadataCache = {};
+  }
+  return metadataCache;
 }
 
 function buildCatalogFromSeed(): FallbackProduct[] {
+  // Esta función se llama de forma síncrona, no puede esperar metadata
+  // Por eso buildCatalogWithMetadata es la versión async correcta
+  return [];
+}
+
+/**
+ * Construye el catálogo completo con metadata de archivos cargada async.
+ */
+async function buildCatalogWithMetadata(): Promise<FallbackProduct[]> {
+  const metadata = await loadMetadata();
   const catalog: FallbackProduct[] = [];
 
   for (const game of SEED_GAMES) {
-    // FILTRO CRÍTICO: solo productos descargables directamente
-    if (!isDirectlyDownloadable(game)) {
-      continue;
-    }
+    if (!isDirectlyDownloadable(game)) continue;
 
     const claimUrl = game.claimUrl || '';
     const isOpenSource = claimUrl.includes('github.com/') && claimUrl.includes('/releases');
     const sellPrice = calculateSellPrice(game.originalPrice);
     const category = detectCategory(game);
+
+    // Buscar metadata del archivo
+    const fileMeta = metadata[game.id];
+
+    let file_name: string | null = null;
+    let file_size = 0;
+    let file_type: string | null = null;
+    let storage_key: string | null = null;
+    let sha256: string | null = null;
+    let version = '1.0.0';
+
+    if (fileMeta) {
+      file_name = fileMeta.file_name;
+      file_size = fileMeta.file_size;
+      file_type = fileMeta.file_type;
+      storage_key = `remote:${fileMeta.download_url}`;
+      sha256 = fileMeta.sha256;
+      version = fileMeta.version || version;
+    }
 
     catalog.push({
       id: game.id,
@@ -148,18 +161,19 @@ function buildCatalogFromSeed(): FallbackProduct[] {
       is_free: false,
       image: game.imageUrl,
       iconEmoji: '📦',
-      version: '1.0.0',
+      version,
       tags: game.tags || [],
       featured: false,
       badge: isOpenSource ? 'OPEN SOURCE' : 'OFFICIAL',
-      file_name: null,
-      file_size: 0,
-      file_type: null,
-      storage_key: null,
-      sha256: null,
-      verified: true,            // auto-verificados: son open source, archivo verificable
-      download_enabled: true,    // se pueden descargar
-      distribution_allowed: true, // licencia open source permite redistribución
+      file_name,
+      file_size,
+      file_type,
+      storage_key,
+      sha256,
+      // Solo es "verified" si tiene archivo asociado
+      verified: !!fileMeta,
+      download_enabled: !!fileMeta,
+      distribution_allowed: !!fileMeta,
       source: isOpenSource ? 'github' : 'official',
       claimUrl,
       createdAt: new Date().toISOString(),
@@ -170,11 +184,9 @@ function buildCatalogFromSeed(): FallbackProduct[] {
   return catalog;
 }
 
-let catalogCache: FallbackProduct[] | null = null;
-
 export async function getFallbackCatalog(): Promise<FallbackProduct[]> {
   if (catalogCache) return catalogCache;
-  catalogCache = buildCatalogFromSeed();
+  catalogCache = await buildCatalogWithMetadata();
   return catalogCache;
 }
 
@@ -200,3 +212,4 @@ export async function listFallbackDownloadableProducts(filter?: {
     return true;
   });
 }
+

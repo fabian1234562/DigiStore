@@ -2,11 +2,9 @@
  * STORAGE — Manejo de archivos digitales privados.
  *
  * Arquitectura:
- *   /public/downloads/private/[sha256_prefix]/[sha256]/[filename]
- *
- * En Vercel serverless, /public no es escribible en runtime.
- * Para archivos subidos por admin, se usa /tmp/digistore-storage/ (efímero).
- * Para archivos pre-deployados (seed), se leen de /public/downloads/.
+ *   - Archivos locales: /public/downloads/private/[sha256]/[filename]
+ *   - Archivos remotos: storage_key = "remote:https://..."
+ *     Se descargan on-demand al servir, no se persisten localmente
  *
  * El storage_key NUNCA se expone al frontend.
  */
@@ -25,7 +23,22 @@ export function calculateSha256(buffer: Buffer): string {
 }
 
 /**
- * Genera un storage_key único para un archivo basado en su SHA-256.
+ * Verifica si un storage_key es remoto (URL).
+ */
+export function isRemoteStorageKey(storageKey: string | null | undefined): boolean {
+  if (!storageKey) return false;
+  return storageKey.startsWith('remote:');
+}
+
+/**
+ * Extrae la URL de un storage_key remoto.
+ */
+export function getRemoteUrl(storageKey: string): string {
+  return storageKey.replace(/^remote:/, '');
+}
+
+/**
+ * Genera un storage_key único para un archivo local basado en su SHA-256.
  */
 export function generateStorageKey(sha256: string, fileName: string): string {
   if (!sha256 || sha256.length < 4) {
@@ -75,9 +88,30 @@ export async function saveFile(
 }
 
 /**
- * Lee un archivo del storage privado.
+ * Lee un archivo del storage.
+ * Soporta:
+ *   - Local: storage_key normal (path relativo dentro de STORAGE_ROOT)
+ *   - Remoto: storage_key = "remote:https://..." → fetch on-demand
+ *
+ * Para archivos remotos, descarga el binario en cada request.
+ * No se cachea en disco (efímero en Vercel serverless).
  */
 export async function readFile(storageKey: string): Promise<Buffer> {
+  // Caso remoto
+  if (isRemoteStorageKey(storageKey)) {
+    const url = getRemoteUrl(storageKey);
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'DigiStore-Downloader/1.0' },
+      redirect: 'follow',
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch remote file: ${res.status} ${res.statusText}`);
+    }
+    const arrayBuffer = await res.arrayBuffer();
+    return Buffer.from(arrayBuffer);
+  }
+
+  // Caso local
   const absolutePath = getAbsolutePath(storageKey);
   return await fs.readFile(absolutePath);
 }

@@ -1,0 +1,255 @@
+{
+  "products": {
+    "app-vscodium-real": {
+      "file_name": "VSCodiumSetup-arm64-1.135.06055.exe",
+      "file_size": 170104784,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/VSCodium/vscodium/releases/download/1.135.06055/VSCodiumSetup-arm64-1.135.06055.exe",
+      "sha256": null,
+      "version": "1.135.06055"
+    },
+    "app-tabby": {
+      "file_name": "tabby-1.0.235-setup-arm64.exe",
+      "file_size": 142692784,
+      "file_type": "application/octet-stream",
+      "download_url": "https://github.com/Eugeny/tabby/releases/download/v1.0.235/tabby-1.0.235-setup-arm64.exe",
+      "sha256": null,
+      "version": "v1.0.235"
+    },
+    "app-terminal": {
+      "file_name": "Microsoft.WindowsTerminal_1.24.11911.0_8wekyb3d8bbwe.msixbundle",
+      "file_size": 22304127,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_8wekyb3d8bbwe.msixbundle",
+      "sha256": null,
+      "version": "v1.24.11911.0"
+    },
+    "app-lazygit": {
+      "file_name": "lazygit_0.65.1_windows_32-bit.zip",
+      "file_size": 6912906,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/jesseduffield/lazygit/releases/download/v0.65.1/lazygit_0.65.1_windows_32-bit.zip",
+      "sha256": null,
+      "version": "v0.65.1"
+    },
+    "app-tinode": {
+      "file_name": "tinode-alldbs.windows-amd64.zip",
+      "file_size": 41657628,
+      "file_type": "application/octet-stream",
+      "download_url": "https://github.com/tinode/chat/releases/download/v0.25.3/tinode-alldbs.windows-amd64.zip",
+      "sha256": null,
+      "version": "v0.25.3"
+    },
+    "app-keepassdx": {
+      "file_name": "KeePassDX-4.5.4-free.apk",
+      "file_size": 16752314,
+      "file_type": "application/vnd.android.package-archive",
+      "download_url": "https://github.com/Kunzisoft/KeePassDX/releases/download/4.5.4/KeePassDX-4.5.4-free.apk",
+      "sha256": null,
+      "version": "4.5.4"
+    },
+    "app-marktext": {
+      "file_name": "marktext-win-arm64-0.19.1-setup.exe",
+      "file_size": 111603296,
+      "file_type": "application/x-msdos-program",
+      "download_url": "https://github.com/marktext/marktext/releases/download/v0.19.1/marktext-win-arm64-0.19.1-setup.exe",
+      "sha256": null,
+      "version": "v0.19.1"
+    },
+    "app-logseq": {
+      "file_name": "Logseq-win-arm64-2.0.1-nsis.exe",
+      "file_size": 142984208,
+      "file_type": "application/octet-stream",
+      "download_url": "https://github.com/logseq/logseq/releases/download/2.0.1/Logseq-win-arm64-2.0.1-nsis.exe",
+      "sha256": null,
+      "version": "2.0.1"
+    },
+    "app-siyuan": {
+      "file_name": "siyuan-3.8.5-win-arm64.exe",
+      "file_size": 188482704,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/siyuan-note/siyuan/releases/download/v3.8.5/siyuan-3.8.5-win-arm64.exe",
+      "sha256": null,
+      "version": "v3.8.5"
+    },
+    "app-xournalpp": {
+      "file_name": "xournalpp-1.3.7-windows-setup-AMD64.exe",
+      "file_size": 96945338,
+      "file_type": "raw",
+      "download_url": "https://github.com/xournalpp/xournalpp/releases/download/v1.3.7/xournalpp-1.3.7-windows-setup-AMD64.exe",
+      "sha256": null,
+      "version": "v1.3.7"
+    },
+    "app-dosbox-x": {
+      "file_name": "dosbox-x-windows-2026.09.01-setup.exe",
+      "file_size": 101777114,
+      "file_type": "application/x-msdos-program",
+      "download_url": "https://github.com/joncampbell123/dosbox-x/releases/download/dosbox-x-v2026.08.31/dosbox-x-windows-2026.09.01-setup.exe",
+      "sha256": null,
+      "version": "dosbox-x-v2026.08.31"
+    },
+    "app-obs-studio": {
+      "file_name": "OBS-Studio-32.2.2-Windows-x64-Installer.exe",
+      "file_size": 159809104,
+      "file_type": "application/x-msdos-program",
+      "download_url": "https://github.com/obsproject/obs-studio/releases/download/32.2.2/OBS-Studio-32.2.2-Windows-x64-Installer.exe",
+      "sha256": null,
+      "version": "32.2.2"
+    },
+    "app-blender": {
+      "file_name": "blender-windows-x64.zip",
+      "file_size": 0,
+      "file_type": "application/zip",
+      "download_url": "https://www.blender.org/download/release/",
+      "sha256": null,
+      "version": "latest",
+      "note": "Blender - Sitio oficial"
+    },
+    "app-gimp": {
+      "file_name": "gimp-installer-windows.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.gimp.org/downloads/",
+      "sha256": null,
+      "version": "latest",
+      "note": "GIMP - Sitio oficial"
+    },
+    "app-libreoffice": {
+      "file_name": "libreoffice-windows-x64.msi",
+      "file_size": 0,
+      "file_type": "application/x-msi",
+      "download_url": "https://www.libreoffice.org/download/download-libreoffice/",
+      "sha256": null,
+      "version": "latest",
+      "note": "LibreOffice - Sitio oficial"
+    },
+    "app-openoffice": {
+      "file_name": "Apache_OpenOffice_installer.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.openoffice.org/download/",
+      "sha256": null,
+      "version": "latest",
+      "note": "Apache OpenOffice - Sitio oficial"
+    },
+    "app-audacity": {
+      "file_name": "audacity-win-4.0.0-arm64.msi",
+      "file_size": 37949440,
+      "file_type": "application/octet-stream",
+      "download_url": "https://github.com/audacity/audacity/releases/download/Audacity-4.0.0/audacity-win-4.0.0-arm64.msi",
+      "sha256": null,
+      "version": "Audacity-4.0.0"
+    },
+    "app-openshot": {
+      "file_name": "OpenShot-v4.0.0-x86.exe",
+      "file_size": 224873009,
+      "file_type": "application/json",
+      "download_url": "https://github.com/OpenShot/openshot-qt/releases/download/v4.0.0/OpenShot-v4.0.0-x86.exe",
+      "sha256": null,
+      "version": "v4.0.0"
+    },
+    "app-vlc": {
+      "file_name": "vlc-windows-installer.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.videolan.org/vlc/",
+      "sha256": null,
+      "version": "latest",
+      "note": "VLC - Sitio oficial"
+    },
+    "app-firefox": {
+      "file_name": "Firefox-Installer.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.mozilla.org/firefox/",
+      "sha256": null,
+      "version": "latest",
+      "note": "Firefox - Sitio oficial"
+    },
+    "app-thunderbird": {
+      "file_name": "Thunderbird-Setup.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.thunderbird.net/",
+      "sha256": null,
+      "version": "latest",
+      "note": "Thunderbird - Sitio oficial"
+    },
+    "app-7zip": {
+      "file_name": "7z2603-x64.exe",
+      "file_size": 1661239,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-x64.exe",
+      "sha256": null,
+      "version": "26.03"
+    },
+    "app-darktable": {
+      "file_name": "darktable-5.6.1-win64.exe",
+      "file_size": 139586523,
+      "file_type": "raw",
+      "download_url": "https://github.com/darktable-org/darktable/releases/download/release-5.6.1/darktable-5.6.1-win64.exe",
+      "sha256": null,
+      "version": "release-5.6.1"
+    },
+    "app-pencil2d": {
+      "file_name": "pencil2d-win32-v0.7.2.zip",
+      "file_size": 53557703,
+      "file_type": "application/x-zip-compressed",
+      "download_url": "https://github.com/pencil2d/pencil/releases/download/v0.7.2/pencil2d-win32-v0.7.2.zip",
+      "sha256": null,
+      "version": "v0.7.2"
+    },
+    "app-synfig": {
+      "file_name": "synfigstudio-windows-installer.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.synfig.org/download/",
+      "sha256": null,
+      "version": "latest",
+      "note": "Synfig Studio - Sitio oficial"
+    },
+    "app-obs-studio-desktop": {
+      "file_name": "OBS-Studio-32.2.2-Windows-arm64-PDBs.zip",
+      "file_size": 57317650,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/obsproject/obs-studio/releases/download/32.2.2/OBS-Studio-32.2.2-Windows-arm64-PDBs.zip",
+      "sha256": null,
+      "version": "32.2.2"
+    },
+    "app-retroarch": {
+      "file_name": "RetroArch-Windows-installer.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.retroarch.com/?page=download",
+      "sha256": null,
+      "version": "latest",
+      "note": "RetroArch - Sitio oficial"
+    },
+    "app-prusaslicer": {
+      "file_name": "PrusaSlicer-2.9.6-setup.exe",
+      "file_size": 96706936,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/prusa3d/PrusaSlicer/releases/download/version_2.9.6/PrusaSlicer-2.9.6-setup.exe",
+      "sha256": null,
+      "version": "version_2.9.6"
+    },
+    "app-strawberry": {
+      "file_name": "strawberry-windows-installer.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.strawberrymusicplayer.org/",
+      "sha256": null,
+      "version": "latest",
+      "note": "Strawberry Music Player - Sitio oficial"
+    },
+    "app-clementine": {
+      "file_name": "clementine-windows-installer.exe",
+      "file_size": 0,
+      "file_type": "application/vnd.microsoft.portable-executable",
+      "download_url": "https://www.clementine-player.org/downloads",
+      "sha256": null,
+      "version": "latest",
+      "note": "Clementine Music Player - Sitio oficial"
+    }
+  }
+}
