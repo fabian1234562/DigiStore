@@ -32,16 +32,30 @@ export interface FallbackProduct {
   tags: string[];
   featured: boolean;
   badge: string;
+  // Tipo de entrega: FILE, KEY, OFFICIAL_ACCESS
+  delivery_type: string;
+  license_type: string;
+  // Para FILE
   file_name: string | null;
   file_size: number;
   file_type: string | null;
   storage_key: string | null;
   sha256: string | null;
+  virus_scan_status: string;
+  license_status: string;
+  file_status: string;
+  // Para KEY
+  key_pool: string;
+  // Para OFFICIAL_ACCESS
+  official_url: string | null;
+  access_instructions: string | null;
+  // Metadata
   verified: boolean;
   download_enabled: boolean;
   distribution_allowed: boolean;
   source: string;
   claimUrl: string | null;
+  product_status: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -162,16 +176,26 @@ async function buildCatalogWithMetadata(): Promise<FallbackProduct[]> {
       tags: game.tags || [],
       featured: false,
       badge: isOpenSource ? 'OPEN SOURCE' : 'OFFICIAL',
+      // Tipo de entrega: siempre FILE para productos open source
+      delivery_type: 'FILE',
+      license_type: 'OPEN_SOURCE',
       file_name,
       file_size,
       file_type,
       storage_key,
       sha256,
+      virus_scan_status: 'CLEAN',
+      license_status: 'AUTHORIZED',
+      file_status: 'READY',
+      key_pool: '[]',
+      official_url: null,
+      access_instructions: null,
       verified: true,
       download_enabled: true,
       distribution_allowed: true,
       source: isOpenSource ? 'github' : 'official',
       claimUrl,
+      product_status: 'PUBLISHED',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });

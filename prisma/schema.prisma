@@ -23,27 +23,51 @@ model User {
   updatedAt     DateTime @updatedAt
   orders        Order[]
   deliveries    Delivery[]
+  downloads     Download[]
 }
 
 model Order {
   id            String   @id @default(cuid())
   userId        String?
   user          User?    @relation(fields: [userId], references: [id])
-  items         String   // JSON stringified
+  // JSON array of items
+  items         String
   total         Float
-  status        String   @default("completed") // pending, paid, completed, failed
+  status        String   @default("pending") // pending, paid, completed, failed, refunded
   email         String
   paymentMethod String?
   paymentId     String?
   createdAt     DateTime @default(now())
+  paidAt        DateTime?
   deliveries    Delivery[]
+  order_items   OrderItem[]
+}
+
+/// Order item individual (un producto en una orden)
+model OrderItem {
+  id              String   @id @default(cuid())
+  order           Order    @relation(fields: [order_id], references: [id])
+  order_id        String
+  product_id      String
+  product_name    String
+  product_slug    String
+  delivery_type   String   // FILE, KEY, OFFICIAL_ACCESS
+  price           Float
+  quantity        Int      @default(1)
+  // Asignación post-pago:
+  // - Para FILE: storage_key + sha256 + file_name del momento de compra
+  // - Para KEY: license_key_id (relación)
+  // - Para OFFICIAL_ACCESS: official_url + access_instructions
+  license_key_id  String?
+  license_key     LicenseKey? @relation(fields: [license_key_id], references: [id])
+  delivery        Delivery?
+  status          String   @default("pending") // pending, delivered, revoked
+  createdAt       DateTime @default(now())
 }
 
 /// Producto digital distribuible por DigiStore.
-/// Solo se puede descargar si: verified=true AND download_enabled=true AND distribution_allowed=true
 model Product {
   id                    String   @id @default(cuid())
-  /// Slug único legible: "manual-pentesting-web"
   slug                  String   @unique
   name                  String
   description           String
@@ -53,85 +77,124 @@ model Product {
   price                 Float    @default(0)
   originalPrice         Float?
   currency              String   @default("USD")
+
+  // ─── Tipo de entrega ───
+  // FILE: archivo real descargable
+  // KEY: licencia/clave (ej: Steam key, Windows key)
+  // OFFICIAL_ACCESS: link a plataforma oficial (Steam, Epic, etc.)
+  delivery_type         String   @default("FILE")
+
+  // ─── Tipo de licencia ───
+  // OWNED, COMMERCIAL_LICENSE, OPEN_SOURCE, FREEWARE, AUTHORIZED_RESELLER,
+  // OFFICIAL_REDEMPTION, REVIEW_REQUIRED, NOT_AUTHORIZED
+  license_type          String   @default("REVIEW_REQUIRED")
+
+  // ─── Para FILE ───
+  file_name             String?
+  file_size             Int      @default(0)
+  file_type             String?
+  file_extension        String?
+  version               String   @default("1.0.0")
+  storage_key           String?
+  storage_provider      String?  // local, vercel-blob, supabase, s3
+  sha256                String?
+  virus_scan_status     String   @default("PENDING") // PENDING, CLEAN, INFECTED, ERROR
+  license_status        String   @default("REVIEW_REQUIRED") // REVIEW_REQUIRED, AUTHORIZED, NOT_AUTHORIZED
+  file_status           String   @default("DRAFT") // DRAFT, UPLOADING, SCANNING, READY, BLOCKED, ERROR
+
+  // ─── Para KEY ───
+  // Pool de claves disponibles (JSON array de strings)
+  // Cada clave asignada a un OrderItem se mueve a LicenseKey
+  key_pool              String   @default("[]") // JSON array
+
+  // ─── Para OFFICIAL_ACCESS ───
+  official_url          String?
+  access_type           String?  // claim, redeem, download_external
+  access_instructions   String?
+
+  // ─── Metadata de producto ───
   is_free               Boolean  @default(false)
   image                 String?
   iconEmoji             String?
   rating                Float    @default(5)
   reviews               Int      @default(0)
   sold                  Int      @default(0)
-
-  // ─── Archivo asociado ───
-  /// Nombre original del archivo subido: "manual-pentesting-web.pdf"
-  file_name             String?
-  /// Tamaño en bytes
-  file_size             Int      @default(0)
-  /// MIME type: "application/pdf", "application/zip"
-  file_type             String?
-  /// Versión semántica: "1.0.0"
-  version               String   @default("1.0.0")
-  /// Clave de almacenamiento interna (path ofuscado o storage key)
-  /// NUNCA exponer al frontend
-  storage_key           String?
-  /// Hash SHA-256 del archivo para verificar integridad
-  sha256                String?
-
-  // ─── Flags de control de descarga ───
-  /// Si el producto puede ser descargado
-  download_enabled      Boolean  @default(false)
-  /// Si la distribución está autorizada (licencia, permiso, open source)
-  distribution_allowed  Boolean  @default(false)
-  /// Si el producto está verificado (archivo subido + SHA calculado)
-  verified              Boolean  @default(false)
-
-  // ─── Metadata ───
   tags                  String   @default("[]") // JSON array
   featured              Boolean  @default(false)
   badge                 String?
-  source                String?  // "github", "steam", "manual", etc.
-  claimUrl              String?  // URL externa (legacy, no se usa en flujo nuevo)
+  source                String?
+  claimUrl              String?
+  platform              String?  // Windows, Mac, Linux, Android, iOS
+  publisher             String?
+  developer             String?
+  systemRequirements    String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
+  // ─── Estado del producto ───
+  // DRAFT, PENDING_REVIEW, APPROVED, PUBLISHED, SUSPENDED, REJECTED
+  product_status        String   @default("DRAFT")
+
   deliveries            Delivery[]
+  license_keys          LicenseKey[]
 
   @@index([category])
-  @@index([is_free])
-  @@index([verified, download_enabled, distribution_allowed])
+  @@index([delivery_type])
+  @@index([product_status, license_status, file_status, virus_scan_status])
 }
 
-/// Entrega digital: un token que permite descargar un producto.
+/// Pool de claves disponibles para productos tipo KEY
+model LicenseKey {
+  id              String   @id @default(cuid())
+  product         Product  @relation(fields: [product_id], references: [id])
+  product_id      String
+  // La clave real (encriptada en producción)
+  license_key     String
+  product_code    String?
+  platform        String?  // Steam, Epic, GOG, etc.
+  // AVAILABLE: en pool, esperando venta
+  // SOLD: asignada a un OrderItem
+  // REVOKED: revocada por admin
+  // REFUNDED: reembolsada, vuelve a AVAILABLE si aplica
+  status          String   @default("AVAILABLE")
+  activation_instructions String?
+  assignedAt      DateTime?
+  createdAt       DateTime @default(now())
+
+  order_items     OrderItem[]
+
+  @@index([product_id, status])
+}
+
+/// Entrega digital: un token que permite descargar un producto tipo FILE
 model Delivery {
   id                String   @id @default(cuid())
-  /// Token criptográfico aleatorio (64 chars hex)
-  /// NUNCA usar IDs predecibles
+  // Para tokens stateless, este campo puede ser null
+  // (el token contiene los datos en sí mismo)
   token             String   @unique
   product           Product  @relation(fields: [product_id], references: [id])
   product_id        String
   user              User?    @relation(fields: [user_id], references: [id])
   user_id           String?
-  /// Email del receptor (para guests sin cuenta)
   user_email        String
-  /// Orden asociada (si fue compra)
-  order             Order?   @relation(fields: [order_id], references: [id])
-  order_id          String?
+  order           Order?   @relation(fields: [order_id], references: [id])
+  order_id        String?
+  order_item_id   String?  @unique
+  order_item      OrderItem? @relation(fields: [order_item_id], references: [id])
 
   created_at        DateTime @default(now())
   expires_at        DateTime
-  /// Cuántas veces se ha descargado
   downloads_count   Int      @default(0)
-  /// Límite máximo de descargas permitidas
   max_downloads     Int      @default(5)
 
-  /// Para auditoría (legal cuando se aplica política de privacidad)
+  // Para auditoría
   ip_address        String?
   user_agent        String?
 
-  /// Invalidación manual (admin puede invalidar)
   invalidated       Boolean  @default(false)
-  /// Motivo de invalidación si aplica
   invalidation_reason String?
 
-  download_logs     DownloadLog[]
+  download_logs     Download[]
 
   @@index([product_id])
   @@index([user_email])
@@ -140,15 +203,23 @@ model Delivery {
 }
 
 /// Log de cada descarga realizada (auditoría)
-model DownloadLog {
+model Download {
   id              String   @id @default(cuid())
   delivery        Delivery @relation(fields: [delivery_id], references: [id], onDelete: Cascade)
   delivery_id     String
-  downloaded_at   DateTime @default(now())
-  ip_address      String?
+  user            User?    @relation(fields: [user_id], references: [id])
+  user_id         String?
+  order_id        String?
+  product_id      String
+  file_id         String?
+  // IP hasheada (no guardar IP cruda por privacidad)
+  ip_hash         String?
   user_agent      String?
-  bytes_served    Int      @default(0)
+  downloaded_at   DateTime @default(now())
+  bytes_sent      Int      @default(0)
+  status          String   @default("OK") // OK, FAILED, EXPIRED, BLOCKED
 
   @@index([delivery_id])
   @@index([downloaded_at])
+  @@index([user_id])
 }

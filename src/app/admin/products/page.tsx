@@ -32,7 +32,9 @@ interface Product {
   createdAt: string;
 }
 
-const ADMIN_KEY_DEFAULT = 'digistore-admin-change-this-in-production';
+// En producción, ADMIN_SECRET_KEY debe estar configurado en variables de entorno.
+// No se muestra el valor por defecto por seguridad.
+const ADMIN_KEY_DEFAULT = '⚠️ Configura ADMIN_SECRET_KEY en Vercel';
 
 function formatBytes(bytes: number): string {
   if (!bytes) return '0 B';
