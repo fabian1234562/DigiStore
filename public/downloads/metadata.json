@@ -401,6 +401,46 @@
       "download_url": "https://github.com/Andrettin/Wyrmsun/releases/download/v5.3.6/wyrmsun.exe",
       "sha256": null,
       "version": "v5.3.6"
+    },
+    "game-stepmania": {
+      "file_name": "StepMania-5.0.12-win32.exe",
+      "file_size": 51790237,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/stepmania/stepmania/releases/download/v5.0.12/StepMania-5.0.12-win32.exe",
+      "sha256": null,
+      "version": "v5.0.12"
+    },
+    "game-thrive": {
+      "file_name": "Thrive_1.6.0.0_mac_osx.zip",
+      "file_size": 764296089,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/Revolutionary-Games/Thrive/releases/download/v1.6.0/Thrive_1.6.0.0_mac_osx.zip",
+      "sha256": null,
+      "version": "v1.6.0"
+    },
+    "game-megaglest-new": {
+      "file_name": "MegaGlest-Installer-3.13.0_windows_32bit.exe",
+      "file_size": 256573341,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/MegaGlest/megaglest-source/releases/download/3.13.0/MegaGlest-Installer-3.13.0_windows_32bit.exe",
+      "sha256": null,
+      "version": "3.13.0"
+    },
+    "game-openra": {
+      "file_name": "OpenRA-release-20250330-x64.exe",
+      "file_size": 61266292,
+      "file_type": "application/x-ms-dos-executable",
+      "download_url": "https://github.com/OpenRA/OpenRA/releases/download/release-20250330/OpenRA-release-20250330-x64.exe",
+      "sha256": null,
+      "version": "release-20250330"
+    },
+    "game-corsixth": {
+      "file_name": "CorsixTHInstaller.exe",
+      "file_size": 35836176,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/CorsixTH/CorsixTH/releases/download/v0.70.1/CorsixTHInstaller.exe",
+      "sha256": null,
+      "version": "v0.70.1"
     }
   }
 }
