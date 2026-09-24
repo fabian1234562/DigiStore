@@ -337,6 +337,14 @@
       "download_url": "https://github.com/diasurgical/DevilutionX/releases/download/1.5.5/devilutionx-windows-i386.zip",
       "sha256": null,
       "version": "1.5.5"
+    },
+    "game-gzdoom": {
+      "file_name": "gzdoom-4-14-2-windows.zip",
+      "file_size": 21879627,
+      "file_type": "application/x-zip-compressed",
+      "download_url": "https://github.com/ZDoom/gzdoom/releases/download/g4.14.2/gzdoom-4-14-2-windows.zip",
+      "sha256": null,
+      "version": "g4.14.2"
     }
   }
 }
