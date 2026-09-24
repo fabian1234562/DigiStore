@@ -369,6 +369,38 @@
       "download_url": "https://github.com/vcmi/vcmi/releases/download/1.7.5/VCMI-Windows-arm64.exe",
       "sha256": null,
       "version": "1.7.5"
+    },
+    "game-cdda": {
+      "file_name": "cdda-windows-with-graphics-and-sounds-x64-2026-09-19-2324.zip",
+      "file_size": 335606477,
+      "file_type": "application/zip",
+      "download_url": "https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.I-1/cdda-windows-with-graphics-and-sounds-x64-2026-09-19-2324.zip",
+      "sha256": null,
+      "version": "0.I-1"
+    },
+    "game-freeorion": {
+      "file_name": "FreeOrion_v0.5.1.2_Win32_Setup.exe",
+      "file_size": 191777564,
+      "file_type": "application/x-msdos-program",
+      "download_url": "https://github.com/freeorion/freeorion/releases/download/v0.5.1.2/FreeOrion_v0.5.1.2_Win32_Setup.exe",
+      "sha256": null,
+      "version": "v0.5.1.2"
+    },
+    "game-triplea": {
+      "file_name": "TripleA_2026-09.16.15797_windows-64bit.exe",
+      "file_size": 90055168,
+      "file_type": "raw",
+      "download_url": "https://github.com/triplea-game/triplea/releases/download/2026-09.16.15797/TripleA_2026-09.16.15797_windows-64bit.exe",
+      "sha256": null,
+      "version": "2026-09.16.15797"
+    },
+    "game-wyrmsun": {
+      "file_name": "wyrmsun.exe",
+      "file_size": 10138112,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/Andrettin/Wyrmsun/releases/download/v5.3.6/wyrmsun.exe",
+      "sha256": null,
+      "version": "v5.3.6"
     }
   }
 }
