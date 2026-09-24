@@ -345,6 +345,30 @@
       "download_url": "https://github.com/ZDoom/gzdoom/releases/download/g4.14.2/gzdoom-4-14-2-windows.zip",
       "sha256": null,
       "version": "g4.14.2"
+    },
+    "game-openrct2": {
+      "file_name": "OpenRCT2-v0.5.5-windows-installer-arm64.exe",
+      "file_size": 78381896,
+      "file_type": "application/x-msdos-program",
+      "download_url": "https://github.com/OpenRCT2/OpenRCT2/releases/download/v0.5.5/OpenRCT2-v0.5.5-windows-installer-arm64.exe",
+      "sha256": null,
+      "version": "v0.5.5"
+    },
+    "game-openmw": {
+      "file_name": "OpenMW-0.51.0-Windows-x64.exe",
+      "file_size": 73331347,
+      "file_type": "application/x-msdos-program",
+      "download_url": "https://github.com/OpenMW/openmw/releases/download/openmw-0.51.0/OpenMW-0.51.0-Windows-x64.exe",
+      "sha256": null,
+      "version": "openmw-0.51.0"
+    },
+    "game-vcmi": {
+      "file_name": "VCMI-Windows-arm64.exe",
+      "file_size": 36348093,
+      "file_type": "application/x-msdownload",
+      "download_url": "https://github.com/vcmi/vcmi/releases/download/1.7.5/VCMI-Windows-arm64.exe",
+      "sha256": null,
+      "version": "1.7.5"
     }
   }
 }
