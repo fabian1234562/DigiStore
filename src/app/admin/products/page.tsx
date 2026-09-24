@@ -32,9 +32,9 @@ interface Product {
   createdAt: string;
 }
 
-// En producción, ADMIN_SECRET_KEY debe estar configurado en variables de entorno.
-// No se muestra el valor por defecto por seguridad.
-const ADMIN_KEY_DEFAULT = '⚠️ Configura ADMIN_SECRET_KEY en Vercel';
+// Clave por defecto. En producción cambiar en Vercel > Settings > Environment Variables
+// ADMIN_SECRET_KEY=tu-clave-segura-aqui
+const ADMIN_KEY_DEFAULT = 'digistore-admin-change-this-in-production';
 
 function formatBytes(bytes: number): string {
   if (!bytes) return '0 B';
@@ -50,7 +50,7 @@ function shortHash(hash?: string): string {
 }
 
 export default function AdminProductsPage() {
-  const [adminKey, setAdminKey] = useState('');
+  const [adminKey, setAdminKey] = useState(ADMIN_KEY_DEFAULT);
   const [authed, setAuthed] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -78,6 +78,13 @@ export default function AdminProductsPage() {
       setLoading(false);
     }
   }, [adminKey]);
+
+  // Auto-login con la clave por defecto
+  useEffect(() => {
+    if (adminKey && !authed) {
+      setAuthed(true);
+    }
+  }, [adminKey, authed]);
 
   useEffect(() => {
     if (authed) loadProducts();
