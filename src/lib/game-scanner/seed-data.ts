@@ -2217,6 +2217,93 @@ export const SEED_GAMES: ScannedGame[] = [
     platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
     tags: ['game', 'strategy', 'turn-based', 'open-source', 'github', 'LTS'] }),
 
+  /* ══════════════════════════════════════════════════════════════
+     JUEGOS OPEN SOURCE REALMENTE POPULARES (millones de jugadores)
+     ══════════════════════════════════════════════════════════════ */
+  makeGame({ id: 'game-openrct2', title: 'OpenRCT2 (RollerCoaster Tycoon 2)', source: 'software', originalPrice: 19.99, genre: 'Simulation',
+    description: 'Remasterizacion del clasico RollerCoaster Tycoon 2. Construye y gestiona tu parque de atracciones. Miles de escenarios, mods, multijugador. Comunidad enorme.',
+    imageUrl: 'https://openrct2.io/images/logo.png',
+    steamUrl: 'https://github.com/OpenRCT2/OpenRCT2/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'simulation', 'tycoon', 'open-source', 'github', 'rollercoaster'] }),
+
+  makeGame({ id: 'game-gzdoom', title: 'GZDoom (Doom Engine Moderno)', source: 'software', originalPrice: 0, genre: 'FPS Engine',
+    description: 'Engine moderno para Doom, Heretic, Hexen. Soporta mods, 3D, mouselook, alta resolucion. Miles de WADs disponibles. El Doom que juega todo el mundo hoy.',
+    imageUrl: 'https://zdoom.org/w/images/8/8a/Logo.png',
+    steamUrl: 'https://github.com/ZDoom/gzdoom/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'fps', 'engine', 'doom', 'open-source', 'github', 'mods'] }),
+
+  makeGame({ id: 'game-openmw', title: 'OpenMW (Morrowind Engine)', source: 'software', originalPrice: 0, genre: 'RPG Engine',
+    description: 'Engine moderno para The Elder Scrolls III: Morrowind. Mejor rendimiento, mods, interfaz moderna. Requiere assets del juego original.',
+    imageUrl: 'https://openmw.org/wp-content/uploads/2017/10/screenshot-023.png',
+    steamUrl: 'https://github.com/OpenMW/openmw/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'rpg', 'engine', 'morrowind', 'open-source', 'github'] }),
+
+  makeGame({ id: 'game-vcmi', title: 'VCMI (Heroes of Might & Magic III)', source: 'software', originalPrice: 0, genre: 'Strategy',
+    description: 'Engine moderno para Heroes of Might and Magic III. Multijugador, mods, mejoras de interfaz. Uno de los juegos de estrategia mas queridos.',
+    imageUrl: 'https://vcmi.eu/files/screenshots/1.png',
+    steamUrl: 'https://github.com/vcmi/vcmi/releases',
+    platform: ['PC', 'Mac', 'Linux', 'Android'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'strategy', 'heroes', 'homm3', 'open-source', 'github'] }),
+
+  makeGame({ id: 'game-cdda', title: 'Cataclysm: Dark Days Ahead', source: 'software', originalPrice: 0, genre: 'Roguelike',
+    description: 'Sobrevivencia post-apocaliptica. Mundos proceduralmente generados, profundidad extrema. Uno de los roguelikes mas profundos. Comunidad enorme.',
+    imageUrl: 'https://cataclysmdda.org/assets/images/screenshot.png',
+    steamUrl: 'https://github.com/CleverRaven/Cataclysm-DDA/releases',
+    platform: ['PC', 'Mac', 'Linux', 'Android'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'roguelike', 'survival', 'open-source', 'github', 'zombies'] }),
+
+  makeGame({ id: 'game-osu-lazer', title: 'osu!lazer', source: 'software', originalPrice: 0, genre: 'Rhythm',
+    description: 'Juego de ritmo mas popular del mundo. Mapas de canciones, rankings, multiplayer. Remake moderno de osu!. Comunidad masiva.',
+    imageUrl: 'https://github.com/ppy/osu/raw/master/osu.Game/Resources/Textures/menu-logo.png',
+    steamUrl: 'https://github.com/ppy/osu/releases',
+    platform: ['PC', 'Mac', 'Linux', 'Android', 'iOS'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'rhythm', 'music', 'open-source', 'github', 'multiplayer'] }),
+
+  makeGame({ id: 'game-xonotic', title: 'Xonotic', source: 'software', originalPrice: 0, genre: 'FPS Arena',
+    description: 'FPS arena multiplayer. Movement fluido tipo Quake, weapons balanceadas. Free y sin microtransacciones. Sucesor de Nexuiz.',
+    imageUrl: 'https://xonotic.org/media/screenshots/1.jpg',
+    steamUrl: 'https://github.com/Xonotic/Xonotic/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'fps', 'arena', 'multiplayer', 'open-source', 'github', 'quake'] }),
+
+  makeGame({ id: 'game-freeciv', title: 'Freeciv', source: 'software', originalPrice: 0, genre: 'Strategy',
+    description: 'Civilization libre y open source. Multijugador masivo, cientos de civilizaciones, mods. Comunidad activa hace 25 años.',
+    imageUrl: 'https://freeciv.org/images/screenshot.png',
+    steamUrl: 'https://github.com/freeciv/freeciv/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'strategy', 'civ-clone', 'open-source', 'github', 'turn-based'] }),
+
+  makeGame({ id: 'game-arx', title: 'Arx Libertatis (Arx Fatalis)', source: 'software', originalPrice: 0, genre: 'RPG',
+    description: 'Engine moderno para Arx Fatalis. RPG inmersivo primera persona. Mejoras graficas, mods.',
+    imageUrl: 'https://arx-libertatis.org/images/screenshot.png',
+    steamUrl: 'https://github.com/ArxLibertatis/ArxLibertatis/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 4,
+    tags: ['game', 'rpg', 'arx-fatalis', 'open-source', 'github'] }),
+
+  makeGame({ id: 'game-dfunity', title: 'Daggerfall Unity', source: 'software', originalPrice: 0, genre: 'RPG',
+    description: 'Reimplementacion moderna de The Elder Scrolls II: Daggerfall. Mundo masivo, mods, mejoras graficas y de gameplay.',
+    imageUrl: 'https://www.dfworkshop.net/wp-content/uploads/2022/09/screenshot1.jpg',
+    steamUrl: 'https://github.com/Interkarma/daggerfall-unity/releases',
+    platform: ['PC', 'Mac', 'Linux'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'rpg', 'daggerfall', 'elder-scrolls', 'open-source', 'github'] }),
+
+  makeGame({ id: 'game-mindustry-viral', title: 'Mindustry (Viral)', source: 'software', originalPrice: 8.99, genre: 'Strategy',
+    description: 'Juego VIRAL de estrategia. Crea cadenas de produccion, defiende tu nucleo. Multijugador cooperativo. Cross-platform. Millones de jugadores.',
+    imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1127400/capsule_616x353.jpg',
+    steamUrl: 'https://github.com/Anuken/Mindustry/releases',
+    platform: ['PC', 'Mac', 'Linux', 'Android', 'iOS'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'strategy', 'factory', 'tower-defense', 'open-source', 'github', 'viral'] }),
+
+  makeGame({ id: 'game-shatteredpd-viral', title: 'Shattered Pixel Dungeon', source: 'software', originalPrice: 0, genre: 'Roguelike',
+    description: 'Roguelike dungeon crawler VIRAL en Android. Recorre mazmorras, lucha, recolecta loot. Muerte permanente. Millones de descargas.',
+    imageUrl: 'https://shatteredpixel.com/assets/images/shattered-pixel-dungeon-banner.png',
+    steamUrl: 'https://github.com/00-Evan/shattered-pixel-dungeon-gdx/releases',
+    platform: ['PC', 'Android'], deliveryType: 'claim-link', rating: 5,
+    tags: ['game', 'roguelike', 'dungeon-crawler', 'open-source', 'github', 'viral'] }),
+
 ];
 
 /** Estadisticas de la base de datos verificada */
