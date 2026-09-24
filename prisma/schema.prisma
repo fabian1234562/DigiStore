@@ -61,7 +61,6 @@ model Product {
   sold                  Int      @default(0)
 
   // ─── Archivo asociado ───
-<<<<<<< HEAD
   /// Nombre original del archivo subido: "manual-pentesting-web.pdf"
   file_name             String?
   /// Tamaño en bytes
@@ -90,26 +89,6 @@ model Product {
   badge                 String?
   source                String?  // "github", "steam", "manual", etc.
   claimUrl              String?  // URL externa (legacy, no se usa en flujo nuevo)
-=======
-  file_name             String?
-  file_size             Int      @default(0)
-  file_type             String?
-  version               String   @default("1.0.0")
-  storage_key           String?
-  sha256                String?
-
-  // ─── Flags de control de descarga ───
-  download_enabled      Boolean  @default(false)
-  distribution_allowed  Boolean  @default(false)
-  verified              Boolean  @default(false)
-
-  // ─── Metadata ───
-  tags                  String   @default("[]")
-  featured              Boolean  @default(false)
-  badge                 String?
-  source                String?
-  claimUrl              String?
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
@@ -123,29 +102,21 @@ model Product {
 /// Entrega digital: un token que permite descargar un producto.
 model Delivery {
   id                String   @id @default(cuid())
-<<<<<<< HEAD
   /// Token criptográfico aleatorio (64 chars hex)
   /// NUNCA usar IDs predecibles
-=======
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   token             String   @unique
   product           Product  @relation(fields: [product_id], references: [id])
   product_id        String
   user              User?    @relation(fields: [user_id], references: [id])
   user_id           String?
-<<<<<<< HEAD
   /// Email del receptor (para guests sin cuenta)
   user_email        String
   /// Orden asociada (si fue compra)
-=======
-  user_email        String
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   order             Order?   @relation(fields: [order_id], references: [id])
   order_id          String?
 
   created_at        DateTime @default(now())
   expires_at        DateTime
-<<<<<<< HEAD
   /// Cuántas veces se ha descargado
   downloads_count   Int      @default(0)
   /// Límite máximo de descargas permitidas
@@ -158,15 +129,6 @@ model Delivery {
   /// Invalidación manual (admin puede invalidar)
   invalidated       Boolean  @default(false)
   /// Motivo de invalidación si aplica
-=======
-  downloads_count   Int      @default(0)
-  max_downloads     Int      @default(5)
-
-  ip_address        String?
-  user_agent        String?
-
-  invalidated       Boolean  @default(false)
->>>>>>> 7456423 (feat: panel admin muestra TODOS los productos del scanner + import script)
   invalidation_reason String?
 
   download_logs     DownloadLog[]
