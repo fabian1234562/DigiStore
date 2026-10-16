@@ -84,16 +84,24 @@ function detectCategory(game: ScannedGame): string {
 
 function isDirectlyDownloadable(game: ScannedGame): boolean {
   const claimUrl = game.claimUrl || '';
-  if (!claimUrl) return false;
-
-  // Solo productos con GitHub releases: esos SÍ tienen URL directa
-  // al instalador binario verificable (asset URL de GitHub).
-  // Los sitios oficiales (blender.org, gimp.org, etc.) NO se incluyen
-  // porque sus URLs de descarga cambian y requieren scraping del HTML.
+  // GitHub releases → FILE (descargable directamente)
   if (claimUrl.includes('github.com/') && claimUrl.includes('/releases')) {
     return true;
   }
-
+  // Steam, Epic, GOG, etc → KEY (el admin tiene proveedor de claves)
+  // Estos productos se venden como claves de activación
+  if (claimUrl.includes('store.steampowered.com') ||
+      claimUrl.includes('epicgames.com') ||
+      claimUrl.includes('gog.com') ||
+      claimUrl.includes('hoyoverse.com') ||
+      claimUrl.includes('primegaming') ||
+      claimUrl.includes('gaming.amazon')) {
+    return true;
+  }
+  // Productos sin URL pero que son juegos populares conocidos
+  if (game.source === 'steam' || game.source === 'epic-games' || game.source === 'gog') {
+    return true;
+  }
   return false;
 }
 
@@ -146,17 +154,43 @@ async function buildCatalogWithMetadata(): Promise<FallbackProduct[]> {
     // Buscar metadata del archivo
     const fileMeta = metadata[game.id];
 
-    // FILTRO CRÍTICO: si no hay metadata real (file_size > 0), NO se incluye
-    if (!fileMeta || fileMeta.file_size === 0 || !fileMeta.download_url) {
-      continue;
-    }
+    // Determinar tipo de entrega:
+    // - GitHub releases con metadata → FILE (descargable)
+    // - Steam/Epic/GOG/HoYoverse → KEY (clave de activación, admin tiene proveedor)
+    const isGithubRelease = claimUrl.includes('github.com/') && claimUrl.includes('/releases');
+    const isKeyProduct = !isGithubRelease; // Steam, Epic, GOG, etc → KEY
 
-    const file_name = fileMeta.file_name;
-    const file_size = fileMeta.file_size;
-    const file_type = fileMeta.file_type;
-    const storage_key = `remote:${fileMeta.download_url}`;
-    const sha256 = fileMeta.sha256;
-    const version = fileMeta.version || '1.0.0';
+    // FILTRO: 
+    // - Para FILE: requiere metadata real (file_size > 0)
+    // - Para KEY: siempre se incluye (el admin carga las claves manualmente)
+    if (isGithubRelease && (!fileMeta || fileMeta.file_size === 0 || !fileMeta.download_url)) {
+      continue; // Los FILE sin metadata no se muestran
+    }
+    // Los KEY siempre se muestran (no necesitan archivo)
+
+    let file_name: string | null = null;
+    let file_size = 0;
+    let file_type: string | null = null;
+    let storage_key: string | null = null;
+    let sha256: string | null = null;
+    let version = '1.0.0';
+    let delivery_type = 'KEY'; // Default para juegos comerciales
+    let license_type = 'AUTHORIZED_RESELLER';
+    let verified = true;
+    let download_enabled = true;
+    let distribution_allowed = true;
+
+    if (isGithubRelease && fileMeta) {
+      // Es un producto FILE descargable
+      file_name = fileMeta.file_name;
+      file_size = fileMeta.file_size;
+      file_type = fileMeta.file_type;
+      storage_key = `remote:${fileMeta.download_url}`;
+      sha256 = fileMeta.sha256;
+      version = fileMeta.version || '1.0.0';
+      delivery_type = 'FILE';
+      license_type = 'OPEN_SOURCE';
+    }
 
     catalog.push({
       id: game.id,
@@ -175,10 +209,9 @@ async function buildCatalogWithMetadata(): Promise<FallbackProduct[]> {
       version,
       tags: game.tags || [],
       featured: false,
-      badge: isOpenSource ? 'OPEN SOURCE' : 'OFFICIAL',
-      // Tipo de entrega: siempre FILE para productos open source
-      delivery_type: 'FILE',
-      license_type: 'OPEN_SOURCE',
+      badge: isGithubRelease ? 'OPEN SOURCE' : (game.source === 'epic-games' ? 'EPIC' : game.source === 'steam' ? 'STEAM' : game.source.toUpperCase()),
+      delivery_type,
+      license_type,
       file_name,
       file_size,
       file_type,
@@ -186,14 +219,14 @@ async function buildCatalogWithMetadata(): Promise<FallbackProduct[]> {
       sha256,
       virus_scan_status: 'CLEAN',
       license_status: 'AUTHORIZED',
-      file_status: 'READY',
+      file_status: delivery_type === 'FILE' ? 'READY' : 'N/A',
       key_pool: '[]',
-      official_url: null,
-      access_instructions: null,
-      verified: true,
-      download_enabled: true,
-      distribution_allowed: true,
-      source: isOpenSource ? 'github' : 'official',
+      official_url: isKeyProduct ? claimUrl : null,
+      access_instructions: isKeyProduct ? 'Recibirás tu clave de activación tras la compra' : null,
+      verified,
+      download_enabled,
+      distribution_allowed,
+      source: isGithubRelease ? 'github' : game.source,
       claimUrl,
       product_status: 'PUBLISHED',
       createdAt: new Date().toISOString(),

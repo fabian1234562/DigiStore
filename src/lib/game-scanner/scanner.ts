@@ -45,14 +45,25 @@ class GameScannerStore {
     if (this.seedLoaded) return;
     this.seedLoaded = true;
 
-    // FILTRO CRÍTICO: solo productos con GitHub releases.
-    // Las URLs de GitHub releases son estables (asset URLs firmadas) y
-    // nos dan el instalador binario verificable.
-    // Los sitios oficiales (blender.org, gimp.org) no se incluyen porque
-    // sus URLs de descarga cambian con cada versión.
+    // FILTRO: incluir TODOS los productos del seed.
+    // - GitHub releases → FILE (descargable directamente)
+    // - Steam/Epic/GOG/HoYoverse → KEY (el admin tiene proveedor de claves)
     const downloadableGames = SEED_GAMES.filter((game) => {
       const url = game.claimUrl || '';
-      return url.includes('github.com/') && url.includes('/releases');
+      // GitHub releases
+      if (url.includes('github.com/') && url.includes('/releases')) return true;
+      // Steam, Epic, GOG, etc → KEY products
+      if (url.includes('store.steampowered.com') ||
+          url.includes('epicgames.com') ||
+          url.includes('gog.com') ||
+          url.includes('hoyoverse.com') ||
+          url.includes('garena.com') ||
+          url.includes('gaming.amazon')) return true;
+      // Productos KEY sin URL específica (source steam/epic)
+      if (game.source === 'steam' || game.source === 'epic-games' || game.source === 'gog') return true;
+      // Productos con ID que empieza con 'key-' (juegos comerciales con claves)
+      if (game.id.startsWith('key-')) return true;
+      return false;
     });
 
     console.log(`[GameScanner] Cargando ${downloadableGames.length} productos descargables directamente (de ${SEED_GAMES.length} totales en seed)`);
