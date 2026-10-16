@@ -1013,14 +1013,26 @@ export default function HomePage() {
 
   const loadGames = useCallback(async () => {
     try {
-      // Cargar pagos (para mostrar) y gratis (sección separada)
-      const [paidRes, freeRes] = await Promise.all([
+      // Cargar catálogo popular (Fortnite, Free Fire, FIFA, etc.) + scanner
+      const [catalogRes, paidRes, freeRes] = await Promise.all([
+        fetch('/api/catalog'),
         fetch('/api/scanner/results?products=true&filter=paid'),
         fetch('/api/scanner/results?products=true&filter=free'),
       ]);
+      const catalogData = await catalogRes.json();
       const paidData = await paidRes.json();
       const freeData = await freeRes.json();
-      if (paidData.success) setGames(paidData.games || paidData.products || []);
+
+      const catalogProducts = (catalogData.products || []).map((p: any) => ({
+        ...p,
+        originalPrice: p.originalPrice || 0,
+      }));
+
+      const scannerProducts = paidData.success ? (paidData.games || paidData.products || []) : [];
+
+      // Catálogo popular PRIMERO, luego scanner como relleno
+      const allGames = [...catalogProducts, ...scannerProducts];
+      setGames(allGames);
       if (freeData.success) setFreeGames(freeData.games || freeData.products || []);
     } catch (e) { console.error(e); }
     setLoading(false);
@@ -1055,12 +1067,86 @@ export default function HomePage() {
       ) : (
         <>
           <DealsCarousel games={games} />
+          {/* ─── SECCIONES DE JUEGOS POPULARES DEL CATÁLOGO ─── */}
+          <FeaturedSection
+            games={games}
+            title="🔥 Fortnite"
+            subtitle="V-Bucks, skins y battle pass — entrega instantánea"
+            icon={Flame}
+            filterFn={g => g.category === 'Fortnite' || (g.tags || []).some((t: string) => t.includes('fortnite'))}
+            href="/tienda"
+            ctaText="Ver Fortnite"
+          />
+          <FeaturedSection
+            games={games}
+            title="📱 Free Fire, PUBG y Móvil"
+            subtitle="Diamantes, UC, Robux — los juegos móviles más populares"
+            icon={Gamepad2}
+            filterFn={g => g.category === 'Juegos Móvil' || (g.tags || []).some((t: string) => ['free-fire','pubg','roblox','mobile'].includes(t))}
+            href="/tienda"
+            ctaText="Ver móviles"
+          />
+          <FeaturedSection
+            games={games}
+            title="⚽ FIFA / EA FC 25"
+            subtitle="FC Points para Ultimate Team — el juego de fútbol #1"
+            icon={TrendingUp}
+            filterFn={g => g.category === 'Fútbol' || (g.tags || []).some((t: string) => t.includes('fifa') || t.includes('fc25'))}
+            href="/tienda"
+            ctaText="Ver FIFA"
+          />
+          <FeaturedSection
+            games={games}
+            title="🎮 Juegos PC Famosos"
+            subtitle="Minecraft, GTA V, CS2, Valorant, LoL, Elden Ring y más"
+            icon={Crown}
+            filterFn={g => g.category === 'Juegos PC'}
+            href="/tienda"
+            ctaText="Ver PC"
+          />
+          <FeaturedSection
+            games={games}
+            title="✨ Genshin & Honkai"
+            subtitle="Crystals, Stellar Jade — gacha más popular del mundo"
+            icon={Sparkles}
+            filterFn={g => g.category === 'Gacha' || (g.tags || []).some((t: string) => ['genshin','honkai','gacha'].includes(t))}
+            href="/tienda"
+            ctaText="Ver gacha"
+          />
+          <FeaturedSection
+            games={games}
+            title="👑 Skins"
+            subtitle="CS2, Fortnite, Valorant — skins premium a precios increíbles"
+            icon={Crown}
+            filterFn={g => g.category === 'Skins' || (g.tags || []).some((t: string) => t.includes('skin'))}
+            href="/tienda"
+            ctaText="Ver skins"
+          />
+          <FeaturedSection
+            games={games}
+            title="🎁 Tarjetas de Regalo"
+            subtitle="Steam, Google Play, PlayStation, Xbox"
+            icon={Gift}
+            filterFn={g => g.category === 'Tarjetas de Regalo' || (g.tags || []).some((t: string) => t.includes('gift-card'))}
+            href="/tienda"
+            ctaText="Ver tarjetas"
+          />
+          <FeaturedSection
+            games={games}
+            title="📺 Suscripciones"
+            subtitle="Netflix, Spotify, Discord Nitro, YouTube Premium"
+            icon={CreditCard}
+            filterFn={g => g.category === 'Suscripciones' || (g.tags || []).some((t: string) => t.includes('subscription'))}
+            href="/tienda"
+            ctaText="Ver suscripciones"
+          />
+          {/* ─── SECCIONES ORIGINALES DEL SCANNER ─── */}
           <FeaturedSection
             games={games}
             title="Juegos Premium"
             subtitle="Los mejores juegos gratis con mayor valor original — hasta $39.99"
             icon={Crown}
-            filterFn={g => (g.originalPrice || 0) >= 20}
+            filterFn={g => (g.originalPrice || 0) >= 20 && !g.category?.includes('Fortnite') && !g.category?.includes('Móvil') && !g.category?.includes('PC') && !g.category?.includes('Gacha') && !g.category?.includes('Skin') && !g.category?.includes('Fútbol') && !g.category?.includes('Tarjeta') && !g.category?.includes('Suscrip')}
             href="/tienda"
             ctaText="Ver todos"
           />
